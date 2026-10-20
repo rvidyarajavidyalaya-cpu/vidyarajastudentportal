@@ -455,85 +455,227 @@ footer {
 </div>
 
 <script>
-const form = document.getElementById('studentForm');
-const statusEl = document.getElementById('status');
-const formSection = document.getElementById('formSection');
-const successScreen = document.getElementById('successScreen');
-const blurOverlay = document.getElementById('blurOverlay');
 
-const fieldIds = [
-    'admission', 'fullName', 'dob', 'guardian',
-    'phone', 'whatsapp', 'email', 'grade',
-    'address', 'al', 'ol', 'sports', 'extra'
+<script type="module">
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
+  authDomain: "vidyarajastudentsystem.firebaseapp.com",
+  projectId: "vidyarajastudentsystem",
+  storageBucket: "vidyarajastudentsystem.firebasestorage.app",
+  messagingSenderId: "580500123852",
+  appId: "1:580500123852:web:f3c6f3f80f03fd1e21d269",
+  measurementId: "G-YWQNDRM4E1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const form = document.getElementById("studentForm");
+const statusEl = document.getElementById("status");
+const profile = document.getElementById("profile");
+const profileGrid = document.getElementById("profileGrid");
+
+let selectedPhotoData = "";
+
+const fields = [
+  ["fullName", "සම්පූර්ණ නම / Full Name"],
+  ["dob", "උපන්දිනය / Date of Birth"],
+  ["guardian", "මව / පියා / භාරකරු / Guardian"],
+  ["phone", "දුරකථන අංකය / Telephone"],
+  ["whatsapp", "වට්සැප් අංකය / WhatsApp"],
+  ["email", "Email"],
+  ["grade", "ශ්‍රේණිය / පන්තිය / Grade / Class"],
+  ["address", "ලිපිනය / Address"],
+  ["al", "උසස් පෙළ විෂයන් / A/L Subjects"],
+  ["ol", "O/L Results / සාමාන්‍ය පෙළ ප්‍රතිඵල"],
+  ["sports", "ක්‍රීඩා දක්ෂතා / Sports Achievements"],
+  ["extra", "විෂය සමගාමී ක්‍රියාකාරකම් / Extracurricular Activities"]
 ];
 
-form.addEventListener('submit', function(event) {
-    event.preventDefault();
+function getFormData() {
+  const data = {
+    admission: document.getElementById("admission").value.trim()
+  };
 
-    const data = {};
+  fields.forEach(([id]) => {
+    data[id] = document.getElementById(id).value.trim();
+  });
 
-    fieldIds.forEach(function(id) {
-        data[id] = document.getElementById(id).value.trim();
-    });
+  return data;
+}
 
-    const photoFile = document.getElementById('photo').files[0];
+function showProfile(data) {
+  if (!data) return;
 
-    function saveDetails(photoData) {
-        data.photo = photoData || '';
+  document.getElementById("profileName").textContent =
+    data.fullName || "Student Profile";
 
-        try {
-            const key = 'vidyaraja_student_' + data.admission;
-            localStorage.setItem(key, JSON.stringify(data));
+  document.getElementById("profileAdmission").textContent =
+    "Admission Number: " + (data.admission || "");
 
-            formSection.style.display = 'none';
-            successScreen.style.display = 'block';
+  const img = document.getElementById("profilePhoto");
 
-            window.scrollTo({top:0,behavior:'smooth'});
-        } catch (error) {
-            statusEl.textContent =
-                'Could not save details. Browser storage may be full.';
-        }
+  if (data.photo) {
+    img.src = data.photo;
+    img.style.display = "block";
+  } else {
+    img.removeAttribute("src");
+    img.style.display = "none";
+  }
+
+  profileGrid.replaceChildren();
+
+  fields.forEach(([id, label]) => {
+    const item = document.createElement("div");
+    item.className = "profile-item";
+
+    const title = document.createElement("strong");
+    title.textContent = label;
+
+    const value = document.createElement("p");
+    value.textContent =
+      data[id] || "Not provided / සඳහන් කර නැත";
+
+    item.append(title, value);
+    profileGrid.appendChild(item);
+  });
+
+  profile.style.display = "block";
+  profile.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+document.getElementById("photo").addEventListener("change", function () {
+  const file = this.files && this.files[0];
+  selectedPhotoData = "";
+
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    statusEl.textContent = "Please select an image file.";
+    this.value = "";
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    statusEl.textContent =
+      "Please choose a photo smaller than 2 MB.";
+    this.value = "";
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    selectedPhotoData = reader.result;
+  };
+
+  reader.readAsDataURL(file);
+});
+
+form.addEventListener("submit", async function (event) {
+  event.preventDefault();
+
+  const data = getFormData();
+
+  if (!data.admission || !data.fullName) {
+    statusEl.textContent =
+      "Admission Number සහ Full Name ඇතුළත් කරන්න.";
+    return;
+  }
+
+  if (document.getElementById("photo").files.length > 0) {
+    statusEl.textContent =
+      "Photo upload is not configured yet. Remove the photo and submit again.";
+    return;
+  }
+
+  const submitButton = form.querySelector('button[type="submit"]');
+
+  submitButton.disabled = true;
+  statusEl.textContent = "Saving student details to Firebase...";
+
+  try {
+    const payload = {
+      ...data,
+      submittedAt: new Date().toISOString()
+    };
+
+    await addDoc(collection(db, "students"), payload);
+
+    try {
+      localStorage.setItem(
+        "vidyaraja_student_" + data.admission,
+        JSON.stringify(data)
+      );
+    } catch (storageError) {
+      console.warn("Local preview could not be saved.", storageError);
     }
 
-    if (photoFile) {
-        if (!photoFile.type.startsWith('image/')) {
-            statusEl.textContent = 'Please select a valid image.';
-            return;
-        }
+    statusEl.textContent =
+      "SUCCESSFULLY SAVED! Student details saved to the school database.";
 
-        if (photoFile.size > 1024 * 1024) {
-            statusEl.textContent = 'Please select a photo smaller than 1 MB.';
-            return;
-        }
+    showProfile(data);
 
-        const reader = new FileReader();
+    form.reset();
+    selectedPhotoData = "";
 
-        reader.onload = function() {
-            saveDetails(reader.result);
-        };
+  } catch (error) {
+    console.error("Firebase save error:", error);
 
-        reader.onerror = function() {
-            statusEl.textContent = 'Could not read the selected photo.';
-        };
-
-        reader.readAsDataURL(photoFile);
+    if (error.code === "permission-denied") {
+      statusEl.textContent =
+        "Permission denied. Please check Firestore Rules.";
     } else {
-        saveDetails('');
+      statusEl.textContent =
+        "Could not save to Firebase. Check your internet connection and try again.";
     }
+  } finally {
+    submitButton.disabled = false;
+  }
 });
 
-document.getElementById('doneBtn').addEventListener('click', function() {
-    successScreen.style.display = 'none';
+document.getElementById("viewBtn").addEventListener("click", function () {
+  const admission =
+    document.getElementById("admission").value.trim();
 
-    // Blur the entire website and display the final screen
-    blurOverlay.style.display = 'flex';
+  if (!admission) {
+    statusEl.textContent =
+      "Enter the admission number first.";
+    return;
+  }
+
+  try {
+    const saved = localStorage.getItem(
+      "vidyaraja_student_" + admission
+    );
+
+    if (saved) {
+      showProfile(JSON.parse(saved));
+    } else {
+      statusEl.textContent =
+        "No local preview found. Previously submitted records are available to the Admin.";
+    }
+  } catch (error) {
+    statusEl.textContent = "Could not read the saved profile.";
+  }
 });
 
-// Clear form status
-form.addEventListener('reset', function() {
-    statusEl.textContent = '';
+document.getElementById("clearBtn").addEventListener("click", function () {
+  form.reset();
+  selectedPhotoData = "";
+  statusEl.textContent = "";
+  profile.style.display = "none";
 });
 </script>
-
-</body>
-</html>
