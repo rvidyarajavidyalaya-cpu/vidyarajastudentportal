@@ -1,0 +1,539 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R/VIDYARAJA VIDYALAYA | Student Portal</title>
+
+<style>
+:root {
+    --green: #39ff14;
+    --yellow: #eaff00;
+    --panel: rgba(7,19,10,.96);
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+
+body {
+    min-height:100vh;
+    font-family:Arial,"Noto Sans Sinhala",sans-serif;
+    color:#f5fff5;
+    background:radial-gradient(ellipse at top,#17351c,#07100a 50%,#030604);
+    padding:24px 14px;
+    overflow-x:hidden;
+}
+
+.bubbles span {
+    position:fixed;
+    bottom:-80px;
+    width:22px;
+    height:22px;
+    border:1px solid var(--green);
+    border-radius:50%;
+    box-shadow:0 0 14px var(--green);
+    animation:float 12s linear infinite;
+    pointer-events:none;
+    z-index:0;
+}
+.bubbles span:nth-child(1){left:8%;animation-duration:12s}
+.bubbles span:nth-child(2){left:28%;animation-duration:16s;width:34px;height:34px}
+.bubbles span:nth-child(3){left:53%;animation-duration:11s}
+.bubbles span:nth-child(4){left:76%;animation-duration:15s;width:28px;height:28px}
+.bubbles span:nth-child(5){left:91%;animation-duration:13s}
+
+@keyframes float {
+    0%{transform:translateY(0);opacity:0}
+    20%{opacity:.7}
+    100%{transform:translateY(-115vh);opacity:0}
+}
+@keyframes appear {
+    from{opacity:0;transform:scale(.9)}
+    to{opacity:1;transform:scale(1)}
+}
+
+main {
+    position:relative;
+    z-index:1;
+    max-width:1000px;
+    margin:auto;
+}
+
+header,.card {
+    background:var(--panel);
+    border:1px solid var(--green);
+    border-radius:20px;
+    box-shadow:0 0 22px #39ff1428;
+}
+
+header {
+    text-align:center;
+    padding:26px 18px;
+    margin-bottom:22px;
+}
+
+.logo {
+    width:110px;
+    height:110px;
+    object-fit:contain;
+    border-radius:50%;
+    background:#fff;
+    border:2px solid var(--yellow);
+    box-shadow:0 0 20px #39ff1477;
+    margin-bottom:15px;
+}
+
+h1 {
+    color:var(--yellow);
+    font-size:clamp(21px,4vw,32px);
+    line-height:1.4;
+    text-shadow:0 0 12px #eaff0044;
+}
+.subtitle {
+    color:#b9d2bd;
+    letter-spacing:2px;
+    font-size:12px;
+    margin-top:8px;
+}
+.notice {
+    color:#d7e8d9;
+    font-size:13px;
+    line-height:1.8;
+    margin-top:14px;
+}
+
+.card {
+    padding:22px;
+    margin-bottom:20px;
+}
+
+.section-title {
+    color:var(--yellow);
+    font-size:20px;
+    margin-bottom:18px;
+}
+
+.grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+}
+.field {
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    min-width:0;
+}
+.field.full {grid-column:1/-1}
+.field label {
+    color:var(--green);
+    font-size:14px;
+    font-weight:bold;
+    line-height:1.6;
+}
+.field label span {
+    display:block;
+    color:#d0e6d2;
+    font-size:12px;
+    font-weight:normal;
+}
+
+input,textarea {
+    width:100%;
+    border:1px solid var(--green);
+    border-radius:11px;
+    background:#061009;
+    color:white;
+    padding:13px 12px;
+    font:inherit;
+    outline:none;
+}
+input:focus,textarea:focus {
+    border-color:var(--yellow);
+    box-shadow:0 0 13px #39ff1455;
+}
+input[type=date],input[type=file] {color-scheme:dark}
+textarea {min-height:100px;resize:vertical}
+input::placeholder,textarea::placeholder {color:#819786}
+
+.actions {
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-top:20px;
+}
+button {
+    border:1px solid var(--green);
+    border-radius:10px;
+    padding:13px 17px;
+    font-weight:bold;
+    font-size:14px;
+    cursor:pointer;
+    transition:.25s;
+}
+.primary {background:var(--green);color:#041004}
+.secondary {background:#07140a;color:var(--green)}
+button:hover {
+    transform:translateY(-2px);
+    box-shadow:0 0 16px #39ff1455;
+}
+.status {
+    font-size:14px;
+    color:var(--green);
+    margin-top:12px;
+    line-height:1.6;
+}
+
+/* SUCCESS SCREEN */
+.success-screen {
+    display:none;
+    max-width:600px;
+    margin:30px auto;
+    padding:35px 20px;
+    text-align:center;
+    background:var(--panel);
+    border:2px solid var(--green);
+    border-radius:24px;
+    box-shadow:0 0 35px #39ff1444;
+    animation:appear .5s ease;
+}
+.success-logo {
+    width:115px;
+    height:115px;
+    object-fit:contain;
+    border-radius:50%;
+    background:white;
+    border:2px solid var(--yellow);
+    padding:5px;
+    margin-bottom:22px;
+    box-shadow:0 0 22px #39ff1477;
+}
+.success-icon {
+    width:75px;
+    height:75px;
+    margin:0 auto 20px;
+    border:3px solid var(--green);
+    border-radius:50%;
+    color:var(--green);
+    font-size:48px;
+    line-height:68px;
+    box-shadow:0 0 22px #39ff1466;
+}
+.success-screen h2 {
+    color:var(--yellow);
+    font-size:clamp(23px,5vw,32px);
+    margin-bottom:15px;
+    text-shadow:0 0 12px #eaff0055;
+}
+.success-screen p {
+    color:#d7e8d9;
+    font-size:15px;
+    line-height:1.9;
+    margin-bottom:24px;
+}
+
+/* BLUR OVERLAY AFTER DONE */
+.blur-overlay {
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    background:rgba(0,8,3,.35);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    animation:appear .45s ease;
+}
+.blur-box {
+    width:min(100%,460px);
+    text-align:center;
+    padding:35px 22px;
+    border:2px solid var(--green);
+    border-radius:24px;
+    background:rgba(3,12,6,.94);
+    box-shadow:0 0 35px #39ff1466,inset 0 0 25px #39ff1418;
+    animation:appear .5s ease;
+}
+.blur-check {
+    width:85px;
+    height:85px;
+    margin:0 auto 20px;
+    border:3px solid var(--green);
+    border-radius:50%;
+    color:var(--green);
+    font-size:54px;
+    line-height:78px;
+    box-shadow:0 0 28px #39ff1488;
+}
+.blur-box h2 {
+    color:var(--yellow);
+    font-size:clamp(22px,5vw,30px);
+    margin-bottom:14px;
+    text-shadow:0 0 15px #eaff0066;
+}
+.blur-box p {
+    color:#d7e8d9;
+    line-height:1.9;
+    font-size:14px;
+}
+.blur-box .end-label {
+    color:var(--green);
+    margin-top:18px;
+    font-size:12px;
+    letter-spacing:3px;
+}
+
+footer {
+    text-align:center;
+    color:#8da991;
+    font-size:12px;
+    line-height:1.8;
+    padding:20px 4px;
+}
+
+@media(max-width:650px) {
+    .grid {grid-template-columns:1fr}
+    .field.full {grid-column:auto}
+    .card {padding:17px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="bubbles">
+    <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<main id="pageContent">
+
+<header>
+    <img class="logo" src="school-logo.png" alt="School Logo"
+         onerror="this.style.display='none'">
+    <h1>R/VIDYARAJA VIDYALAYA</h1>
+    <p class="subtitle">STUDENT INFORMATION PORTAL</p>
+    <p class="notice">
+        ඔබගේ ශිෂ්‍ය තොරතුරු ඇතුළත් කරන්න<br>
+        Enter Student Information
+    </p>
+</header>
+
+<section class="card" id="formSection">
+    <h2 class="section-title">Student Information / ශිෂ්‍ය තොරතුරු</h2>
+
+    <form id="studentForm">
+        <div class="grid">
+
+            <div class="field">
+                <label for="admission">ඇතුළත් වීමේ අංකය
+                    <span>Admission Number</span>
+                </label>
+                <input id="admission" required placeholder="Enter admission number">
+            </div>
+
+            <div class="field">
+                <label for="fullName">සම්පූර්ණ නම
+                    <span>Full Name</span>
+                </label>
+                <input id="fullName" required placeholder="Enter full name">
+            </div>
+
+            <div class="field">
+                <label for="dob">උපන්දිනය <span>Date of Birth</span></label>
+                <input id="dob" type="date">
+            </div>
+
+            <div class="field">
+                <label for="guardian">මව / පියා / භාරකරු
+                    <span>Mother / Father / Guardian</span>
+                </label>
+                <input id="guardian" placeholder="Guardian's full name">
+            </div>
+
+            <div class="field">
+                <label for="phone">දුරකථන අංකය <span>Telephone Number</span></label>
+                <input id="phone" type="tel" placeholder="+94 7X XXX XXXX">
+            </div>
+
+            <div class="field">
+                <label for="whatsapp">වට්සැප් අංකය <span>WhatsApp Number</span></label>
+                <input id="whatsapp" type="tel" placeholder="+94 7X XXX XXXX">
+            </div>
+
+            <div class="field">
+                <label for="email">විද්‍යුත් තැපෑල <span>Email Address</span></label>
+                <input id="email" type="email" placeholder="name@example.com">
+            </div>
+
+            <div class="field">
+                <label for="grade">ශ්‍රේණිය / පන්තිය <span>Grade / Class</span></label>
+                <input id="grade" placeholder="e.g. Grade 11 - A">
+            </div>
+
+            <div class="field full">
+                <label for="address">ලිපිනය <span>Home Address</span></label>
+                <textarea id="address" placeholder="Enter home address"></textarea>
+            </div>
+
+            <div class="field full">
+                <label for="al">උසස් පෙළ විෂයන් <span>A/L Subjects</span></label>
+                <textarea id="al" placeholder="Enter A/L subjects"></textarea>
+            </div>
+
+            <div class="field full">
+                <label for="ol">සාමාන්‍ය පෙළ ප්‍රතිඵල <span>O/L Results</span></label>
+                <textarea id="ol" placeholder="Enter O/L results"></textarea>
+            </div>
+
+            <div class="field full">
+                <label for="sports">ක්‍රීඩා දක්ෂතා <span>Sports Achievements</span></label>
+                <textarea id="sports" placeholder="Enter sports and achievements"></textarea>
+            </div>
+
+            <div class="field full">
+                <label for="extra">විෂය සමගාමී ක්‍රියාකාරකම්
+                    <span>Extracurricular Activities</span>
+                </label>
+                <textarea id="extra" placeholder="Clubs, societies and other activities"></textarea>
+            </div>
+
+            <div class="field full">
+                <label for="photo">ශිෂ්‍ය ඡායාරූපය <span>Student Photo (Optional)</span></label>
+                <input id="photo" type="file" accept="image/*">
+            </div>
+
+        </div>
+
+        <div class="actions">
+            <button class="primary" type="submit">
+                SAVE DETAILS / විස්තර සුරකින්න
+            </button>
+            <button class="secondary" type="reset">
+                CLEAR FORM / හිස් කරන්න
+            </button>
+        </div>
+
+        <p class="status" id="status" role="status"></p>
+    </form>
+</section>
+
+<section class="success-screen" id="successScreen">
+    <img src="school-logo.png" alt="School Logo"
+         class="success-logo" onerror="this.style.display='none'">
+
+    <div class="success-icon">✓</div>
+    <h2>SUCCESSFULLY SAVED!</h2>
+    <p>
+        Student details have been saved successfully.<br>
+        ශිෂ්‍ය තොරතුරු සාර්ථකව සුරකින ලදී.
+    </p>
+
+    <button class="primary" type="button" id="doneBtn">
+        DONE / අවසන්
+    </button>
+</section>
+
+<footer>
+    R/VIDYARAJA VIDYALAYA<br>
+    STUDENT INFORMATION PORTAL
+</footer>
+
+</main>
+
+<!-- BLURRED FINAL SCREEN -->
+<div class="blur-overlay" id="blurOverlay">
+    <div class="blur-box">
+        <div class="blur-check">✓</div>
+        <h2>THANK YOU!</h2>
+        <p>
+            Your session has been completed successfully.<br>
+            ඔබගේ ක්‍රියාවලිය සාර්ථකව අවසන් විය.
+        </p>
+        <div class="end-label">R/VIDYARAJA VIDYALAYA</div>
+    </div>
+</div>
+
+<script>
+const form = document.getElementById('studentForm');
+const statusEl = document.getElementById('status');
+const formSection = document.getElementById('formSection');
+const successScreen = document.getElementById('successScreen');
+const blurOverlay = document.getElementById('blurOverlay');
+
+const fieldIds = [
+    'admission', 'fullName', 'dob', 'guardian',
+    'phone', 'whatsapp', 'email', 'grade',
+    'address', 'al', 'ol', 'sports', 'extra'
+];
+
+form.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const data = {};
+
+    fieldIds.forEach(function(id) {
+        data[id] = document.getElementById(id).value.trim();
+    });
+
+    const photoFile = document.getElementById('photo').files[0];
+
+    function saveDetails(photoData) {
+        data.photo = photoData || '';
+
+        try {
+            const key = 'vidyaraja_student_' + data.admission;
+            localStorage.setItem(key, JSON.stringify(data));
+
+            formSection.style.display = 'none';
+            successScreen.style.display = 'block';
+
+            window.scrollTo({top:0,behavior:'smooth'});
+        } catch (error) {
+            statusEl.textContent =
+                'Could not save details. Browser storage may be full.';
+        }
+    }
+
+    if (photoFile) {
+        if (!photoFile.type.startsWith('image/')) {
+            statusEl.textContent = 'Please select a valid image.';
+            return;
+        }
+
+        if (photoFile.size > 1024 * 1024) {
+            statusEl.textContent = 'Please select a photo smaller than 1 MB.';
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function() {
+            saveDetails(reader.result);
+        };
+
+        reader.onerror = function() {
+            statusEl.textContent = 'Could not read the selected photo.';
+        };
+
+        reader.readAsDataURL(photoFile);
+    } else {
+        saveDetails('');
+    }
+});
+
+document.getElementById('doneBtn').addEventListener('click', function() {
+    successScreen.style.display = 'none';
+
+    // Blur the entire website and display the final screen
+    blurOverlay.style.display = 'flex';
+});
+
+// Clear form status
+form.addEventListener('reset', function() {
+    statusEl.textContent = '';
+});
+</script>
+
+</body>
+</html>
