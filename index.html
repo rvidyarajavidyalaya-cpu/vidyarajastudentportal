@@ -176,11 +176,17 @@ button:hover {
     transform:translateY(-2px);
     box-shadow:0 0 16px #39ff1455;
 }
+button:disabled {
+    opacity:.6;
+    cursor:wait;
+    transform:none;
+}
 .status {
     font-size:14px;
     color:var(--green);
     margin-top:12px;
-    line-height:1.6;
+    line-height:1.7;
+    overflow-wrap:anywhere;
 }
 
 /* SUCCESS SCREEN */
@@ -231,7 +237,7 @@ button:hover {
     margin-bottom:24px;
 }
 
-/* BLUR OVERLAY AFTER DONE */
+/* BLUR OVERLAY */
 .blur-overlay {
     display:none;
     position:fixed;
@@ -296,6 +302,7 @@ footer {
     .grid {grid-template-columns:1fr}
     .field.full {grid-column:auto}
     .card {padding:17px}
+    .actions button {width:100%}
 }
 </style>
 </head>
@@ -329,14 +336,16 @@ footer {
                 <label for="admission">ඇතුළත් වීමේ අංකය
                     <span>Admission Number</span>
                 </label>
-                <input id="admission" required placeholder="Enter admission number">
+                <input id="admission" required maxlength="50"
+                       placeholder="Enter admission number">
             </div>
 
             <div class="field">
                 <label for="fullName">සම්පූර්ණ නම
                     <span>Full Name</span>
                 </label>
-                <input id="fullName" required placeholder="Enter full name">
+                <input id="fullName" required maxlength="150"
+                       placeholder="Enter full name">
             </div>
 
             <div class="field">
@@ -348,65 +357,80 @@ footer {
                 <label for="guardian">මව / පියා / භාරකරු
                     <span>Mother / Father / Guardian</span>
                 </label>
-                <input id="guardian" placeholder="Guardian's full name">
+                <input id="guardian" maxlength="150"
+                       placeholder="Guardian's full name">
             </div>
 
             <div class="field">
                 <label for="phone">දුරකථන අංකය <span>Telephone Number</span></label>
-                <input id="phone" type="tel" placeholder="+94 7X XXX XXXX">
+                <input id="phone" type="tel" maxlength="30"
+                       placeholder="+94 7X XXX XXXX">
             </div>
 
             <div class="field">
                 <label for="whatsapp">වට්සැප් අංකය <span>WhatsApp Number</span></label>
-                <input id="whatsapp" type="tel" placeholder="+94 7X XXX XXXX">
+                <input id="whatsapp" type="tel" maxlength="30"
+                       placeholder="+94 7X XXX XXXX">
             </div>
 
             <div class="field">
                 <label for="email">විද්‍යුත් තැපෑල <span>Email Address</span></label>
-                <input id="email" type="email" placeholder="name@example.com">
+                <input id="email" type="email" maxlength="150"
+                       placeholder="name@example.com">
             </div>
 
             <div class="field">
                 <label for="grade">ශ්‍රේණිය / පන්තිය <span>Grade / Class</span></label>
-                <input id="grade" placeholder="e.g. Grade 11 - A">
+                <input id="grade" maxlength="50"
+                       placeholder="e.g. Grade 11 - A">
             </div>
 
             <div class="field full">
                 <label for="address">ලිපිනය <span>Home Address</span></label>
-                <textarea id="address" placeholder="Enter home address"></textarea>
+                <textarea id="address" maxlength="1000"
+                          placeholder="Enter home address"></textarea>
             </div>
 
             <div class="field full">
                 <label for="al">උසස් පෙළ විෂයන් <span>A/L Subjects</span></label>
-                <textarea id="al" placeholder="Enter A/L subjects"></textarea>
+                <textarea id="al" maxlength="2000"
+                          placeholder="Enter A/L subjects"></textarea>
             </div>
 
             <div class="field full">
                 <label for="ol">සාමාන්‍ය පෙළ ප්‍රතිඵල <span>O/L Results</span></label>
-                <textarea id="ol" placeholder="Enter O/L results"></textarea>
+                <textarea id="ol" maxlength="2000"
+                          placeholder="Enter O/L results"></textarea>
             </div>
 
             <div class="field full">
                 <label for="sports">ක්‍රීඩා දක්ෂතා <span>Sports Achievements</span></label>
-                <textarea id="sports" placeholder="Enter sports and achievements"></textarea>
+                <textarea id="sports" maxlength="2000"
+                          placeholder="Enter sports and achievements"></textarea>
             </div>
 
             <div class="field full">
                 <label for="extra">විෂය සමගාමී ක්‍රියාකාරකම්
                     <span>Extracurricular Activities</span>
                 </label>
-                <textarea id="extra" placeholder="Clubs, societies and other activities"></textarea>
+                <textarea id="extra" maxlength="2000"
+                          placeholder="Clubs, societies and other activities"></textarea>
             </div>
 
             <div class="field full">
-                <label for="photo">ශිෂ්‍ය ඡායාරූපය <span>Student Photo (Optional)</span></label>
+                <label for="photo">ශිෂ්‍ය ඡායාරූපය
+                    <span>Student Photo (Optional)</span>
+                </label>
                 <input id="photo" type="file" accept="image/*">
+                <p class="notice">
+                    Photo upload is not enabled yet. Leave this empty when submitting.
+                </p>
             </div>
 
         </div>
 
         <div class="actions">
-            <button class="primary" type="submit">
+            <button class="primary" type="submit" id="saveBtn">
                 SAVE DETAILS / විස්තර සුරකින්න
             </button>
             <button class="secondary" type="reset">
@@ -414,7 +438,7 @@ footer {
             </button>
         </div>
 
-        <p class="status" id="status" role="status"></p>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
     </form>
 </section>
 
@@ -441,7 +465,6 @@ footer {
 
 </main>
 
-<!-- BLURRED FINAL SCREEN -->
 <div class="blur-overlay" id="blurOverlay">
     <div class="blur-box">
         <div class="blur-check">✓</div>
@@ -454,228 +477,173 @@ footer {
     </div>
 </div>
 
-<script>
-
 <script type="module">
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
 import {
-  getFirestore,
-  collection,
-  addDoc
+    getFirestore,
+    collection,
+    addDoc
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
-  authDomain: "vidyarajastudentsystem.firebaseapp.com",
-  projectId: "vidyarajastudentsystem",
-  storageBucket: "vidyarajastudentsystem.firebasestorage.app",
-  messagingSenderId: "580500123852",
-  appId: "1:580500123852:web:f3c6f3f80f03fd1e21d269",
-  measurementId: "G-YWQNDRM4E1"
+    apiKey: "AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
+    authDomain: "vidyarajastudentsystem.firebaseapp.com",
+    projectId: "vidyarajastudentsystem",
+    storageBucket: "vidyarajastudentsystem.firebasestorage.app",
+    messagingSenderId: "580500123852",
+    appId: "1:580500123852:web:f3c6f3f80f03fd1e21d269",
+    measurementId: "G-YWQNDRM4E1"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
 const form = document.getElementById("studentForm");
+const formSection = document.getElementById("formSection");
 const statusEl = document.getElementById("status");
-const profile = document.getElementById("profile");
-const profileGrid = document.getElementById("profileGrid");
+const successScreen = document.getElementById("successScreen");
+const blurOverlay = document.getElementById("blurOverlay");
+const doneBtn = document.getElementById("doneBtn");
+const photoInput = document.getElementById("photo");
+const saveBtn = document.getElementById("saveBtn");
 
-let selectedPhotoData = "";
+let db = null;
 
-const fields = [
-  ["fullName", "සම්පූර්ණ නම / Full Name"],
-  ["dob", "උපන්දිනය / Date of Birth"],
-  ["guardian", "මව / පියා / භාරකරු / Guardian"],
-  ["phone", "දුරකථන අංකය / Telephone"],
-  ["whatsapp", "වට්සැප් අංකය / WhatsApp"],
-  ["email", "Email"],
-  ["grade", "ශ්‍රේණිය / පන්තිය / Grade / Class"],
-  ["address", "ලිපිනය / Address"],
-  ["al", "උසස් පෙළ විෂයන් / A/L Subjects"],
-  ["ol", "O/L Results / සාමාන්‍ය පෙළ ප්‍රතිඵල"],
-  ["sports", "ක්‍රීඩා දක්ෂතා / Sports Achievements"],
-  ["extra", "විෂය සමගාමී ක්‍රියාකාරකම් / Extracurricular Activities"]
+try {
+    const app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    statusEl.textContent = "Ready / සූදානම්";
+} catch (error) {
+    console.error("Firebase initialization error:", error);
+    statusEl.textContent =
+        "Firebase initialization failed. Reload the website.";
+}
+
+const fieldIds = [
+    "fullName",
+    "dob",
+    "guardian",
+    "phone",
+    "whatsapp",
+    "email",
+    "grade",
+    "address",
+    "al",
+    "ol",
+    "sports",
+    "extra"
 ];
 
-function getFormData() {
-  const data = {
-    admission: document.getElementById("admission").value.trim()
-  };
+form.addEventListener("submit", async function(event) {
+    event.preventDefault();
 
-  fields.forEach(([id]) => {
-    data[id] = document.getElementById(id).value.trim();
-  });
+    if (!db) {
+        statusEl.textContent =
+            "SAVE FAILED: Firebase is not initialized. Reload the page.";
+        return;
+    }
 
-  return data;
-}
+    if (!form.reportValidity()) return;
 
-function showProfile(data) {
-  if (!data) return;
+    if (photoInput.files && photoInput.files.length > 0) {
+        statusEl.textContent =
+            "Photo upload is not configured yet. Remove the photo and submit again.";
+        return;
+    }
 
-  document.getElementById("profileName").textContent =
-    data.fullName || "Student Profile";
-
-  document.getElementById("profileAdmission").textContent =
-    "Admission Number: " + (data.admission || "");
-
-  const img = document.getElementById("profilePhoto");
-
-  if (data.photo) {
-    img.src = data.photo;
-    img.style.display = "block";
-  } else {
-    img.removeAttribute("src");
-    img.style.display = "none";
-  }
-
-  profileGrid.replaceChildren();
-
-  fields.forEach(([id, label]) => {
-    const item = document.createElement("div");
-    item.className = "profile-item";
-
-    const title = document.createElement("strong");
-    title.textContent = label;
-
-    const value = document.createElement("p");
-    value.textContent =
-      data[id] || "Not provided / සඳහන් කර නැත";
-
-    item.append(title, value);
-    profileGrid.appendChild(item);
-  });
-
-  profile.style.display = "block";
-  profile.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
-}
-
-document.getElementById("photo").addEventListener("change", function () {
-  const file = this.files && this.files[0];
-  selectedPhotoData = "";
-
-  if (!file) return;
-
-  if (!file.type.startsWith("image/")) {
-    statusEl.textContent = "Please select an image file.";
-    this.value = "";
-    return;
-  }
-
-  if (file.size > 2 * 1024 * 1024) {
-    statusEl.textContent =
-      "Please choose a photo smaller than 2 MB.";
-    this.value = "";
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = () => {
-    selectedPhotoData = reader.result;
-  };
-
-  reader.readAsDataURL(file);
-});
-
-form.addEventListener("submit", async function (event) {
-  event.preventDefault();
-
-  const data = getFormData();
-
-  if (!data.admission || !data.fullName) {
-    statusEl.textContent =
-      "Admission Number සහ Full Name ඇතුළත් කරන්න.";
-    return;
-  }
-
-  if (document.getElementById("photo").files.length > 0) {
-    statusEl.textContent =
-      "Photo upload is not configured yet. Remove the photo and submit again.";
-    return;
-  }
-
-  const submitButton = form.querySelector('button[type="submit"]');
-
-  submitButton.disabled = true;
-  statusEl.textContent = "Saving student details to Firebase...";
-
-  try {
-    const payload = {
-      ...data,
-      submittedAt: new Date().toISOString()
+    const data = {
+        admission: document.getElementById("admission").value.trim()
     };
 
-    await addDoc(collection(db, "students"), payload);
+    fieldIds.forEach(function(id) {
+        data[id] = document.getElementById(id).value.trim();
+    });
+
+    if (!data.admission || !data.fullName) {
+        statusEl.textContent =
+            "Please enter Admission Number and Full Name.";
+        return;
+    }
+
+    saveBtn.disabled = true;
+    statusEl.textContent =
+        "Saving student details to Firebase... Please wait.";
 
     try {
-      localStorage.setItem(
-        "vidyaraja_student_" + data.admission,
-        JSON.stringify(data)
-      );
-    } catch (storageError) {
-      console.warn("Local preview could not be saved.", storageError);
+        const payload = {
+            ...data,
+            submittedAt: new Date().toISOString()
+        };
+
+        // Send the record to Firestore.
+        // Wait for Firebase to confirm success before showing the success screen.
+        const result = await addDoc(
+            collection(db, "students"),
+            payload
+        );
+
+        console.log("Firestore document saved:", result.id);
+
+        // Local preview is optional; Firestore is the main database.
+        try {
+            localStorage.setItem(
+                "vidyaraja_student_" + data.admission,
+                JSON.stringify(data)
+            );
+        } catch (storageError) {
+            console.warn("Local preview could not be saved:", storageError);
+        }
+
+        formSection.style.display = "none";
+        successScreen.style.display = "block";
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        form.reset();
+
+    } catch (error) {
+        console.error("Firebase save error:", error);
+
+        if (error.code === "permission-denied") {
+            statusEl.textContent =
+                "SAVE FAILED: Permission denied. Please check Firestore Rules.";
+        } else if (
+            error.code === "unavailable" ||
+            error.code === "network-request-failed"
+        ) {
+            statusEl.textContent =
+                "SAVE FAILED: Network/Firebase unavailable. Check your internet and retry.";
+        } else {
+            statusEl.textContent =
+                "SAVE FAILED: " +
+                (error.code || error.message || "Unknown error");
+        }
+
+    } finally {
+        saveBtn.disabled = false;
     }
-
-    statusEl.textContent =
-      "SUCCESSFULLY SAVED! Student details saved to the school database.";
-
-    showProfile(data);
-
-    form.reset();
-    selectedPhotoData = "";
-
-  } catch (error) {
-    console.error("Firebase save error:", error);
-
-    if (error.code === "permission-denied") {
-      statusEl.textContent =
-        "Permission denied. Please check Firestore Rules.";
-    } else {
-      statusEl.textContent =
-        "Could not save to Firebase. Check your internet connection and try again.";
-    }
-  } finally {
-    submitButton.disabled = false;
-  }
 });
 
-document.getElementById("viewBtn").addEventListener("click", function () {
-  const admission =
-    document.getElementById("admission").value.trim();
-
-  if (!admission) {
-    statusEl.textContent =
-      "Enter the admission number first.";
-    return;
-  }
-
-  try {
-    const saved = localStorage.getItem(
-      "vidyaraja_student_" + admission
-    );
-
-    if (saved) {
-      showProfile(JSON.parse(saved));
-    } else {
-      statusEl.textContent =
-        "No local preview found. Previously submitted records are available to the Admin.";
-    }
-  } catch (error) {
-    statusEl.textContent = "Could not read the saved profile.";
-  }
+doneBtn.addEventListener("click", function() {
+    successScreen.style.display = "none";
+    blurOverlay.style.display = "flex";
 });
 
-document.getElementById("clearBtn").addEventListener("click", function () {
-  form.reset();
-  selectedPhotoData = "";
-  statusEl.textContent = "";
-  profile.style.display = "none";
+form.addEventListener("reset", function() {
+    statusEl.textContent = "";
+});
+
+photoInput.addEventListener("change", function() {
+    if (this.files && this.files.length > 0) {
+        statusEl.textContent =
+            "Photo upload requires Firebase Storage setup. Remove the photo to continue.";
+    } else {
+        statusEl.textContent = "";
+    }
 });
 </script>
+
+</body>
+</html>
