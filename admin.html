@@ -1,1 +1,572 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIDYARAJA Student Admin Dashboard</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #050a07;
+    color: #f3fff3;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at top left, #173b18 0, transparent 40%),
+        radial-gradient(circle at bottom right, #343900 0, transparent 35%);
+    z-index: -1;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+header {
+    text-align: center;
+    padding: 30px 10px;
+    margin-bottom: 25px;
+}
+
+.logo {
+    width: 95px;
+    height: 95px;
+    object-fit: contain;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 0 12px #39ff14);
+}
+
+h1 {
+    color: #eaff00;
+    font-size: clamp(23px, 4vw, 38px);
+    text-shadow: 0 0 15px #39ff1460;
+}
+
+header p {
+    color: #9db99d;
+    margin-top: 10px;
+    letter-spacing: 2px;
+}
+
+.panel {
+    background: #0b140e;
+    border: 1px solid #39ff1470;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 22px;
+    box-shadow: 0 0 25px #39ff1410;
+}
+
+h2 {
+    color: #eaff00;
+    margin-bottom: 20px;
+}
+
+input, button {
+    font: inherit;
+    border-radius: 9px;
+    padding: 12px 14px;
+}
+
+input {
+    width: 100%;
+    color: white;
+    background: #050a07;
+    border: 1px solid #35683b;
+    outline: none;
+    margin-bottom: 13px;
+}
+
+input:focus {
+    border-color: #39ff14;
+    box-shadow: 0 0 10px #39ff1425;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: .2s;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.12);
+}
+
+.primary {
+    color: #061006;
+    background: #39ff14;
+}
+
+.secondary {
+    color: #111500;
+    background: #eaff00;
+}
+
+.danger {
+    color: white;
+    background: #b82b2b;
+}
+
+.login-box {
+    max-width: 480px;
+    margin: auto;
+}
+
+.full {
+    width: 100%;
+}
+
+.message {
+    margin-top: 15px;
+    overflow-wrap: anywhere;
+    color: #eaff00;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.toolbar input {
+    flex: 1;
+    min-width: 200px;
+    margin: 0;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat {
+    padding: 20px;
+    background: #071009;
+    border: 1px solid #39ff1460;
+    border-radius: 12px;
+}
+
+.stat span {
+    display: block;
+    color: #a9c0a9;
+    margin-bottom: 10px;
+}
+
+.stat strong {
+    font-size: 27px;
+    color: #eaff00;
+}
+
+.table-wrap {
+    overflow-x: auto;
+    width: 100%;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 760px;
+}
+
+th, td {
+    border-bottom: 1px solid #244329;
+    padding: 13px 10px;
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+th {
+    color: #eaff00;
+    background: #111c12;
+}
+
+td {
+    color: #e0eee0;
+}
+
+td button {
+    padding: 8px 10px;
+    margin: 3px;
+}
+
+#detailsPanel pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: #c8ffc8;
+    line-height: 1.7;
+}
+
+#status {
+    margin-top: 15px;
+    color: #b7e9b7;
+    overflow-wrap: anywhere;
+}
+
+footer {
+    text-align: center;
+    padding: 25px 5px;
+    color: #789078;
+    font-size: 13px;
+}
+
+@media(max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    .panel {
+        padding: 16px;
+    }
+
+    .toolbar button {
+        flex: 1;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+    <img src="school-logo.png"
+         alt="Vidyaraja Vidyalaya Logo"
+         class="logo"
+         onerror="this.style.display='none'">
+
+    <h1>VIDYARAJA Student Admin Dashboard</h1>
+    <p>STUDENT RECORD MANAGEMENT SYSTEM</p>
+</header>
+
+<section class="panel login-box" id="loginPanel">
+    <h2>🔐 Admin Login</h2>
+
+    <form id="loginForm">
+        <label for="email">Admin Email</label>
+        <input id="email" type="email"
+               placeholder="Enter admin email" required>
+
+        <label for="password">Password</label>
+        <input id="password" type="password"
+               placeholder="Enter password" required>
+
+        <button type="submit" class="primary full">
+            LOGIN TO DASHBOARD
+        </button>
+    </form>
+
+    <p id="loginMessage" class="message" role="status"></p>
+</section>
+
+<section id="dashboard" class="hidden">
+
+    <div class="stats">
+        <div class="stat">
+            <span>Total Student Records</span>
+            <strong id="totalCount">0</strong>
+        </div>
+
+        <div class="stat">
+            <span>Dashboard Status</span>
+            <strong style="font-size:19px">ADMIN</strong>
+        </div>
+    </div>
+
+    <section class="panel">
+        <h2>👨‍🎓 Student Records</h2>
+
+        <div class="toolbar">
+            <input id="searchInput"
+                   type="search"
+                   placeholder="Search name or admission number...">
+
+            <button class="secondary" id="refreshBtn">
+                ↻ Refresh
+            </button>
+
+            <button class="danger" id="logoutBtn">
+                Logout
+            </button>
+        </div>
+
+        <p id="status" role="status">Loading student records...</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Admission No.</th>
+                        <th>Full Name</th>
+                        <th>Grade</th>
+                        <th>Telephone</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="studentsBody"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="panel hidden" id="detailsPanel">
+        <h2>📋 Student Full Details</h2>
+        <pre id="details"></pre>
+        <button class="secondary" id="closeDetailsBtn">
+            Close Details
+        </button>
+    </section>
+</section>
+
+<footer>
+    R/VIDYARAJA VIDYALAYA<br>
+    VIDYARAJA Student Admin Dashboard
+</footer>
+
+</div>
+
+<script type="module">
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+import {
+    getFirestore,
+    collection,
+    getDocs,
+    deleteDoc,
+    doc
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
+    authDomain: "vidyarajastudentsystem.firebaseapp.com",
+    projectId: "vidyarajastudentsystem",
+    storageBucket: "vidyarajastudentsystem.firebasestorage.app",
+    messagingSenderId: "580500123852",
+    appId: "1:580500123852:web:f3c6f3f80f03fd1e21d269",
+    measurementId: "G-YWQNDRM4E1"
+};
+
+const ADMIN_UID = "IpFcr0JLloUN2ENuJ70k8wgBzp22";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const loginPanel = document.getElementById("loginPanel");
+const dashboard = document.getElementById("dashboard");
+const loginMessage = document.getElementById("loginMessage");
+const status = document.getElementById("status");
+const studentsBody = document.getElementById("studentsBody");
+const totalCount = document.getElementById("totalCount");
+const searchInput = document.getElementById("searchInput");
+const detailsPanel = document.getElementById("detailsPanel");
+const details = document.getElementById("details");
+
+let allStudents = [];
+
+function safeText(value) {
+    if (value === null || value === undefined) return "";
+    if (typeof value === "object") return JSON.stringify(value);
+    return String(value);
+}
+
+function addCell(row, value) {
+    const cell = document.createElement("td");
+    cell.textContent = safeText(value);
+    row.appendChild(cell);
+}
+
+document.getElementById("loginForm")
+.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    loginMessage.textContent = "Signing in...";
+
+    try {
+        await signInWithEmailAndPassword(
+            auth,
+            document.getElementById("email").value.trim(),
+            document.getElementById("password").value
+        );
+    } catch (error) {
+        console.error(error);
+        loginMessage.textContent =
+            "Login failed. Check your email, password and Firebase Authentication settings.";
+    }
+});
+
+function renderStudents() {
+    studentsBody.replaceChildren();
+
+    const search = searchInput.value.trim().toLowerCase();
+
+    const filtered = allStudents.filter(item => {
+        const d = item.data;
+
+        return safeText(d.fullName).toLowerCase().includes(search)
+            || safeText(d.admission).toLowerCase().includes(search)
+            || safeText(d.grade).toLowerCase().includes(search);
+    });
+
+    totalCount.textContent = allStudents.length;
+
+    if (filtered.length === 0) {
+        status.textContent = allStudents.length === 0
+            ? "No student records found."
+            : "No matching students found.";
+        return;
+    }
+
+    status.textContent = "Showing " + filtered.length + " record(s).";
+
+    filtered.forEach(item => {
+        const d = item.data;
+        const row = document.createElement("tr");
+
+        addCell(row, d.admission);
+        addCell(row, d.fullName);
+        addCell(row, d.grade);
+        addCell(row, d.phone);
+        addCell(row, d.email);
+
+        const actions = document.createElement("td");
+
+        const viewBtn = document.createElement("button");
+        viewBtn.className = "secondary";
+        viewBtn.textContent = "View";
+
+        viewBtn.addEventListener("click", () => {
+            details.textContent = JSON.stringify(d, null, 2);
+            detailsPanel.classList.remove("hidden");
+            detailsPanel.scrollIntoView({ behavior: "smooth" });
+        });
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "danger";
+        deleteBtn.textContent = "Delete";
+
+        deleteBtn.addEventListener("click", async () => {
+            const confirmed = confirm(
+                "Are you sure you want to permanently delete this student record?"
+            );
+
+            if (!confirmed) return;
+
+            deleteBtn.disabled = true;
+
+            try {
+                await deleteDoc(doc(db, "students", item.id));
+                status.textContent = "Student record deleted.";
+                await loadStudents();
+            } catch (error) {
+                console.error(error);
+                status.textContent =
+                    "Delete failed. Check Firestore Rules and Admin UID.";
+                deleteBtn.disabled = false;
+            }
+        });
+
+        actions.append(viewBtn, deleteBtn);
+        row.appendChild(actions);
+        studentsBody.appendChild(row);
+    });
+}
+
+async function loadStudents() {
+    if (!auth.currentUser ||
+        auth.currentUser.uid !== ADMIN_UID) {
+        return;
+    }
+
+    status.textContent = "Loading student records...";
+    studentsBody.replaceChildren();
+
+    try {
+        const snapshot = await getDocs(collection(db, "students"));
+
+        allStudents = snapshot.docs.map(item => ({
+            id: item.id,
+            data: item.data()
+        }));
+
+        allStudents.sort((a, b) => {
+            const dateA = Date.parse(a.data.submittedAt || "") || 0;
+            const dateB = Date.parse(b.data.submittedAt || "") || 0;
+            return dateB - dateA;
+        });
+
+        renderStudents();
+    } catch (error) {
+        console.error(error);
+        status.textContent =
+            "Unable to load records. Verify that this account's UID matches the Admin UID in Firestore Rules.";
+    }
+}
+
+searchInput.addEventListener("input", renderStudents);
+
+document.getElementById("refreshBtn")
+.addEventListener("click", loadStudents);
+
+document.getElementById("logoutBtn")
+.addEventListener("click", async () => {
+    await signOut(auth);
+});
+
+document.getElementById("closeDetailsBtn")
+.addEventListener("click", () => {
+    detailsPanel.classList.add("hidden");
+});
+
+onAuthStateChanged(auth, async user => {
+    if (user && user.uid === ADMIN_UID) {
+        loginPanel.classList.add("hidden");
+        dashboard.classList.remove("hidden");
+        loginMessage.textContent = "";
+        await loadStudents();
+    } else {
+        dashboard.classList.add("hidden");
+        loginPanel.classList.remove("hidden");
+
+        if (user) {
+            loginMessage.textContent =
+                "This account is not authorized as the school Admin.";
+
+            await signOut(auth);
+        }
+    }
+});
+</script>
+</body>
+</html>
