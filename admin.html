@@ -1,572 +1,80 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VIDYARAJA Student Admin Dashboard</title>
-
+<title>R/VIDYARAJA VIDYALAYA | Admin Dashboard</title>
 <style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: Arial, sans-serif;
-    background: #050a07;
-    color: #f3fff3;
-    min-height: 100vh;
-    padding: 20px;
-}
-
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background:
-        radial-gradient(circle at top left, #173b18 0, transparent 40%),
-        radial-gradient(circle at bottom right, #343900 0, transparent 35%);
-    z-index: -1;
-}
-
-.container {
-    max-width: 1200px;
-    margin: auto;
-}
-
-header {
-    text-align: center;
-    padding: 30px 10px;
-    margin-bottom: 25px;
-}
-
-.logo {
-    width: 95px;
-    height: 95px;
-    object-fit: contain;
-    margin-bottom: 15px;
-    filter: drop-shadow(0 0 12px #39ff14);
-}
-
-h1 {
-    color: #eaff00;
-    font-size: clamp(23px, 4vw, 38px);
-    text-shadow: 0 0 15px #39ff1460;
-}
-
-header p {
-    color: #9db99d;
-    margin-top: 10px;
-    letter-spacing: 2px;
-}
-
-.panel {
-    background: #0b140e;
-    border: 1px solid #39ff1470;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 22px;
-    box-shadow: 0 0 25px #39ff1410;
-}
-
-h2 {
-    color: #eaff00;
-    margin-bottom: 20px;
-}
-
-input, button {
-    font: inherit;
-    border-radius: 9px;
-    padding: 12px 14px;
-}
-
-input {
-    width: 100%;
-    color: white;
-    background: #050a07;
-    border: 1px solid #35683b;
-    outline: none;
-    margin-bottom: 13px;
-}
-
-input:focus {
-    border-color: #39ff14;
-    box-shadow: 0 0 10px #39ff1425;
-}
-
-button {
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    transition: .2s;
-}
-
-button:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.12);
-}
-
-.primary {
-    color: #061006;
-    background: #39ff14;
-}
-
-.secondary {
-    color: #111500;
-    background: #eaff00;
-}
-
-.danger {
-    color: white;
-    background: #b82b2b;
-}
-
-.login-box {
-    max-width: 480px;
-    margin: auto;
-}
-
-.full {
-    width: 100%;
-}
-
-.message {
-    margin-top: 15px;
-    overflow-wrap: anywhere;
-    color: #eaff00;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.toolbar {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 18px;
-}
-
-.toolbar input {
-    flex: 1;
-    min-width: 200px;
-    margin: 0;
-}
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.stat {
-    padding: 20px;
-    background: #071009;
-    border: 1px solid #39ff1460;
-    border-radius: 12px;
-}
-
-.stat span {
-    display: block;
-    color: #a9c0a9;
-    margin-bottom: 10px;
-}
-
-.stat strong {
-    font-size: 27px;
-    color: #eaff00;
-}
-
-.table-wrap {
-    overflow-x: auto;
-    width: 100%;
-}
-
-table {
-    border-collapse: collapse;
-    width: 100%;
-    min-width: 760px;
-}
-
-th, td {
-    border-bottom: 1px solid #244329;
-    padding: 13px 10px;
-    text-align: left;
-    overflow-wrap: anywhere;
-}
-
-th {
-    color: #eaff00;
-    background: #111c12;
-}
-
-td {
-    color: #e0eee0;
-}
-
-td button {
-    padding: 8px 10px;
-    margin: 3px;
-}
-
-#detailsPanel pre {
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-    color: #c8ffc8;
-    line-height: 1.7;
-}
-
-#status {
-    margin-top: 15px;
-    color: #b7e9b7;
-    overflow-wrap: anywhere;
-}
-
-footer {
-    text-align: center;
-    padding: 25px 5px;
-    color: #789078;
-    font-size: 13px;
-}
-
-@media(max-width: 600px) {
-    body {
-        padding: 10px;
-    }
-
-    .panel {
-        padding: 16px;
-    }
-
-    .toolbar button {
-        flex: 1;
-    }
-}
+:root{--green:#39ff14;--yellow:#eaff00;--bg:#050a06;--panel:#0b160d;--muted:#b7c9ba;--red:#ff5757}
+*{box-sizing:border-box;margin:0;padding:0}body{min-height:100vh;background:radial-gradient(ellipse at top,#17351c,#07100a 50%,#030604);color:#f5fff5;font-family:Arial,"Noto Sans Sinhala",sans-serif;padding:22px 14px}main{max-width:1150px;margin:auto}header,.panel{background:rgba(7,19,10,.97);border:1px solid var(--green);border-radius:18px;box-shadow:0 0 22px #39ff1428;padding:22px;margin-bottom:20px}header{text-align:center}h1{color:var(--yellow);font-size:clamp(22px,4vw,32px)}h2{color:var(--yellow);font-size:20px;margin-bottom:16px}.sub{color:var(--muted);font-size:13px;margin-top:8px}.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}label{display:block;color:var(--green);font-size:13px;margin:0 0 6px}input{width:100%;padding:12px;border-radius:9px;border:1px solid #426647;background:#07100a;color:#fff;outline:none}input:focus{border-color:var(--green);box-shadow:0 0 10px #39ff1433}button{border:0;border-radius:9px;padding:11px 16px;font-weight:700;cursor:pointer;margin:6px 6px 0 0}.primary{background:var(--green);color:#031003}.secondary{background:#18251a;color:#fff;border:1px solid #58745b}.danger{background:#471414;color:#fff;border:1px solid var(--red)}button:disabled{opacity:.5;cursor:wait}.status{margin-top:12px;line-height:1.6;color:var(--muted);overflow-wrap:anywhere}.hidden{display:none!important}.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}.toolbar input{flex:1;min-width:220px}.tablewrap{overflow:auto;border:1px solid #29472d;border-radius:10px}table{border-collapse:collapse;width:100%;min-width:750px}th,td{padding:11px;text-align:left;border-bottom:1px solid #243b27;font-size:13px;vertical-align:top}th{background:#102315;color:var(--yellow)}tr:hover td{background:#0e1b10}.small{font-size:12px;color:var(--muted)}.detailgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}.detail{border:1px solid #29472d;border-radius:9px;padding:12px;background:#08120a;overflow-wrap:anywhere}.detail strong{display:block;color:var(--green);font-size:12px;margin-bottom:6px}.detail span{white-space:pre-wrap}.topline{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.pill{display:inline-block;border:1px solid #406444;border-radius:20px;padding:5px 9px;color:var(--green);font-size:12px}
 </style>
 </head>
-
-<body>
-<div class="container">
-
-<header>
-    <img src="school-logo.png"
-         alt="Vidyaraja Vidyalaya Logo"
-         class="logo"
-         onerror="this.style.display='none'">
-
-    <h1>VIDYARAJA Student Admin Dashboard</h1>
-    <p>STUDENT RECORD MANAGEMENT SYSTEM</p>
-</header>
-
-<section class="panel login-box" id="loginPanel">
-    <h2>🔐 Admin Login</h2>
-
-    <form id="loginForm">
-        <label for="email">Admin Email</label>
-        <input id="email" type="email"
-               placeholder="Enter admin email" required>
-
-        <label for="password">Password</label>
-        <input id="password" type="password"
-               placeholder="Enter password" required>
-
-        <button type="submit" class="primary full">
-            LOGIN TO DASHBOARD
-        </button>
-    </form>
-
-    <p id="loginMessage" class="message" role="status"></p>
-</section>
-
-<section id="dashboard" class="hidden">
-
-    <div class="stats">
-        <div class="stat">
-            <span>Total Student Records</span>
-            <strong id="totalCount">0</strong>
-        </div>
-
-        <div class="stat">
-            <span>Dashboard Status</span>
-            <strong style="font-size:19px">ADMIN</strong>
-        </div>
-    </div>
-
-    <section class="panel">
-        <h2>👨‍🎓 Student Records</h2>
-
-        <div class="toolbar">
-            <input id="searchInput"
-                   type="search"
-                   placeholder="Search name or admission number...">
-
-            <button class="secondary" id="refreshBtn">
-                ↻ Refresh
-            </button>
-
-            <button class="danger" id="logoutBtn">
-                Logout
-            </button>
-        </div>
-
-        <p id="status" role="status">Loading student records...</p>
-
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Admission No.</th>
-                        <th>Full Name</th>
-                        <th>Grade</th>
-                        <th>Telephone</th>
-                        <th>Email</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody id="studentsBody"></tbody>
-            </table>
-        </div>
-    </section>
-
-    <section class="panel hidden" id="detailsPanel">
-        <h2>📋 Student Full Details</h2>
-        <pre id="details"></pre>
-        <button class="secondary" id="closeDetailsBtn">
-            Close Details
-        </button>
-    </section>
-</section>
-
-<footer>
-    R/VIDYARAJA VIDYALAYA<br>
-    VIDYARAJA Student Admin Dashboard
-</footer>
-
-</div>
-
+<body><main>
+<header><h1>R/VIDYARAJA VIDYALAYA</h1><p class="sub">STUDENT INFORMATION • ADMIN DASHBOARD</p></header>
+<section class="panel" id="loginPanel"><h2>ADMIN LOGIN</h2><form id="loginForm"><div class="formgrid"><div><label for="email">Admin Email</label><input id="email" type="email" autocomplete="username" required></div><div><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div></div><button class="primary" id="loginBtn" type="submit">LOGIN</button><p class="status" id="loginStatus" role="status"></p></form></section>
+<section class="panel hidden" id="dashboard"><div class="topline"><div><h2>STUDENT RECORDS</h2><p class="small" id="adminIdentity"></p></div><div><span class="pill" id="recordCount">0 records</span><button class="secondary" id="refreshBtn" type="button">REFRESH</button><button class="danger" id="logoutBtn" type="button">LOG OUT</button></div></div><div class="toolbar"><input id="searchInput" placeholder="Search admission number, name, grade, phone..."><button class="primary" id="searchBtn" type="button">SEARCH</button></div><p class="status" id="listStatus" role="status"></p><div class="tablewrap"><table><thead><tr><th>Admission No.</th><th>Full Name</th><th>Grade</th><th>Telephone</th><th>Submitted</th><th>Actions</th></tr></thead><tbody id="studentRows"><tr><td colspan="6">Login to view records.</td></tr></tbody></table></div></section>
+<section class="panel hidden" id="detailPanel"><div class="topline"><h2>STUDENT DETAILS</h2><button class="secondary" id="closeDetailBtn" type="button">CLOSE</button></div><div class="detailgrid" id="detailGrid"></div></section>
+</main>
 <script type="module">
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-
-import {
-    getAuth,
-    signInWithEmailAndPassword,
-    onAuthStateChanged,
-    signOut
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-
-import {
-    getFirestore,
-    collection,
-    getDocs,
-    deleteDoc,
-    doc
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, doc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
-    authDomain: "vidyarajastudentsystem.firebaseapp.com",
-    projectId: "vidyarajastudentsystem",
-    storageBucket: "vidyarajastudentsystem.firebasestorage.app",
-    messagingSenderId: "580500123852",
-    appId: "1:580500123852:web:f3c6f3f80f03fd1e21d269",
-    measurementId: "G-YWQNDRM4E1"
+  apiKey: "AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
+  authDomain: "vidyarajastudentsystem.firebaseapp.com",
+  projectId: "vidyarajastudentsystem",
+  storageBucket: "vidyarajastudentsystem.firebasestorage.app",
+  messagingSenderId: "580500123852",
+  appId: "1:580500123852:web:f3c6f3f80f03fd1e21d269",
+  measurementId: "G-YWQNDRM4E1"
 };
-
 const ADMIN_UID = "IpFcr0JLloUN2ENuJ70k8wgBzp22";
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
-const loginPanel = document.getElementById("loginPanel");
-const dashboard = document.getElementById("dashboard");
-const loginMessage = document.getElementById("loginMessage");
-const status = document.getElementById("status");
-const studentsBody = document.getElementById("studentsBody");
-const totalCount = document.getElementById("totalCount");
-const searchInput = document.getElementById("searchInput");
-const detailsPanel = document.getElementById("detailsPanel");
-const details = document.getElementById("details");
-
+const $ = id => document.getElementById(id);
 let allStudents = [];
 
-function safeText(value) {
-    if (value === null || value === undefined) return "";
-    if (typeof value === "object") return JSON.stringify(value);
-    return String(value);
-}
+function showStatus(id, message, isError=false){ $(id).textContent=message; $(id).style.color=isError?'#ff8585':'#b7c9ba'; }
+function escapeHtml(value){return String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function getText(data,key){return data[key] == null ? '' : String(data[key]);}
 
-function addCell(row, value) {
-    const cell = document.createElement("td");
-    cell.textContent = safeText(value);
-    row.appendChild(cell);
-}
-
-document.getElementById("loginForm")
-.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    loginMessage.textContent = "Signing in...";
-
-    try {
-        await signInWithEmailAndPassword(
-            auth,
-            document.getElementById("email").value.trim(),
-            document.getElementById("password").value
-        );
-    } catch (error) {
-        console.error(error);
-        loginMessage.textContent =
-            "Login failed. Check your email, password and Firebase Authentication settings.";
-    }
+$('loginForm').addEventListener('submit',async e=>{
+ e.preventDefault(); $('loginBtn').disabled=true; showStatus('loginStatus','Signing in...');
+ try{await signInWithEmailAndPassword(auth,$('email').value.trim(),$('password').value);}
+ catch(err){showStatus('loginStatus','Login failed: '+(err.code||err.message),true);}
+ finally{$('loginBtn').disabled=false;}
 });
 
-function renderStudents() {
-    studentsBody.replaceChildren();
-
-    const search = searchInput.value.trim().toLowerCase();
-
-    const filtered = allStudents.filter(item => {
-        const d = item.data;
-
-        return safeText(d.fullName).toLowerCase().includes(search)
-            || safeText(d.admission).toLowerCase().includes(search)
-            || safeText(d.grade).toLowerCase().includes(search);
-    });
-
-    totalCount.textContent = allStudents.length;
-
-    if (filtered.length === 0) {
-        status.textContent = allStudents.length === 0
-            ? "No student records found."
-            : "No matching students found.";
-        return;
-    }
-
-    status.textContent = "Showing " + filtered.length + " record(s).";
-
-    filtered.forEach(item => {
-        const d = item.data;
-        const row = document.createElement("tr");
-
-        addCell(row, d.admission);
-        addCell(row, d.fullName);
-        addCell(row, d.grade);
-        addCell(row, d.phone);
-        addCell(row, d.email);
-
-        const actions = document.createElement("td");
-
-        const viewBtn = document.createElement("button");
-        viewBtn.className = "secondary";
-        viewBtn.textContent = "View";
-
-        viewBtn.addEventListener("click", () => {
-            details.textContent = JSON.stringify(d, null, 2);
-            detailsPanel.classList.remove("hidden");
-            detailsPanel.scrollIntoView({ behavior: "smooth" });
-        });
-
-        const deleteBtn = document.createElement("button");
-        deleteBtn.className = "danger";
-        deleteBtn.textContent = "Delete";
-
-        deleteBtn.addEventListener("click", async () => {
-            const confirmed = confirm(
-                "Are you sure you want to permanently delete this student record?"
-            );
-
-            if (!confirmed) return;
-
-            deleteBtn.disabled = true;
-
-            try {
-                await deleteDoc(doc(db, "students", item.id));
-                status.textContent = "Student record deleted.";
-                await loadStudents();
-            } catch (error) {
-                console.error(error);
-                status.textContent =
-                    "Delete failed. Check Firestore Rules and Admin UID.";
-                deleteBtn.disabled = false;
-            }
-        });
-
-        actions.append(viewBtn, deleteBtn);
-        row.appendChild(actions);
-        studentsBody.appendChild(row);
-    });
-}
-
-async function loadStudents() {
-    if (!auth.currentUser ||
-        auth.currentUser.uid !== ADMIN_UID) {
-        return;
-    }
-
-    status.textContent = "Loading student records...";
-    studentsBody.replaceChildren();
-
-    try {
-        const snapshot = await getDocs(collection(db, "students"));
-
-        allStudents = snapshot.docs.map(item => ({
-            id: item.id,
-            data: item.data()
-        }));
-
-        allStudents.sort((a, b) => {
-            const dateA = Date.parse(a.data.submittedAt || "") || 0;
-            const dateB = Date.parse(b.data.submittedAt || "") || 0;
-            return dateB - dateA;
-        });
-
-        renderStudents();
-    } catch (error) {
-        console.error(error);
-        status.textContent =
-            "Unable to load records. Verify that this account's UID matches the Admin UID in Firestore Rules.";
-    }
-}
-
-searchInput.addEventListener("input", renderStudents);
-
-document.getElementById("refreshBtn")
-.addEventListener("click", loadStudents);
-
-document.getElementById("logoutBtn")
-.addEventListener("click", async () => {
-    await signOut(auth);
+onAuthStateChanged(auth,async user=>{
+ if(!user){$('loginPanel').classList.remove('hidden');$('dashboard').classList.add('hidden');$('detailPanel').classList.add('hidden');return;}
+ if(user.uid!==ADMIN_UID){showStatus('loginStatus','Access denied: this account is not an authorized administrator.',true);await signOut(auth);return;}
+ $('loginPanel').classList.add('hidden');$('dashboard').classList.remove('hidden');$('adminIdentity').textContent='Signed in as '+(user.email||'authorized admin');
+ await loadStudents();
 });
 
-document.getElementById("closeDetailsBtn")
-.addEventListener("click", () => {
-    detailsPanel.classList.add("hidden");
-});
-
-onAuthStateChanged(auth, async user => {
-    if (user && user.uid === ADMIN_UID) {
-        loginPanel.classList.add("hidden");
-        dashboard.classList.remove("hidden");
-        loginMessage.textContent = "";
-        await loadStudents();
-    } else {
-        dashboard.classList.add("hidden");
-        loginPanel.classList.remove("hidden");
-
-        if (user) {
-            loginMessage.textContent =
-                "This account is not authorized as the school Admin.";
-
-            await signOut(auth);
-        }
-    }
+async function loadStudents(){
+ showStatus('listStatus','Loading student records...');$('refreshBtn').disabled=true;
+ try{
+  const snap=await getDocs(collection(db,'students'));
+  allStudents=snap.docs.map(d=>({id:d.id,...d.data()}));
+  allStudents.sort((a,b)=>String(b.submittedAt||'').localeCompare(String(a.submittedAt||'')));
+  renderStudents(allStudents);showStatus('listStatus','Records loaded successfully.');
+ }catch(err){allStudents=[];renderStudents([]);showStatus('listStatus','Could not load records: '+(err.code||err.message)+'. Check Firestore Rules and admin UID.',true);}
+ finally{$('refreshBtn').disabled=false;}
+}
+function renderStudents(items){
+ $('recordCount').textContent=items.length+' record'+(items.length===1?'':'s');
+ if(!items.length){$('studentRows').innerHTML='<tr><td colspan="6">No student records found.</td></tr>';return;}
+ $('studentRows').innerHTML=items.map(s=>`<tr><td>${escapeHtml(s.admission)}</td><td>${escapeHtml(s.fullName)}</td><td>${escapeHtml(s.grade)}</td><td>${escapeHtml(s.phone)}</td><td>${escapeHtml(s.submittedAt)}</td><td><button class="secondary" data-view="${escapeHtml(s.id)}">VIEW</button><button class="danger" data-delete="${escapeHtml(s.id)}">DELETE</button></td></tr>`).join('');
+}
+function search(){const term=$('searchInput').value.trim().toLowerCase();renderStudents(allStudents.filter(s=>['admission','fullName','grade','phone','email'].some(k=>getText(s,k).toLowerCase().includes(term))));}
+$('searchBtn').addEventListener('click',search);$('searchInput').addEventListener('input',search);$('refreshBtn').addEventListener('click',loadStudents);$('logoutBtn').addEventListener('click',()=>signOut(auth));$('closeDetailBtn').addEventListener('click',()=>$('detailPanel').classList.add('hidden'));
+$('studentRows').addEventListener('click',async e=>{
+ const viewId=e.target.dataset.view,deleteId=e.target.dataset.delete;
+ if(viewId){const s=allStudents.find(x=>x.id===viewId);if(!s)return;const fields=[['Admission Number','admission'],['Full Name','fullName'],['Date of Birth','dob'],['Guardian','guardian'],['Telephone','phone'],['WhatsApp','whatsapp'],['Email','email'],['Grade','grade'],['Address','address'],['A/L Subjects','al'],['O/L Results','ol'],['Sports Achievements','sports'],['Extracurricular Activities','extra'],['Submitted At','submittedAt']];$('detailGrid').innerHTML=fields.map(([label,key])=>`<div class="detail"><strong>${escapeHtml(label)}</strong><span>${escapeHtml(s[key])||'—'}</span></div>`).join('');$('detailPanel').classList.remove('hidden');$('detailPanel').scrollIntoView({behavior:'smooth'});}
+ if(deleteId){const s=allStudents.find(x=>x.id===deleteId);if(!s)return;if(!confirm('Delete student record for '+(s.fullName||s.admission||'this student')+'? This cannot be undone.'))return;try{await deleteDoc(doc(db,'students',deleteId));allStudents=allStudents.filter(x=>x.id!==deleteId);search();showStatus('listStatus','Student record deleted.');$('detailPanel').classList.add('hidden');}catch(err){showStatus('listStatus','Delete failed: '+(err.code||err.message),true);}}
 });
 </script>
-</body>
-</html>
+</body></html>
