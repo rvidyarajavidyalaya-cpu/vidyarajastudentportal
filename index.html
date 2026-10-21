@@ -1,6 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>R/VIDYARAJA VIDYALAYA | Student Portal</title>
@@ -8,63 +5,7 @@
 <style>
 :root{--green:#39ff14;--yellow:#eaff00;--panel:rgba(7,19,10,.96)}
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{min-height:100vh;font-family:Arial,"Noto Sans Sinhala",sans-serif;color:#f5fff5;background:radial-gradient(ellipse at top,#17351c,#07100a 50%,#030604);padding:24px 14px;overflow-x:hidden}
-main{position:relative;z-index:1;max-width:1000px;margin:auto}
-.bubbles span{position:fixed;bottom:-80px;width:22px;height:22px;border:1px solid var(--green);border-radius:50%;box-shadow:0 0 14px var(--green);animation:float 12s linear infinite;pointer-events:none;z-index:0}
-.bubbles span:nth-child(1){left:8%}.bubbles span:nth-child(2){left:28%;animation-duration:16s;width:34px;height:34px}.bubbles span:nth-child(3){left:53%;animation-duration:11s}.bubbles span:nth-child(4){left:76%;animation-duration:15s;width:28px;height:28px}.bubbles span:nth-child(5){left:91%;animation-duration:13s}
-@keyframes float{0%{transform:translateY(0);opacity:0}20%{opacity:.7}100%{transform:translateY(-115vh);opacity:0}}
-@keyframes appear{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
-@keyframes slideUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
-@keyframes neonPulse{0%,100%{box-shadow:0 0 12px #39ff1430}50%{box-shadow:0 0 22px #39ff1470}}
-@keyframes iconFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-header,.card,.home-panel,.view-panel,.student-result{background:var(--panel);border:1px solid var(--green);border-radius:20px;box-shadow:0 0 22px #39ff1428}
-header{text-align:center;padding:26px 18px;margin-bottom:22px;animation:slideUp .7s ease,neonPulse 5s infinite}
-.logo,.success-logo,.loading-logo{width:110px;height:110px;object-fit:contain;border-radius:50%;background:#fff;border:2px solid var(--yellow);padding:4px;margin-bottom:15px;animation:iconFloat 4s infinite}
-h1{color:var(--yellow);font-size:clamp(21px,4vw,32px);line-height:1.4}
-.subtitle{color:#b9d2bd;letter-spacing:2px;font-size:12px;margin-top:8px}
-.notice{color:#d7e8d9;font-size:13px;line-height:1.8;margin-top:14px}
-.card,.home-panel,.view-panel,.student-result{padding:22px;margin-bottom:20px;animation:slideUp .6s ease}
-.section-title{color:var(--yellow);font-size:20px;margin-bottom:18px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.field{display:flex;flex-direction:column;gap:8px;min-width:0}
-.field.full{grid-column:1/-1}
-.field label{color:var(--green);font-size:14px;font-weight:bold;line-height:1.6}
-.field label span{display:block;color:#d0e6d2;font-size:12px;font-weight:normal}
-input,textarea,select{width:100%;border:1px solid var(--green);border-radius:11px;background:#061009;color:white;padding:13px 12px;font:inherit;outline:none;transition:.3s}
-input:hover,textarea:hover,select:hover,input:focus,textarea:focus,select:focus{border-color:var(--yellow);box-shadow:0 0 17px #39ff1477}
-input[type=date],input[type=file]{color-scheme:dark}
-textarea{min-height:100px;resize:vertical}
-input::placeholder,textarea::placeholder{color:#819786}
-.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
-button{border:1px solid var(--green);border-radius:10px;padding:13px 17px;font-weight:bold;font-size:14px;cursor:pointer;transition:.25s}
-.primary{background:var(--green);color:#041004}
-.secondary{background:#07140a;color:var(--green)}
-button:hover{transform:translateY(-3px);box-shadow:0 0 18px #39ff1470}
-button:disabled{opacity:.6;cursor:wait;transform:none}
-.home-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:22px}
-.home-button{min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;background:#061009;border:1px solid var(--green);color:var(--green);border-radius:16px;padding:22px 14px;font-size:17px;line-height:1.5;animation:neonPulse 3s infinite}
-.home-button.view{border-color:var(--yellow);color:var(--yellow)}
-.symbol{font-size:34px;animation:iconFloat 2.5s infinite}
-.home-button small{font-size:12px}
-.status{font-size:14px;color:var(--green);margin-top:12px;line-height:1.7;overflow-wrap:anywhere}
-.view-panel,.student-result,#formSection,#successScreen,#gradeSection{display:none}
-.result-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.result-item{padding:13px;border:1px solid #39ff1455;border-radius:11px;background:#061009;overflow-wrap:anywhere;animation:slideUp .5s ease}
-.result-item strong{display:block;color:var(--green);font-size:12px;margin-bottom:7px}
-.result-item span{white-space:pre-wrap;line-height:1.6}
-.term-status{color:var(--yellow)!important;font-weight:bold}
-.success-screen{text-align:center;max-width:600px;margin:30px auto;padding:35px 20px;background:var(--panel);border:2px solid var(--green);border-radius:24px;box-shadow:0 0 35px #39ff1444;animation:appear .5s ease}
-.success-icon{width:75px;height:75px;margin:0 auto 20px;border:3px solid var(--green);border-radius:50%;color:var(--green);font-size:48px;line-height:68px}
-.success-screen h2{color:var(--yellow);margin-bottom:15px}
-.success-screen p{color:#d7e8d9;font-size:14px;line-height:1.9;margin-bottom:20px}
-.loading-screen{display:none;text-align:center;padding:30px 12px}
-.loading-dots{display:flex;justify-content:center;gap:10px;margin:22px}
-.loading-dots span{width:12px;height:12px;border-radius:50%;background:var(--green);animation:iconFloat .8s infinite alternate}
-.blur-overlay{display:none;position:fixed;inset:0;z-index:1000;background:#0009;backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:20px}
-.blur-box{width:min(100%,460px);text-align:center;padding:35px 22px;border:2px solid var(--green);border-radius:24px;background:#030c06;box-shadow:0 0 35px #39ff1466}
-footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20px 4px}
-@media(max-width:650px){.grid,.home-buttons,.result-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.card,.home-panel,.view-panel,.student-result{padding:17px}.actions button{width:100%}.home-button{min-height:105px}header{padding:22px 14px}}
+@@ -68,8 +69,10 @@
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -72,100 +13,43 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 <body>
 <div class="bubbles"><span></span><span></span><span></span><span></span><span></span></div>
 
-<!-- BACKGROUND MUSIC PLAYER -->
-<audio id="backgroundMusic" loop preload="none">
-  <source src="music.mp3" type="audio/mpeg">
-  Your browser does not support audio playback.
-</audio>
-
-<button id="musicToggle" type="button" aria-label="Play background music"
-style="position:fixed;right:16px;bottom:16px;z-index:2000;
-background:#39ff14;color:#041004;border:1px solid #eaff00;
-border-radius:999px;padding:13px 17px;font-weight:bold;
-box-shadow:0 0 18px #39ff1470;cursor:pointer;">
-🎵 Play Music
-</button>
-
 <main>
 <header>
 <img class="logo" src="school-logo.png" alt="School Logo" onerror="this.style.display='none'">
-<h1>R/VIDYARAJA VIDYALAYA</h1>
-<p class="subtitle">STUDENT INFORMATION PORTAL</p>
+@@ -78,7 +81,6 @@ <h1>R/VIDYARAJA VIDYALAYA</h1>
 <p class="notice">ඔබගේ ශිෂ්‍ය තොරතුරු ඇතුළත් කරන්න<br>Enter Student Information</p>
 </header>
 
+<!-- NEW GRADE SELECTION PAGE -->
 <section class="home-panel" id="gradeSection">
 <h2 class="section-title">SELECT YOUR GRADE / ශ්‍රේණිය තෝරන්න</h2>
 <p class="notice">Please select your grade before continuing.</p>
-<div class="field" style="margin-top:18px">
-<label for="selectedGrade">ශ්‍රේණිය / Grade</label>
-<select id="selectedGrade" required>
-<option value="">-- Select Grade 6–13 --</option>
-<option value="Grade 6">Grade 6</option>
-<option value="Grade 7">Grade 7</option>
-<option value="Grade 8">Grade 8</option>
-<option value="Grade 9">Grade 9</option>
-<option value="Grade 10">Grade 10</option>
-<option value="Grade 11">Grade 11</option>
-<option value="Grade 12">Grade 12</option>
-<option value="Grade 13">Grade 13</option>
-</select>
-</div>
-<p class="status" id="gradeStatus" role="status"></p>
-<div class="actions">
-<button class="primary" id="continueGradeBtn" type="button">CONTINUE / ඉදිරියට</button>
-<button class="secondary" id="gradeBackBtn" type="button">BACK / ආපසු</button>
-</div>
-</section>
-
-<section class="home-panel" id="homeSection">
-<h2 class="section-title">STUDENT PORTAL / ශිෂ්‍ය පිවිසුම</h2>
-<p class="notice">Choose an option below / පහත විකල්පයෙන් එකක් තෝරන්න.</p>
-<div class="home-buttons">
-<button class="home-button" id="fillInfoBtn" type="button"><span class="symbol">✎</span><span>FILL INFORMATION</span><small>ශිෂ්‍ය තොරතුරු ඇතුළත් කරන්න</small></button>
-<button class="home-button view" id="viewInfoBtn" type="button"><span class="symbol">⌕</span><span>VIEW INFORMATION</span><small>ඇතුළත් කළ තොරතුරු බලන්න</small></button>
-</div>
-</section>
-
+@@ -115,7 +117,8 @@ <h2 class="section-title">STUDENT PORTAL / ශිෂ්‍ය පිවිසු
 <section class="view-panel" id="viewPanel">
 <div class="loading-screen" id="loadingScreen">
 <img class="loading-logo" src="school-logo.png" alt="School Logo" onerror="this.style.display='none'">
+<h2 class="section-title">LOADING INFORMATION</h2><p class="notice">Please wait / කරුණාකර රැඳී සිටින්න</p>
 <h2 class="section-title">LOADING INFORMATION</h2>
 <p class="notice">Please wait / කරුණාකර රැඳී සිටින්න</p>
 <div class="loading-dots"><span></span><span></span><span></span></div>
 </div>
 <div id="admissionLookup">
-<h2 class="section-title">VIEW INFORMATION</h2>
-<p class="notice" id="viewGradeLabel"></p>
-<label for="lookupAdmission" style="display:block;color:var(--green);margin:14px 0 10px">ENTER YOUR VERIFICATION CODE</label>
-<input id="lookupAdmission" maxlength="50" placeholder="VR-ABCD-2345-EFGH">
-<p class="status" id="lookupStatus" role="status" aria-live="polite"></p>
-<div class="actions">
-<button class="primary" id="lookupBtn" type="button">VIEW MY INFORMATION</button>
-<button class="secondary" id="backHomeBtn" type="button">BACK / ආපසු</button>
-</div>
-</div>
+@@ -132,7 +135,8 @@ <h2 class="section-title">VIEW INFORMATION</h2>
 </section>
 
 <section class="student-result" id="studentResult">
+<h2 class="section-title">MY STUDENT INFORMATION</h2><div class="result-grid" id="resultGrid"></div>
 <h2 class="section-title">MY STUDENT INFORMATION</h2>
 <div class="result-grid" id="resultGrid"></div>
 <div class="actions"><button class="secondary" id="resultBackBtn" type="button">BACK / ආපසු</button></div>
 </section>
 
-<section class="card" id="formSection">
-<h2 class="section-title">Student Information / ශිෂ්‍ය තොරතුරු</h2>
-<form id="studentForm">
-<div class="grid">
-<div class="field"><label for="admission">ඇතුළත් වීමේ අංකය<span>Admission Number</span></label><input id="admission" required maxlength="50" placeholder="Enter admission number"></div>
-<div class="field"><label for="fullName">සම්පූර්ණ නම<span>Full Name</span></label><input id="fullName" required maxlength="150" placeholder="Enter full name"></div>
-<div class="field"><label for="dob">උපන්දිනය<span>Date of Birth</span></label><input id="dob" type="date"></div>
-<div class="field"><label for="guardian">මව / පියා / භාරකරු<span>Mother / Father / Guardian</span></label><input id="guardian" maxlength="150" placeholder="Guardian's full name"></div>
-<div class="field"><label for="phone">දුරකථන අංකය<span>Telephone Number</span></label><input id="phone" type="tel" maxlength="30" placeholder="+94 7X XXX XXXX"></div>
-<div class="field"><label for="whatsapp">වට්සැප් අංකය<span>WhatsApp Number</span></label><input id="whatsapp" type="tel" maxlength="30" placeholder="+94 7X XXX XXXX"></div>
+@@ -149,12 +153,22 @@ <h2 class="section-title">Student Information / ශිෂ්‍ය තොරත
 <div class="field"><label for="email">විද්‍යුත් තැපෑල<span>Email Address</span></label><input id="email" type="email" maxlength="150" placeholder="name@example.com"></div>
 <div class="field"><label for="gradeDisplay">ශ්‍රේණිය / පන්තිය<span>Selected Grade</span></label><input id="gradeDisplay" readonly></div>
 <div class="field full"><label for="address">ලිපිනය<span>Home Address</span></label><textarea id="address" maxlength="1000" placeholder="Enter home address"></textarea></div>
+<div class="field full"><label for="al">උසස් පෙළ විෂයන්<span>A/L Subjects</span></label><textarea id="al" maxlength="2000" placeholder="Enter A/L subjects"></textarea></div>
+<div class="field full"><label for="ol">සාමාන්‍ය පෙළ ප්‍රතිඵල<span>O/L Results</span></label><textarea id="ol" maxlength="2000" placeholder="Enter O/L results"></textarea></div>
 
 <div class="field full" id="alField">
 <label for="al">උසස් පෙළ විෂයන්<span>A/L Subjects</span></label>
@@ -185,29 +69,27 @@ box-shadow:0 0 18px #39ff1470;cursor:pointer;">
 <div class="actions">
 <button class="primary" id="saveBtn" type="submit">SAVE DETAILS / විස්තර සුරකින්න</button>
 <button class="secondary" type="reset">CLEAR FORM / හිස් කරන්න</button>
-<button class="secondary" id="formBackBtn" type="button">BACK / ආපසු</button>
-</div>
-<p class="status" id="status" role="status" aria-live="polite"></p>
-</form>
-</section>
+@@ -166,10 +180,12 @@ <h2 class="section-title">Student Information / ශිෂ්‍ය තොරත
 
 <section class="card success-screen" id="successScreen">
 <img src="school-logo.png" alt="School Logo" class="success-logo" onerror="this.style.display='none'">
+<div class="success-icon">✓</div><h2>SUCCESSFULLY SAVED!</h2>
 <div class="success-icon">✓</div>
 <h2>SUCCESSFULLY SAVED!</h2>
 <p>Student details have been saved successfully.<br>ශිෂ්‍ය තොරතුරු සාර්ථකව සුරකින ලදී.</p>
 <div class="result-item" style="text-align:center;margin:18px auto">
+<strong>YOUR VERIFICATION CODE</strong><span id="generatedCode" style="font-size:1.5rem;color:var(--yellow);font-weight:900;letter-spacing:2px">----</span>
 <strong>YOUR VERIFICATION CODE</strong>
 <span id="generatedCode" style="font-size:1.5rem;color:var(--yellow);font-weight:900;letter-spacing:2px">----</span>
 <p class="notice">Keep this code safe. Do not share it with others.</p>
 <button class="secondary" id="copyCodeBtn" type="button">COPY CODE</button>
 </div>
-<button class="primary" id="doneBtn" type="button">DONE / අවසන්</button>
-</section>
-
+@@ -179,12 +195,15 @@ <h2 class="section-title">Student Information / ශිෂ්‍ය තොරත
 <footer>R/VIDYARAJA VIDYALAYA<br>STUDENT INFORMATION PORTAL</footer>
 </main>
 
+<div class="blur-overlay" id="blurOverlay"><div class="blur-box">
+<div class="success-icon">✓</div><h2 style="color:var(--yellow);margin-bottom:14px">THANK YOU!</h2>
 <div class="blur-overlay" id="blurOverlay">
 <div class="blur-box">
 <div class="success-icon">✓</div>
@@ -215,39 +97,17 @@ box-shadow:0 0 18px #39ff1470;cursor:pointer;">
 <p class="notice">Your session has been completed successfully.<br>ඔබගේ ක්‍රියාවලිය සාර්ථකව අවසන් විය.</p>
 <p class="notice">R/VIDYARAJA VIDYALAYA</p>
 <button class="primary" id="overlayHomeBtn" type="button">HOME</button>
+</div></div>
 </div>
 </div>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-import {getFirestore,collection,getDoc,doc,writeBatch} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
-const firebaseConfig={
-apiKey:"AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
-authDomain:"vidyarajastudentsystem.firebaseapp.com",
-projectId:"vidyarajastudentsystem",
-storageBucket:"vidyarajastudentsystem.firebasestorage.app",
-messagingSenderId:"580500123852",
-appId:"1:580500123852:web:f3c6f3f80f03fd1e21d269",
-measurementId:"G-YWQNDRM4E1"
-};
-
-const $=id=>document.getElementById(id);
-const form=$("studentForm");
-const formSection=$("formSection");
-const homeSection=$("homeSection");
-const gradeSection=$("gradeSection");
-const viewPanel=$("viewPanel");
-const loadingScreen=$("loadingScreen");
-const admissionLookup=$("admissionLookup");
-const studentResult=$("studentResult");
-const resultGrid=$("resultGrid");
-const successScreen=$("successScreen");
-const blurOverlay=$("blurOverlay");
-const photoInput=$("photo");
+@@ -216,7 +235,11 @@ <h2 class="section-title">Student Information / ශිෂ්‍ය තොරත
 const saveBtn=$("saveBtn");
 const statusEl=$("status");
 const lookupStatus=$("lookupStatus");
+let db=null,latestVerificationCode="",selectedGrade="",nextAction="";
 
 let db=null;
 let latestVerificationCode="";
@@ -256,10 +116,7 @@ let nextAction="";
 
 try{
 const app=initializeApp(firebaseConfig);
-db=getFirestore(app);
-statusEl.textContent="Ready / සූදානම්";
-}catch(error){
-console.error(error);
+@@ -227,6 +250,21 @@ <h2 class="section-title">Student Information / ශිෂ්‍ය තොරත
 statusEl.textContent="Firebase initialization failed. Reload the website.";
 }
 
@@ -281,34 +138,7 @@ $("ol").value="";
 function showHome(){
 gradeSection.style.display="none";
 homeSection.style.display="block";
-formSection.style.display="none";
-viewPanel.style.display="none";
-studentResult.style.display="none";
-successScreen.style.display="none";
-blurOverlay.style.display="none";
-loadingScreen.style.display="none";
-admissionLookup.style.display="block";
-lookupStatus.textContent="";
-window.scrollTo({top:0,behavior:"smooth"});
-}
-
-function openGrade(action){
-nextAction=action;
-selectedGrade="";
-$("selectedGrade").value="";
-$("gradeStatus").textContent="";
-homeSection.style.display="none";
-formSection.style.display="none";
-viewPanel.style.display="none";
-studentResult.style.display="none";
-successScreen.style.display="none";
-gradeSection.style.display="block";
-window.scrollTo({top:0,behavior:"smooth"});
-}
-
-$("fillInfoBtn").addEventListener("click",()=>openGrade("fill"));
-$("viewInfoBtn").addEventListener("click",()=>openGrade("view"));
-$("gradeBackBtn").addEventListener("click",showHome);
+@@ -261,11 +299,14 @@ <h2 class="section-title">Student Information / ශිෂ්‍ය තොරත
 
 $("continueGradeBtn").addEventListener("click",async()=>{
 selectedGrade=$("selectedGrade").value;
@@ -323,38 +153,12 @@ updateGradeFields();
 gradeSection.style.display="none";
 
 if(nextAction==="fill"){
-formSection.style.display="block";
-formSection.style.animation="none";
-void formSection.offsetWidth;
-formSection.style.animation="";
-window.scrollTo({top:0,behavior:"smooth"});
-}else{
-viewPanel.style.display="block";
-$("viewGradeLabel").textContent="Selected Grade: "+selectedGrade;
-admissionLookup.style.display="none";
-loadingScreen.style.display="block";
-lookupStatus.textContent="";
-window.scrollTo({top:0,behavior:"smooth"});
-await new Promise(resolve=>setTimeout(resolve,1200));
-loadingScreen.style.display="none";
-admissionLookup.style.display="block";
-$("lookupAdmission").focus();
-}
-});
-
-$("backHomeBtn").addEventListener("click",showHome);
-$("formBackBtn").addEventListener("click",()=>openGrade("fill"));
-
-$("resultBackBtn").addEventListener("click",()=>{
-studentResult.style.display="none";
-viewPanel.style.display="block";
-admissionLookup.style.display="block";
-$("lookupAdmission").value="";
-lookupStatus.textContent="";
-});
+@@ -301,19 +342,30 @@ <h2 class="section-title">Student Information / ශිෂ්‍ය තොරත
 
 $("lookupBtn").addEventListener("click",async()=>{
 const code=$("lookupAdmission").value.trim().toUpperCase();
+if(!code){lookupStatus.textContent="Please enter your Verification Code.";return}
+if(!db){lookupStatus.textContent="Firebase is not initialized. Reload and try again.";return}
 
 if(!code){
 lookupStatus.textContent="Please enter your Verification Code.";
@@ -379,4 +183,217 @@ return;
 
 const student=snap.data();
 
-if
+if(student.grade!==selectedGrade){
+lookupStatus.textContent="This code does not belong to "+selectedGrade+". Please select the correct grade.";
+return;
+@@ -323,43 +375,66 @@ <h2 class="section-title">Student Information / ශිෂ්‍ය තොරත
+["Admission Number",student.admission],
+["Full Name",student.fullName],
+["Date of Birth",student.dob],
+["Grade",student.grade],
+["A/L Subjects",student.al],
+["Grade",student.grade]
+];
+
+if(student.grade==="Grade 12"||student.grade==="Grade 13"){
+fields.push(["A/L Subjects",student.al]);
+fields.push(["O/L Results",student.ol]);
+}
+
+fields.push(
+["Telephone Number",student.phone],
+["Sports Achievements",student.sports],
+["Extracurricular Activities",student.extra]
+];
+);
+
+resultGrid.replaceChildren();
+
+fields.forEach(([label,value],i)=>{
+const item=document.createElement("div");
+item.className="result-item";
+item.style.animationDelay=(i*.07)+"s";
+
+const strong=document.createElement("strong");
+strong.textContent=label;
+
+const span=document.createElement("span");
+span.textContent=value||"Not provided";
+
+item.append(strong,span);
+resultGrid.appendChild(item);
+});
+
+const termItem=document.createElement("div");
+termItem.className="result-item";
+
+const termLabel=document.createElement("strong");
+termLabel.textContent="Term Test Marks";
+
+const termValue=document.createElement("span");
+termValue.className="term-status";
+termValue.textContent="Not Yet Started";
+
+termItem.append(termLabel,termValue);
+resultGrid.appendChild(termItem);
+
+viewPanel.style.display="none";
+studentResult.style.display="block";
+window.scrollTo({top:0,behavior:"smooth"});
+
+}catch(error){
+console.error(error);
+lookupStatus.textContent="Could not load information: "+(error.code||error.message||"Unknown error");
+}finally{$("lookupBtn").disabled=false}
+}finally{
+$("lookupBtn").disabled=false;
+}
+});
+
+const fieldIds=["fullName","dob","guardian","phone","whatsapp","email","address","al","ol","sports","extra"];
+const fieldIds=[
+"fullName","dob","guardian","phone","whatsapp","email",
+"address","al","ol","sports","extra"
+];
+
+function generateVerificationCode(){
+const alphabet="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+@@ -371,21 +446,52 @@ <h2 class="section-title">Student Information / ශිෂ්‍ය තොරත
+
+$("copyCodeBtn").addEventListener("click",async()=>{
+if(!latestVerificationCode)return;
+try{await navigator.clipboard.writeText(latestVerificationCode);$("copyCodeBtn").textContent="COPIED!"}
+catch{$("copyCodeBtn").textContent="Select and copy the code above"}
+
+try{
+await navigator.clipboard.writeText(latestVerificationCode);
+$("copyCodeBtn").textContent="COPIED!";
+}catch{
+$("copyCodeBtn").textContent="Select and copy the code above";
+}
+});
+
+form.addEventListener("submit",async event=>{
+event.preventDefault();
+if(!db){statusEl.textContent="SAVE FAILED: Firebase is not initialized.";return}
+
+if(!db){
+statusEl.textContent="SAVE FAILED: Firebase is not initialized.";
+return;
+}
+
+if(!form.reportValidity())return;
+
+if(photoInput.files&&photoInput.files.length){
+statusEl.textContent="Photo upload is not configured yet. Remove the photo and submit again.";
+return;
+}
+const data={admission:$("admission").value.trim(),grade:selectedGrade};
+
+if(!selectedGrade){
+statusEl.textContent="Please select a grade first.";
+return;
+}
+
+const data={
+admission:$("admission").value.trim(),
+grade:selectedGrade
+};
+
+fieldIds.forEach(id=>data[id]=$(id).value.trim());
+if(!data.admission||!data.fullName){statusEl.textContent="Please enter Admission Number and Full Name.";return}
+
+if(!data.admission||!data.fullName){
+statusEl.textContent="Please enter Admission Number and Full Name.";
+return;
+}
+
+/* Never save A/L and O/L values for Grades 6–11 */
+if(selectedGrade!=="Grade 12"&&selectedGrade!=="Grade 13"){
+data.al="";
+data.ol="";
+}
+
+saveBtn.disabled=true;
+statusEl.textContent="Saving student details to Firebase... Please wait.";
+@@ -394,40 +500,74 @@ <h2 class="section-title">Student Information / ශිෂ්‍ය තොරත
+const submittedAt=new Date().toISOString();
+const payload={...data,submittedAt};
+const verificationCode=generateVerificationCode();
+
+const lookupPayload={
+admission:data.admission,fullName:data.fullName,dob:data.dob,grade:data.grade,
+al:data.al,phone:data.phone,sports:data.sports,extra:data.extra,submittedAt
+admission:data.admission,
+fullName:data.fullName,
+dob:data.dob,
+grade:data.grade,
+al:data.al,
+ol:data.ol,
+phone:data.phone,
+sports:data.sports,
+extra:data.extra,
+submittedAt
+};
+
+const batch=writeBatch(db);
+const studentRef=doc(collection(db,"students"));
+const lookupRef=doc(db,"studentLookups",verificationCode);
+
+batch.set(studentRef,payload);
+batch.set(lookupRef,lookupPayload);
+
+await batch.commit();
+
+latestVerificationCode=verificationCode;
+$("generatedCode").textContent=verificationCode;
+$("copyCodeBtn").textContent="COPY CODE";
+try{localStorage.setItem("vidyaraja_student_"+data.admission,JSON.stringify(data))}catch(e){console.warn(e)}
+
+try{
+localStorage.setItem("vidyaraja_student_"+data.admission,JSON.stringify(data));
+}catch(e){
+console.warn(e);
+}
+
+formSection.style.display="none";
+successScreen.style.display="block";
+window.scrollTo({top:0,behavior:"smooth"});
+form.reset();
+
+}catch(error){
+console.error(error);
+statusEl.textContent="SAVE FAILED: "+(error.code||error.message||"Unknown error");
+}finally{saveBtn.disabled=false}
+}finally{
+saveBtn.disabled=false;
+}
+});
+
+form.addEventListener("reset",()=>{
+statusEl.textContent="";
+});
+
+form.addEventListener("reset",()=>{statusEl.textContent=""});
+photoInput.addEventListener("change",function(){
+statusEl.textContent=this.files.length?"Photo upload requires Firebase Storage setup. Remove the photo to continue.":"";
+statusEl.textContent=this.files.length
+?"Photo upload requires Firebase Storage setup. Remove the photo to continue."
+:"";
+});
+
+$("doneBtn").addEventListener("click",()=>{
+successScreen.style.display="none";
+blurOverlay.style.display="flex";
+});
+
+$("overlayHomeBtn").addEventListener("click",showHome);
+
+/* Initial state */
+$("alField").style.display="none";
+$("olField").style.display="none";
+homeSection.style.display="block";
+gradeSection.style.display="none";
+</script>
+</body>
+</html>
