@@ -1,209 +1,50 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>R/VIDYARAJA VIDYALAYA | Admin Dashboard</title>
-
 <style>
-:root{
---green:#39ff14;
---yellow:#eaff00;
---bg:#050a06;
---panel:#0b160d;
---muted:#b7c9ba;
---red:#ff5757;
-}
-
+:root{--green:#39ff14;--yellow:#eaff00;--bg:#050a06;--panel:#0b160d;--muted:#b7c9ba;--red:#ff5757}
 *{box-sizing:border-box;margin:0;padding:0}
-
-body{
-min-height:100vh;
-background:radial-gradient(ellipse at top,#17351c,#07100a 50%,#030604);
-color:#f5fff5;
-font-family:Arial,"Noto Sans Sinhala",sans-serif;
-padding:22px 14px;
-}
-
+body{min-height:100vh;background:radial-gradient(ellipse at top,#17351c,#07100a 50%,#030604);color:#f5fff5;font-family:Arial,"Noto Sans Sinhala",sans-serif;padding:22px 14px}
 main{max-width:1250px;margin:auto}
-
-header,.panel{
-background:rgba(7,19,10,.97);
-border:1px solid var(--green);
-border-radius:18px;
-box-shadow:0 0 22px #39ff1428;
-padding:22px;
-margin-bottom:20px;
-}
-
+header,.panel{background:rgba(7,19,10,.97);border:1px solid var(--green);border-radius:18px;box-shadow:0 0 22px #39ff1428;padding:22px;margin-bottom:20px}
 header{text-align:center}
-
-h1{
-color:var(--yellow);
-font-size:clamp(22px,4vw,32px);
-}
-
-h2{
-color:var(--yellow);
-font-size:20px;
-margin-bottom:16px;
-}
-
+h1{color:var(--yellow);font-size:clamp(22px,4vw,32px)}
+h2{color:var(--yellow);font-size:20px;margin-bottom:16px}
 .sub{color:var(--muted);font-size:13px;margin-top:8px}
-
-.formgrid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-gap:12px;
-}
-
-label{
-display:block;
-color:var(--green);
-font-size:13px;
-margin:0 0 6px;
-}
-
-input{
-width:100%;
-padding:12px;
-border-radius:9px;
-border:1px solid #426647;
-background:#07100a;
-color:#fff;
-outline:none;
-}
-
-input:focus{
-border-color:var(--green);
-box-shadow:0 0 10px #39ff1433;
-}
-
-button{
-border:0;
-border-radius:9px;
-padding:11px 16px;
-font-weight:700;
-cursor:pointer;
-margin:6px 6px 0 0;
-}
-
+.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+label{display:block;color:var(--green);font-size:13px;margin:0 0 6px}
+input{width:100%;padding:12px;border-radius:9px;border:1px solid #426647;background:#07100a;color:#fff;outline:none}
+input:focus{border-color:var(--green);box-shadow:0 0 10px #39ff1433}
+button{border:0;border-radius:9px;padding:11px 16px;font-weight:700;cursor:pointer;margin:6px 6px 0 0}
 .primary{background:var(--green);color:#031003}
 .secondary{background:#18251a;color:#fff;border:1px solid #58745b}
 .danger{background:#471414;color:#fff;border:1px solid var(--red)}
 button:disabled{opacity:.5;cursor:wait}
-
-.status{
-margin-top:12px;
-line-height:1.6;
-color:var(--muted);
-overflow-wrap:anywhere;
-}
-
+.status{margin-top:12px;line-height:1.6;color:var(--muted);overflow-wrap:anywhere}
 .hidden{display:none!important}
-
-.toolbar{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-align-items:center;
-margin-bottom:14px;
-}
-
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
 .toolbar input{flex:1;min-width:220px}
-
-.tablewrap{
-overflow:auto;
-border:1px solid #29472d;
-border-radius:10px;
-}
-
-table{
-border-collapse:collapse;
-width:100%;
-min-width:750px;
-}
-
-th,td{
-padding:11px;
-text-align:left;
-border-bottom:1px solid #243b27;
-font-size:13px;
-vertical-align:top;
-}
-
+.tablewrap{overflow:auto;border:1px solid #29472d;border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:750px}
+th,td{padding:11px;text-align:left;border-bottom:1px solid #243b27;font-size:13px;vertical-align:top}
 th{background:#102315;color:var(--yellow)}
 tr:hover td{background:#0e1b10}
-
 .small{font-size:12px;color:var(--muted)}
-
-.detailgrid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-gap:10px;
-}
-
-.detail{
-border:1px solid #29472d;
-border-radius:9px;
-padding:12px;
-background:#08120a;
-overflow-wrap:anywhere;
-}
-
-.detail strong{
-display:block;
-color:var(--green);
-font-size:12px;
-margin-bottom:6px;
-}
-
+.detailgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.detail{border:1px solid #29472d;border-radius:9px;padding:12px;background:#08120a;overflow-wrap:anywhere}
+.detail strong{display:block;color:var(--green);font-size:12px;margin-bottom:6px}
 .detail span{white-space:pre-wrap}
-
-.topline{
-display:flex;
-justify-content:space-between;
-gap:10px;
-align-items:center;
-flex-wrap:wrap;
-}
-
-.pill{
-display:inline-block;
-border:1px solid #406444;
-border-radius:20px;
-padding:5px 9px;
-color:var(--green);
-font-size:12px;
-}
-
-.codebox{
-display:inline-block;
-padding:8px 10px;
-background:#061609;
-border:1px solid #39ff1460;
-border-radius:8px;
-color:var(--green);
-font-weight:bold;
-letter-spacing:1px;
-white-space:nowrap;
-}
-
-.codehint{
-color:var(--muted);
-font-size:12px;
-margin-top:8px;
-line-height:1.6;
-}
-
-@media(max-width:600px){
-body{padding:12px 8px}
-header,.panel{padding:15px}
-h2{font-size:18px}
-}
+.topline{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.pill{display:inline-block;border:1px solid #406444;border-radius:20px;padding:5px 9px;color:var(--green);font-size:12px}
+.codebox{display:inline-block;padding:8px 10px;background:#061609;border:1px solid #39ff1460;border-radius:8px;color:var(--green);font-weight:bold;letter-spacing:1px;white-space:nowrap}
+.codehint{color:var(--muted);font-size:12px;margin-top:8px;line-height:1.6}
+@media(max-width:600px){body{padding:12px 8px}header,.panel{padding:15px}h2{font-size:18px}}
 </style>
 </head>
-
 <body>
 <main>
 
@@ -212,39 +53,30 @@ h2{font-size:18px}
 <p class="sub">STUDENT INFORMATION • ADMIN DASHBOARD</p>
 </header>
 
-<!-- ADMIN LOGIN -->
 <section class="panel" id="loginPanel">
 <h2>ADMIN LOGIN</h2>
-
 <form id="loginForm">
 <div class="formgrid">
-
 <div>
 <label for="email">Admin Email</label>
 <input id="email" type="email" autocomplete="username" required>
 </div>
-
 <div>
 <label for="password">Password</label>
 <input id="password" type="password" autocomplete="current-password" required>
 </div>
-
 </div>
-
 <button class="primary" id="loginBtn" type="submit">LOGIN</button>
 <p class="status" id="loginStatus" role="status"></p>
 </form>
 </section>
 
-<!-- MAIN DASHBOARD -->
 <section class="panel hidden" id="dashboard">
-
 <div class="topline">
 <div>
 <h2>STUDENT RECORDS</h2>
 <p class="small" id="adminIdentity"></p>
 </div>
-
 <div>
 <span class="pill" id="recordCount">0 records</span>
 <button class="secondary" id="refreshBtn" type="button">REFRESH</button>
@@ -271,7 +103,6 @@ h2{font-size:18px}
 <th>Actions</th>
 </tr>
 </thead>
-
 <tbody id="studentRows">
 <tr><td colspan="6">Login to view records.</td></tr>
 </tbody>
@@ -279,15 +110,12 @@ h2{font-size:18px}
 </div>
 </section>
 
-<!-- NEW VERIFICATION CODES PANEL -->
 <section class="panel hidden" id="codesPanel">
-
 <div class="topline">
 <div>
 <h2>STUDENT VERIFICATION CODES</h2>
-<p class="small">View and copy the codes generated for students.</p>
+<p class="small">View and copy the verification codes generated for students.</p>
 </div>
-
 <span class="pill" id="codeCount">0 codes</span>
 </div>
 
@@ -297,10 +125,7 @@ h2{font-size:18px}
 <button class="secondary" id="codeRefreshBtn" type="button">REFRESH CODES</button>
 </div>
 
-<p class="codehint">
-Only authorized administrators can load this list. Keep verification codes private.
-</p>
-
+<p class="codehint">Only authorized administrators can load this list. Keep verification codes private.</p>
 <p class="status" id="codeStatus" role="status"></p>
 
 <div class="tablewrap">
@@ -315,7 +140,6 @@ Only authorized administrators can load this list. Keep verification codes priva
 <th>Action</th>
 </tr>
 </thead>
-
 <tbody id="codeRows">
 <tr><td colspan="6">Login to view verification codes.</td></tr>
 </tbody>
@@ -323,517 +147,289 @@ Only authorized administrators can load this list. Keep verification codes priva
 </div>
 </section>
 
-<!-- STUDENT DETAILS -->
 <section class="panel hidden" id="detailPanel">
-
 <div class="topline">
 <h2>STUDENT DETAILS</h2>
 <button class="secondary" id="closeDetailBtn" type="button">CLOSE</button>
 </div>
-
 <div class="detailgrid" id="detailGrid"></div>
 </section>
 
 </main>
 
 <script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import {
-getAuth,
-signInWithEmailAndPassword,
-onAuthStateChanged,
-signOut
+ getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-
 import {
-getFirestore,
-collection,
-getDocs,
-doc,
-deleteDoc
+ getFirestore,collection,getDocs,doc,deleteDoc
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-
-const firebaseConfig = {
-apiKey: "AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
-authDomain: "vidyarajastudentsystem.firebaseapp.com",
-projectId: "vidyarajastudentsystem",
-storageBucket: "vidyarajastudentsystem.firebasestorage.app",
-messagingSenderId: "580500123852",
-appId: "1:580500123852:web:f3c6f3f80f03fd1e21d269",
-measurementId: "G-YWQNDRM4E1"
+const firebaseConfig={
+ apiKey:"AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
+ authDomain:"vidyarajastudentsystem.firebaseapp.com",
+ projectId:"vidyarajastudentsystem",
+ storageBucket:"vidyarajastudentsystem.firebasestorage.app",
+ messagingSenderId:"580500123852",
+ appId:"1:580500123852:web:f3c6f3f80f03fd1e21d269",
+ measurementId:"G-YWQNDRM4E1"
 };
 
-const ADMIN_UID = "IpFcr0JLloUN2ENuJ70k8wgBzp22";
+const ADMIN_UID="IpFcr0JLloUN2ENuJ70k8wgBzp22";
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const $=id=>document.getElementById(id);
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-const $ = id => document.getElementById(id);
-
-let allStudents = [];
-let allCodes = [];
-
+let allStudents=[];
+let allCodes=[];
+let authReady=false;
+let dashboardUser=null;
 
 function showStatus(id,message,isError=false){
-$(id).textContent = message;
-$(id).style.color = isError ? "#ff8585" : "#b7c9ba";
+ $(id).textContent=message;
+ $(id).style.color=isError?"#ff8585":"#b7c9ba";
 }
-
 
 function escapeHtml(value){
-return String(value ?? "").replace(/[&<>"']/g,c=>({
-"&":"&amp;",
-"<":"&lt;",
-">":"&gt;",
-'"':"&quot;",
-"'":"&#39;"
-}[c]));
+ return String(value??"").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
 }
-
 
 function getText(data,key){
-return data[key] == null ? "" : String(data[key]);
+ return data[key]==null?"":String(data[key]);
 }
 
-
-// ADMIN LOGIN
 $("loginForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ $("loginBtn").disabled=true;
+ showStatus("loginStatus","Signing in...");
 
-e.preventDefault();
-
-$("loginBtn").disabled = true;
-showStatus("loginStatus","Signing in...");
-
-try{
-
-await signInWithEmailAndPassword(
-auth,
-$("email").value.trim(),
-$("password").value
-);
-
-}catch(err){
-
-showStatus(
-"loginStatus",
-"Login failed: " + (err.code || err.message),
-true
-);
-
-}finally{
-
-$("loginBtn").disabled = false;
-
-}
-
+ try{
+  await signInWithEmailAndPassword(
+   auth,$("email").value.trim(),$("password").value
+  );
+ }catch(err){
+  showStatus("loginStatus","Login failed: "+(err.code||err.message),true);
+ }finally{
+  $("loginBtn").disabled=false;
+ }
 });
 
-
-// AUTHORIZATION CHECK
 onAuthStateChanged(auth,async user=>{
+ authReady=true;
+ dashboardUser=user;
 
-if(!user){
+ if(!user){
+  $("loginPanel").classList.remove("hidden");
+  $("dashboard").classList.add("hidden");
+  $("codesPanel").classList.add("hidden");
+  $("detailPanel").classList.add("hidden");
+  allStudents=[];
+  allCodes=[];
+  return;
+ }
 
-$("loginPanel").classList.remove("hidden");
-$("dashboard").classList.add("hidden");
-$("codesPanel").classList.add("hidden");
-$("detailPanel").classList.add("hidden");
+ if(user.uid!==ADMIN_UID){
+  showStatus("loginStatus","Access denied: unauthorized administrator.",true);
+  await signOut(auth);
+  return;
+ }
 
-allStudents = [];
-allCodes = [];
+ $("loginPanel").classList.add("hidden");
+ $("dashboard").classList.remove("hidden");
+ $("codesPanel").classList.remove("hidden");
+ $("adminIdentity").textContent="Signed in as "+(user.email||"authorized admin");
 
-return;
-
-}
-
-if(user.uid !== ADMIN_UID){
-
-showStatus(
-"loginStatus",
-"Access denied: this account is not an authorized administrator.",
-true
-);
-
-await signOut(auth);
-return;
-
-}
-
-$("loginPanel").classList.add("hidden");
-$("dashboard").classList.remove("hidden");
-$("codesPanel").classList.remove("hidden");
-
-$("adminIdentity").textContent =
-"Signed in as " + (user.email || "authorized admin");
-
-await loadStudents();
-await loadVerificationCodes();
-
+ await Promise.all([loadStudents(),loadVerificationCodes()]);
 });
 
-
-// LOAD STUDENT RECORDS
 async function loadStudents(){
+ if(!auth.currentUser||auth.currentUser.uid!==ADMIN_UID)return;
 
-showStatus("listStatus","Loading student records...");
-$("refreshBtn").disabled = true;
+ showStatus("listStatus","Loading student records...");
+ $("refreshBtn").disabled=true;
 
-try{
-
-const snap = await getDocs(collection(db,"students"));
-
-allStudents = snap.docs.map(d=>({
-id:d.id,
-...d.data()
-}));
-
-allStudents.sort((a,b)=>
-String(b.submittedAt || "").localeCompare(String(a.submittedAt || ""))
-);
-
-renderStudents(allStudents);
-
-showStatus("listStatus","Student records loaded successfully.");
-
-}catch(err){
-
-allStudents = [];
-renderStudents([]);
-
-showStatus(
-"listStatus",
-"Could not load records: " + (err.code || err.message) +
-". Check Firestore Rules and admin UID.",
-true
-);
-
-}finally{
-
-$("refreshBtn").disabled = false;
-
+ try{
+  const snap=await getDocs(collection(db,"students"));
+  allStudents=snap.docs.map(d=>({id:d.id,...d.data()}));
+  allStudents.sort((a,b)=>String(b.submittedAt||"").localeCompare(String(a.submittedAt||"")));
+  searchStudents();
+  showStatus("listStatus","Student records loaded successfully.");
+ }catch(err){
+  allStudents=[];
+  renderStudents([]);
+  showStatus("listStatus","Could not load records: "+(err.code||err.message)+". Check Firestore Rules.",true);
+ }finally{
+  $("refreshBtn").disabled=false;
+ }
 }
 
-}
-
-
-// DISPLAY STUDENT RECORDS
 function renderStudents(items){
+ $("recordCount").textContent=items.length+" record"+(items.length===1?"":"s");
 
-$("recordCount").textContent =
-items.length + " record" + (items.length === 1 ? "" : "s");
+ if(!items.length){
+  $("studentRows").innerHTML='<tr><td colspan="6">No student records found.</td></tr>';
+  return;
+ }
 
-if(!items.length){
-
-$("studentRows").innerHTML =
-'<tr><td colspan="6">No student records found.</td></tr>';
-
-return;
-
+ $("studentRows").innerHTML=items.map(s=>`
+ <tr>
+  <td>${escapeHtml(s.admission)}</td>
+  <td>${escapeHtml(s.fullName)}</td>
+  <td>${escapeHtml(s.grade)}</td>
+  <td>${escapeHtml(s.phone)}</td>
+  <td>${escapeHtml(s.submittedAt)}</td>
+  <td>
+   <button class="secondary" data-view="${escapeHtml(s.id)}" type="button">VIEW</button>
+   <button class="danger" data-delete="${escapeHtml(s.id)}" type="button">DELETE</button>
+  </td>
+ </tr>`).join("");
 }
 
-$("studentRows").innerHTML = items.map(s=>`
-
-<tr>
-
-<td>${escapeHtml(s.admission)}</td>
-
-<td>${escapeHtml(s.fullName)}</td>
-
-<td>${escapeHtml(s.grade)}</td>
-
-<td>${escapeHtml(s.phone)}</td>
-
-<td>${escapeHtml(s.submittedAt)}</td>
-
-<td>
-<button class="secondary" data-view="${escapeHtml(s.id)}" type="button">
-VIEW
-</button>
-
-<button class="danger" data-delete="${escapeHtml(s.id)}" type="button">
-DELETE
-</button>
-</td>
-
-</tr>
-
-`).join("");
-
-}
-
-
-// SEARCH STUDENT RECORDS
 function searchStudents(){
-
-const term = $("searchInput").value.trim().toLowerCase();
-
-renderStudents(
-allStudents.filter(s=>
-["admission","fullName","grade","phone","email"].some(
-k=>getText(s,k).toLowerCase().includes(term)
-)
-)
-);
-
+ const term=$("searchInput").value.trim().toLowerCase();
+ renderStudents(allStudents.filter(s=>
+  ["admission","fullName","grade","phone","email"].some(
+   k=>getText(s,k).toLowerCase().includes(term)
+  )
+ ));
 }
 
-
-// LOAD VERIFICATION CODES
 async function loadVerificationCodes(){
+ if(!auth.currentUser||auth.currentUser.uid!==ADMIN_UID)return;
 
-showStatus("codeStatus","Loading verification codes...");
+ showStatus("codeStatus","Loading verification codes...");
+ $("codeRefreshBtn").disabled=true;
 
-$("codeRefreshBtn").disabled = true;
-
-try{
-
-// Admin-only list access must be enabled in Firestore Rules.
-const snap = await getDocs(collection(db,"studentLookups"));
-
-allCodes = snap.docs.map(d=>({
-
-id:d.id,
-...d.data()
-
-}));
-
-allCodes.sort((a,b)=>
-String(b.submittedAt || "").localeCompare(String(a.submittedAt || ""))
-);
-
-renderCodes(allCodes);
-
-showStatus(
-"codeStatus",
-"Verification codes loaded successfully."
-);
-
-}catch(err){
-
-allCodes = [];
-renderCodes([]);
-
-showStatus(
-"codeStatus",
-"Could not load verification codes: " +
-(err.code || err.message) +
-". Check the studentLookups Firestore Rules.",
-true
-);
-
-}finally{
-
-$("codeRefreshBtn").disabled = false;
-
+ try{
+  const snap=await getDocs(collection(db,"studentLookups"));
+  allCodes=snap.docs.map(d=>({id:d.id,...d.data()}));
+  allCodes.sort((a,b)=>String(b.submittedAt||"").localeCompare(String(a.submittedAt||"")));
+  searchCodes();
+  showStatus("codeStatus","Verification codes loaded successfully.");
+ }catch(err){
+  allCodes=[];
+  renderCodes([]);
+  showStatus(
+   "codeStatus",
+   "Could not load codes: "+(err.code||err.message)+". Check studentLookups Rules.",
+   true
+  );
+ }finally{
+  $("codeRefreshBtn").disabled=false;
+ }
 }
 
-}
-
-
-// DISPLAY VERIFICATION CODES
 function renderCodes(items){
+ $("codeCount").textContent=items.length+" code"+(items.length===1?"":"s");
 
-$("codeCount").textContent =
-items.length + " code" + (items.length === 1 ? "" : "s");
+ if(!items.length){
+  $("codeRows").innerHTML='<tr><td colspan="6">No verification codes found.</td></tr>';
+  return;
+ }
 
-if(!items.length){
-
-$("codeRows").innerHTML =
-'<tr><td colspan="6">No verification codes found.</td></tr>';
-
-return;
-
+ $("codeRows").innerHTML=items.map(c=>`
+ <tr>
+  <td>${escapeHtml(c.admission)}</td>
+  <td>${escapeHtml(c.fullName)}</td>
+  <td>${escapeHtml(c.grade)}</td>
+  <td><span class="codebox">${escapeHtml(c.id)}</span></td>
+  <td>${escapeHtml(c.submittedAt)}</td>
+  <td><button class="primary" type="button" data-copy-code="${escapeHtml(c.id)}">COPY CODE</button></td>
+ </tr>`).join("");
 }
 
-$("codeRows").innerHTML = items.map(c=>`
-
-<tr>
-
-<td>${escapeHtml(c.admission)}</td>
-
-<td>${escapeHtml(c.fullName)}</td>
-
-<td>${escapeHtml(c.grade)}</td>
-
-<td>
-<span class="codebox">${escapeHtml(c.id)}</span>
-</td>
-
-<td>${escapeHtml(c.submittedAt)}</td>
-
-<td>
-<button
-class="primary"
-type="button"
-data-copy-code="${escapeHtml(c.id)}">
-COPY CODE
-</button>
-</td>
-
-</tr>
-
-`).join("");
-
-}
-
-
-// SEARCH VERIFICATION CODES
 function searchCodes(){
-
-const term = $("codeSearchInput").value.trim().toLowerCase();
-
-const filtered = allCodes.filter(c=>
-["id","admission","fullName","grade","phone","submittedAt"].some(
-k=>getText(c,k).toLowerCase().includes(term)
-)
-);
-
-renderCodes(filtered);
-
+ const term=$("codeSearchInput").value.trim().toLowerCase();
+ renderCodes(allCodes.filter(c=>
+  ["id","admission","fullName","grade","phone","submittedAt"].some(
+   k=>getText(c,k).toLowerCase().includes(term)
+  )
+ ));
 }
 
-
-// BUTTON EVENTS
 $("searchBtn").addEventListener("click",searchStudents);
-
 $("searchInput").addEventListener("input",searchStudents);
-
-$("refreshBtn").addEventListener("click",async()=>{
-await loadStudents();
-});
-
+$("refreshBtn").addEventListener("click",loadStudents);
 $("logoutBtn").addEventListener("click",()=>signOut(auth));
-
-$("closeDetailBtn").addEventListener("click",()=>
-$("detailPanel").classList.add("hidden")
-);
+$("closeDetailBtn").addEventListener("click",()=>$("detailPanel").classList.add("hidden"));
 
 $("codeSearchBtn").addEventListener("click",searchCodes);
-
 $("codeSearchInput").addEventListener("input",searchCodes);
-
 $("codeRefreshBtn").addEventListener("click",loadVerificationCodes);
 
-
-// STUDENT RECORD ACTIONS
 $("studentRows").addEventListener("click",async e=>{
+ const button=e.target.closest("button");
+ if(!button)return;
 
-const viewId = e.target.dataset.view;
-const deleteId = e.target.dataset.delete;
+ const viewId=button.dataset.view;
+ const deleteId=button.dataset.delete;
 
+ if(viewId){
+  const s=allStudents.find(x=>x.id===viewId);
+  if(!s)return;
 
-// VIEW DETAILS
-if(viewId){
+  const fields=[
+   ["Admission Number","admission"],
+   ["Full Name","fullName"],
+   ["Date of Birth","dob"],
+   ["Guardian","guardian"],
+   ["Telephone","phone"],
+   ["WhatsApp","whatsapp"],
+   ["Email","email"],
+   ["Grade","grade"],
+   ["Address","address"],
+   ["A/L Subjects","al"],
+   ["O/L Results","ol"],
+   ["Sports Achievements","sports"],
+   ["Extracurricular Activities","extra"],
+   ["Submitted At","submittedAt"]
+  ];
 
-const s = allStudents.find(x=>x.id===viewId);
+  $("detailGrid").innerHTML=fields.map(([label,key])=>`
+   <div class="detail">
+    <strong>${escapeHtml(label)}</strong>
+    <span>${escapeHtml(s[key])||"—"}</span>
+   </div>`).join("");
 
-if(!s)return;
+  $("detailPanel").classList.remove("hidden");
+  $("detailPanel").scrollIntoView({behavior:"smooth"});
+ }
 
-const fields = [
+ if(deleteId){
+  const s=allStudents.find(x=>x.id===deleteId);
+  if(!s)return;
 
-["Admission Number","admission"],
-["Full Name","fullName"],
-["Date of Birth","dob"],
-["Guardian","guardian"],
-["Telephone","phone"],
-["WhatsApp","whatsapp"],
-["Email","email"],
-["Grade","grade"],
-["Address","address"],
-["A/L Subjects","al"],
-["O/L Results","ol"],
-["Sports Achievements","sports"],
-["Extracurricular Activities","extra"],
-["Submitted At","submittedAt"]
+  if(!confirm("Delete student record for "+(s.fullName||s.admission||"this student")+"? This cannot be undone."))return;
 
-];
-
-$("detailGrid").innerHTML = fields.map(([label,key])=>`
-
-<div class="detail">
-
-<strong>${escapeHtml(label)}</strong>
-
-<span>${escapeHtml(s[key]) || "—"}</span>
-
-</div>
-
-`).join("");
-
-$("detailPanel").classList.remove("hidden");
-
-$("detailPanel").scrollIntoView({behavior:"smooth"});
-
-}
-
-
-// DELETE STUDENT RECORD
-if(deleteId){
-
-const s = allStudents.find(x=>x.id===deleteId);
-
-if(!s)return;
-
-if(!confirm(
-"Delete student record for " +
-(s.fullName || s.admission || "this student") +
-"? This cannot be undone."
-))return;
-
-try{
-
-await deleteDoc(doc(db,"students",deleteId));
-
-allStudents = allStudents.filter(x=>x.id!==deleteId);
-
-searchStudents();
-
-showStatus("listStatus","Student record deleted.");
-
-$("detailPanel").classList.add("hidden");
-
-}catch(err){
-
-showStatus(
-"listStatus",
-"Delete failed: " + (err.code || err.message),
-true
-);
-
-}
-
-}
-
+  try{
+   await deleteDoc(doc(db,"students",deleteId));
+   allStudents=allStudents.filter(x=>x.id!==deleteId);
+   searchStudents();
+   showStatus("listStatus","Student record deleted.");
+   $("detailPanel").classList.add("hidden");
+  }catch(err){
+   showStatus("listStatus","Delete failed: "+(err.code||err.message),true);
+  }
+ }
 });
 
-
-// COPY VERIFICATION CODE
 $("codeRows").addEventListener("click",async e=>{
+ const button=e.target.closest("button[data-copy-code]");
+ if(!button)return;
 
-const code = e.target.dataset.copyCode;
+ const code=button.dataset.copyCode;
 
-if(!code)return;
-
-try{
-
-await navigator.clipboard.writeText(code);
-
-showStatus("codeStatus","Verification code copied: " + code);
-
-}catch(err){
-
-// Fallback if clipboard permission is unavailable.
-window.prompt("Copy this verification code:",code);
-
-}
-
+ try{
+  await navigator.clipboard.writeText(code);
+  showStatus("codeStatus","Verification code copied: "+code);
+ }catch(err){
+  window.prompt("Copy this verification code:",code);
+ }
 });
-
 </script>
-
 </body>
 </html>
