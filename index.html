@@ -304,6 +304,72 @@ footer {
     .card {padding:17px}
     .actions button {width:100%}
 }
+
+/* HOME AND VIEW INFORMATION INTERFACES */
+.home-panel,.view-panel,.student-result {
+    background:var(--panel);
+    border:1px solid var(--green);
+    border-radius:20px;
+    padding:24px;
+    margin-bottom:20px;
+    box-shadow:0 0 22px #39ff1428;
+}
+.home-buttons {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:16px;
+    margin-top:22px;
+}
+.home-button {
+    min-height:130px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    text-align:center;
+    background:#061009;
+    border:1px solid var(--green);
+    color:var(--green);
+    border-radius:16px;
+    padding:22px 14px;
+    font-size:17px;
+    line-height:1.5;
+}
+.home-button.view {border-color:var(--yellow);color:var(--yellow)}
+.home-button .symbol {font-size:30px}
+.view-panel,.student-result {display:none}
+.loading-screen {
+    display:none;
+    text-align:center;
+    padding:30px 12px;
+}
+.loading-logo {
+    width:105px;height:105px;object-fit:contain;
+    border-radius:50%;background:white;padding:5px;
+    border:2px solid var(--yellow);
+    box-shadow:0 0 24px #39ff1477;
+    margin-bottom:20px;
+}
+.loading-dots {display:flex;justify-content:center;gap:10px;margin:22px 0}
+.loading-dots span {
+    width:12px;height:12px;border-radius:50%;
+    background:var(--green);box-shadow:0 0 12px var(--green);
+    animation:dotPulse .8s infinite alternate;
+}
+.loading-dots span:nth-child(2){animation-delay:.2s}
+.loading-dots span:nth-child(3){animation-delay:.4s}
+@keyframes dotPulse {from{opacity:.25;transform:scale(.7)}to{opacity:1;transform:scale(1.15)}}
+.result-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.result-item {padding:13px;border:1px solid #39ff1455;border-radius:11px;background:#061009;overflow-wrap:anywhere}
+.result-item strong {display:block;color:var(--green);font-size:12px;margin-bottom:7px}
+.result-item span {white-space:pre-wrap;line-height:1.6}
+.term-status {color:var(--yellow)!important;font-weight:bold}
+@media(max-width:650px) {
+    .home-buttons,.result-grid {grid-template-columns:1fr}
+    .home-button {min-height:105px}
+}
+
 </style>
 </head>
 
@@ -326,7 +392,54 @@ footer {
     </p>
 </header>
 
-<section class="card" id="formSection">
+<section class="home-panel" id="homeSection">
+    <h2 class="section-title">STUDENT PORTAL / ශිෂ්‍ය පිවිසුම</h2>
+    <p class="notice">Choose an option below / පහත විකල්පයෙන් එකක් තෝරන්න.</p>
+    <div class="home-buttons">
+        <button class="home-button" type="button" id="fillInfoBtn">
+            <span class="symbol">✎</span>
+            <span>FILL INFORMATION</span>
+            <small>ශිෂ්‍ය තොරතුරු ඇතුළත් කරන්න</small>
+        </button>
+        <button class="home-button view" type="button" id="viewInfoBtn">
+            <span class="symbol">⌕</span>
+            <span>VIEW INFORMATION</span>
+            <small>ඇතුළත් කළ තොරතුරු බලන්න</small>
+        </button>
+    </div>
+</section>
+
+<section class="view-panel" id="viewPanel">
+    <div class="loading-screen" id="loadingScreen">
+        <img class="loading-logo" src="school-logo.png" alt="School Logo"
+             onerror="this.style.display='none'">
+        <h2 class="section-title">LOADING INFORMATION</h2>
+        <p class="notice">Please wait / කරුණාකර රැඳී සිටින්න</p>
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+    </div>
+    <div id="admissionLookup">
+        <h2 class="section-title">VIEW INFORMATION</h2>
+        <label class="field label" for="lookupAdmission" style="display:block;color:var(--green);margin-bottom:10px">
+            ENTER YOUR ADMISSION NUMBER
+        </label>
+        <input id="lookupAdmission" maxlength="50" placeholder="Enter your admission number">
+        <p class="status" id="lookupStatus" role="status" aria-live="polite"></p>
+        <div class="actions">
+            <button class="primary" type="button" id="lookupBtn">VIEW MY INFORMATION</button>
+            <button class="secondary" type="button" id="backHomeBtn">BACK / ආපසු</button>
+        </div>
+    </div>
+</section>
+
+<section class="student-result" id="studentResult">
+    <h2 class="section-title">MY STUDENT INFORMATION</h2>
+    <div class="result-grid" id="resultGrid"></div>
+    <div class="actions">
+        <button class="secondary" type="button" id="resultBackBtn">BACK / ආපසු</button>
+    </div>
+</section>
+
+<section class="card" id="formSection" style="display:none">
     <h2 class="section-title">Student Information / ශිෂ්‍ය තොරතුරු</h2>
 
     <form id="studentForm">
@@ -484,7 +597,11 @@ from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import {
     getFirestore,
     collection,
-    addDoc
+    addDoc,
+    getDocs,
+    query,
+    where,
+    limit
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -499,6 +616,13 @@ const firebaseConfig = {
 
 const form = document.getElementById("studentForm");
 const formSection = document.getElementById("formSection");
+const homeSection = document.getElementById("homeSection");
+const viewPanel = document.getElementById("viewPanel");
+const loadingScreen = document.getElementById("loadingScreen");
+const admissionLookup = document.getElementById("admissionLookup");
+const studentResult = document.getElementById("studentResult");
+const resultGrid = document.getElementById("resultGrid");
+const lookupStatus = document.getElementById("lookupStatus");
 const statusEl = document.getElementById("status");
 const successScreen = document.getElementById("successScreen");
 const blurOverlay = document.getElementById("blurOverlay");
@@ -517,6 +641,131 @@ try {
     statusEl.textContent =
         "Firebase initialization failed. Reload the website.";
 }
+
+
+const fillInfoBtn = document.getElementById("fillInfoBtn");
+const viewInfoBtn = document.getElementById("viewInfoBtn");
+const lookupBtn = document.getElementById("lookupBtn");
+const backHomeBtn = document.getElementById("backHomeBtn");
+const resultBackBtn = document.getElementById("resultBackBtn");
+
+function showHome() {
+    homeSection.style.display = "block";
+    formSection.style.display = "none";
+    viewPanel.style.display = "none";
+    studentResult.style.display = "none";
+    loadingScreen.style.display = "none";
+    admissionLookup.style.display = "block";
+    lookupStatus.textContent = "";
+}
+
+fillInfoBtn.addEventListener("click", function() {
+    homeSection.style.display = "none";
+    viewPanel.style.display = "none";
+    studentResult.style.display = "none";
+    formSection.style.display = "block";
+    window.scrollTo({top:0,behavior:"smooth"});
+});
+
+viewInfoBtn.addEventListener("click", async function() {
+    homeSection.style.display = "none";
+    formSection.style.display = "none";
+    studentResult.style.display = "none";
+    viewPanel.style.display = "block";
+    admissionLookup.style.display = "none";
+    loadingScreen.style.display = "block";
+    lookupStatus.textContent = "";
+    window.scrollTo({top:0,behavior:"smooth"});
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    loadingScreen.style.display = "none";
+    admissionLookup.style.display = "block";
+    document.getElementById("lookupAdmission").focus();
+});
+
+backHomeBtn.addEventListener("click", showHome);
+resultBackBtn.addEventListener("click", function() {
+    studentResult.style.display = "none";
+    viewPanel.style.display = "block";
+    admissionLookup.style.display = "block";
+    document.getElementById("lookupAdmission").value = "";
+    lookupStatus.textContent = "";
+});
+
+lookupBtn.addEventListener("click", async function() {
+    const admission = document.getElementById("lookupAdmission").value.trim();
+    if (!admission) {
+        lookupStatus.textContent = "Please enter your Admission Number.";
+        return;
+    }
+    if (!db) {
+        lookupStatus.textContent = "Firebase is not initialized. Reload and try again.";
+        return;
+    }
+
+    lookupBtn.disabled = true;
+    lookupStatus.textContent = "Searching... Please wait.";
+    try {
+        const studentQuery = query(
+            collection(db, "students"),
+            where("admission", "==", admission),
+            limit(1)
+        );
+        const snapshot = await getDocs(studentQuery);
+
+        if (snapshot.empty) {
+            lookupStatus.textContent = "No student record found for this Admission Number.";
+            return;
+        }
+
+        const student = snapshot.docs[0].data();
+        const fields = [
+            ["Full Name", student.fullName],
+            ["Date of Birth", student.dob],
+            ["Grade", student.grade],
+            ["A/L Subjects", student.al],
+            ["Telephone Number", student.phone],
+            ["Sports Achievements", student.sports],
+            ["Extracurricular Activities", student.extra]
+        ];
+
+        resultGrid.replaceChildren();
+        fields.forEach(([label, value]) => {
+            const item = document.createElement("div");
+            item.className = "result-item";
+            const strong = document.createElement("strong");
+            strong.textContent = label;
+            const span = document.createElement("span");
+            span.textContent = value || "Not provided";
+            item.append(strong, span);
+            resultGrid.appendChild(item);
+        });
+
+        const termItem = document.createElement("div");
+        termItem.className = "result-item";
+        const termLabel = document.createElement("strong");
+        termLabel.textContent = "Term Test Marks";
+        const termValue = document.createElement("span");
+        termValue.className = "term-status";
+        termValue.textContent = "Not Yet Started";
+        termItem.append(termLabel, termValue);
+        resultGrid.appendChild(termItem);
+
+        viewPanel.style.display = "none";
+        studentResult.style.display = "block";
+        window.scrollTo({top:0,behavior:"smooth"});
+    } catch (error) {
+        console.error("Student lookup error:", error);
+        if (error.code === "permission-denied") {
+            lookupStatus.textContent =
+                "Access denied by Firestore Rules. Public student lookup permission must be configured securely.";
+        } else {
+            lookupStatus.textContent =
+                "Could not load information: " + (error.code || error.message || "Unknown error");
+        }
+    } finally {
+        lookupBtn.disabled = false;
+    }
+});
 
 const fieldIds = [
     "fullName",
