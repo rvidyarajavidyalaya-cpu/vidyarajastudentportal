@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -72,6 +71,20 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 
 <body>
 <div class="bubbles"><span></span><span></span><span></span><span></span><span></span></div>
+
+<!-- BACKGROUND MUSIC PLAYER -->
+<audio id="backgroundMusic" loop preload="none">
+  <source src="music.mp3" type="audio/mpeg">
+  Your browser does not support audio playback.
+</audio>
+
+<button id="musicToggle" type="button" aria-label="Play background music"
+style="position:fixed;right:16px;bottom:16px;z-index:2000;
+background:#39ff14;color:#041004;border:1px solid #eaff00;
+border-radius:999px;padding:13px 17px;font-weight:bold;
+box-shadow:0 0 18px #39ff1470;cursor:pointer;">
+🎵 Play Music
+</button>
 
 <main>
 <header>
@@ -366,208 +379,4 @@ return;
 
 const student=snap.data();
 
-if(student.grade!==selectedGrade){
-lookupStatus.textContent="This code does not belong to "+selectedGrade+". Please select the correct grade.";
-return;
-}
-
-const fields=[
-["Admission Number",student.admission],
-["Full Name",student.fullName],
-["Date of Birth",student.dob],
-["Grade",student.grade]
-];
-
-if(student.grade==="Grade 12"||student.grade==="Grade 13"){
-fields.push(["A/L Subjects",student.al]);
-fields.push(["O/L Results",student.ol]);
-}
-
-fields.push(
-["Telephone Number",student.phone],
-["Sports Achievements",student.sports],
-["Extracurricular Activities",student.extra]
-);
-
-resultGrid.replaceChildren();
-
-fields.forEach(([label,value],i)=>{
-const item=document.createElement("div");
-item.className="result-item";
-item.style.animationDelay=(i*.07)+"s";
-
-const strong=document.createElement("strong");
-strong.textContent=label;
-
-const span=document.createElement("span");
-span.textContent=value||"Not provided";
-
-item.append(strong,span);
-resultGrid.appendChild(item);
-});
-
-const termItem=document.createElement("div");
-termItem.className="result-item";
-
-const termLabel=document.createElement("strong");
-termLabel.textContent="Term Test Marks";
-
-const termValue=document.createElement("span");
-termValue.className="term-status";
-termValue.textContent="Not Yet Started";
-
-termItem.append(termLabel,termValue);
-resultGrid.appendChild(termItem);
-
-viewPanel.style.display="none";
-studentResult.style.display="block";
-window.scrollTo({top:0,behavior:"smooth"});
-
-}catch(error){
-console.error(error);
-lookupStatus.textContent="Could not load information: "+(error.code||error.message||"Unknown error");
-}finally{
-$("lookupBtn").disabled=false;
-}
-});
-
-const fieldIds=[
-"fullName","dob","guardian","phone","whatsapp","email",
-"address","al","ol","sports","extra"
-];
-
-function generateVerificationCode(){
-const alphabet="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-const random=new Uint8Array(12);
-crypto.getRandomValues(random);
-const chars=Array.from(random,value=>alphabet[value%alphabet.length]);
-return "VR-"+chars.slice(0,4).join("")+"-"+chars.slice(4,8).join("")+"-"+chars.slice(8,12).join("");
-}
-
-$("copyCodeBtn").addEventListener("click",async()=>{
-if(!latestVerificationCode)return;
-
-try{
-await navigator.clipboard.writeText(latestVerificationCode);
-$("copyCodeBtn").textContent="COPIED!";
-}catch{
-$("copyCodeBtn").textContent="Select and copy the code above";
-}
-});
-
-form.addEventListener("submit",async event=>{
-event.preventDefault();
-
-if(!db){
-statusEl.textContent="SAVE FAILED: Firebase is not initialized.";
-return;
-}
-
-if(!form.reportValidity())return;
-
-if(photoInput.files&&photoInput.files.length){
-statusEl.textContent="Photo upload is not configured yet. Remove the photo and submit again.";
-return;
-}
-
-if(!selectedGrade){
-statusEl.textContent="Please select a grade first.";
-return;
-}
-
-const data={
-admission:$("admission").value.trim(),
-grade:selectedGrade
-};
-
-fieldIds.forEach(id=>data[id]=$(id).value.trim());
-
-if(!data.admission||!data.fullName){
-statusEl.textContent="Please enter Admission Number and Full Name.";
-return;
-}
-
-/* Never save A/L and O/L values for Grades 6–11 */
-if(selectedGrade!=="Grade 12"&&selectedGrade!=="Grade 13"){
-data.al="";
-data.ol="";
-}
-
-saveBtn.disabled=true;
-statusEl.textContent="Saving student details to Firebase... Please wait.";
-
-try{
-const submittedAt=new Date().toISOString();
-const payload={...data,submittedAt};
-const verificationCode=generateVerificationCode();
-
-const lookupPayload={
-admission:data.admission,
-fullName:data.fullName,
-dob:data.dob,
-grade:data.grade,
-al:data.al,
-ol:data.ol,
-phone:data.phone,
-sports:data.sports,
-extra:data.extra,
-submittedAt
-};
-
-const batch=writeBatch(db);
-const studentRef=doc(collection(db,"students"));
-const lookupRef=doc(db,"studentLookups",verificationCode);
-
-batch.set(studentRef,payload);
-batch.set(lookupRef,lookupPayload);
-
-await batch.commit();
-
-latestVerificationCode=verificationCode;
-$("generatedCode").textContent=verificationCode;
-$("copyCodeBtn").textContent="COPY CODE";
-
-try{
-localStorage.setItem("vidyaraja_student_"+data.admission,JSON.stringify(data));
-}catch(e){
-console.warn(e);
-}
-
-formSection.style.display="none";
-successScreen.style.display="block";
-window.scrollTo({top:0,behavior:"smooth"});
-form.reset();
-
-}catch(error){
-console.error(error);
-statusEl.textContent="SAVE FAILED: "+(error.code||error.message||"Unknown error");
-}finally{
-saveBtn.disabled=false;
-}
-});
-
-form.addEventListener("reset",()=>{
-statusEl.textContent="";
-});
-
-photoInput.addEventListener("change",function(){
-statusEl.textContent=this.files.length
-?"Photo upload requires Firebase Storage setup. Remove the photo to continue."
-:"";
-});
-
-$("doneBtn").addEventListener("click",()=>{
-successScreen.style.display="none";
-blurOverlay.style.display="flex";
-});
-
-$("overlayHomeBtn").addEventListener("click",showHome);
-
-/* Initial state */
-$("alField").style.display="none";
-$("olField").style.display="none";
-homeSection.style.display="block";
-gradeSection.style.display="none";
-</script>
-</body>
-</html>
+if
