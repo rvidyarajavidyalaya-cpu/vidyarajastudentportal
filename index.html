@@ -420,9 +420,9 @@ footer {
     <div id="admissionLookup">
         <h2 class="section-title">VIEW INFORMATION</h2>
         <label class="field label" for="lookupAdmission" style="display:block;color:var(--green);margin-bottom:10px">
-            ENTER YOUR ADMISSION NUMBER
+            ENTER YOUR VERIFICATION CODE
         </label>
-        <input id="lookupAdmission" maxlength="50" placeholder="Enter your admission number">
+        <input id="lookupAdmission" maxlength="50" placeholder="Enter your verification code (e.g. VR-ABCD-2345-EFGH)">
         <p class="status" id="lookupStatus" role="status" aria-live="polite"></p>
         <div class="actions">
             <button class="primary" type="button" id="lookupBtn">VIEW MY INFORMATION</button>
@@ -565,6 +565,12 @@ footer {
         Student details have been saved successfully.<br>
         ශිෂ්‍ය තොරතුරු සාර්ථකව සුරකින ලදී.
     </p>
+    <div class="result-item" style="max-width:520px;margin:18px auto;text-align:center">
+        <strong>YOUR VERIFICATION CODE / ඔබගේ තහවුරු කිරීමේ කේතය</strong>
+        <span id="generatedCode" style="font-size:1.5rem;font-weight:900;letter-spacing:2px;overflow-wrap:anywhere">----</span>
+        <p style="margin-top:10px">Keep this code safe. Enter this code in VIEW INFORMATION to see your saved details. Do not share it with others.</p>
+        <button class="secondary" type="button" id="copyCodeBtn">COPY CODE</button>
+    </div>
 
     <button class="primary" type="button" id="doneBtn">
         DONE / අවසන්
@@ -599,6 +605,9 @@ import {
     collection,
     addDoc,
     getDocs,
+    getDoc,
+    doc,
+    writeBatch,
     query,
     where,
     limit
@@ -622,6 +631,9 @@ const loadingScreen = document.getElementById("loadingScreen");
 const admissionLookup = document.getElementById("admissionLookup");
 const studentResult = document.getElementById("studentResult");
 const resultGrid = document.getElementById("resultGrid");
+const generatedCodeEl = document.getElementById("generatedCode");
+const copyCodeBtn = document.getElementById("copyCodeBtn");
+let latestVerificationCode = "";
 const lookupStatus = document.getElementById("lookupStatus");
 const statusEl = document.getElementById("status");
 const successScreen = document.getElementById("successScreen");
@@ -692,9 +704,9 @@ resultBackBtn.addEventListener("click", function() {
 });
 
 lookupBtn.addEventListener("click", async function() {
-    const admission = document.getElementById("lookupAdmission").value.trim();
-    if (!admission) {
-        lookupStatus.textContent = "Please enter your Admission Number.";
+    const code = document.getElementById("lookupAdmission").value.trim().toUpperCase();
+    if (!code) {
+        lookupStatus.textContent = "Please enter your Verification Code.";
         return;
     }
     if (!db) {
@@ -703,22 +715,18 @@ lookupBtn.addEventListener("click", async function() {
     }
 
     lookupBtn.disabled = true;
-    lookupStatus.textContent = "Searching... Please wait.";
+    lookupStatus.textContent = "Verifying code... Please wait.";
     try {
-        const studentQuery = query(
-            collection(db, "students"),
-            where("admission", "==", admission),
-            limit(1)
-        );
-        const snapshot = await getDocs(studentQuery);
-
-        if (snapshot.empty) {
-            lookupStatus.textContent = "No student record found for this Admission Number.";
+        // A random, secret verification code is the document ID. Public list access stays disabled.
+        const lookupSnap = await getDoc(doc(db, "studentLookups", code));
+        if (!lookupSnap.exists()) {
+            lookupStatus.textContent = "Invalid verification code. Please check the code and try again.";
             return;
         }
 
-        const student = snapshot.docs[0].data();
+        const student = lookupSnap.data();
         const fields = [
+            ["Admission Number", student.admission],
             ["Full Name", student.fullName],
             ["Date of Birth", student.dob],
             ["Grade", student.grade],
@@ -756,11 +764,9 @@ lookupBtn.addEventListener("click", async function() {
     } catch (error) {
         console.error("Student lookup error:", error);
         if (error.code === "permission-denied") {
-            lookupStatus.textContent =
-                "Access denied by Firestore Rules. Public student lookup permission must be configured securely.";
+            lookupStatus.textContent = "Permission denied. Please add the secure studentLookups rules in Firebase.";
         } else {
-            lookupStatus.textContent =
-                "Could not load information: " + (error.code || error.message || "Unknown error");
+            lookupStatus.textContent = "Could not load information: " + (error.code || error.message || "Unknown error");
         }
     } finally {
         lookupBtn.disabled = false;
@@ -781,6 +787,24 @@ const fieldIds = [
     "sports",
     "extra"
 ];
+
+function generateVerificationCode() {
+    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const random = new Uint8Array(12);
+    crypto.getRandomValues(random);
+    const chars = Array.from(random, value => alphabet[value % alphabet.length]);
+    return "VR-" + chars.slice(0,4).join("") + "-" + chars.slice(4,8).join("") + "-" + chars.slice(8,12).join("");
+}
+
+copyCodeBtn.addEventListener("click", async function() {
+    if (!latestVerificationCode) return;
+    try {
+        await navigator.clipboard.writeText(latestVerificationCode);
+        copyCodeBtn.textContent = "COPIED!";
+    } catch (error) {
+        copyCodeBtn.textContent = "Please select and copy the code above";
+    }
+});
 
 form.addEventListener("submit", async function(event) {
     event.preventDefault();
@@ -822,15 +846,30 @@ form.addEventListener("submit", async function(event) {
             ...data,
             submittedAt: new Date().toISOString()
         };
+        const verificationCode = generateVerificationCode();
+        const lookupPayload = {
+            admission: data.admission,
+            fullName: data.fullName,
+            dob: data.dob,
+            grade: data.grade,
+            al: data.al,
+            phone: data.phone,
+            sports: data.sports,
+            extra: data.extra,
+            submittedAt: payload.submittedAt
+        };
 
-        // Send the record to Firestore.
-        // Wait for Firebase to confirm success before showing the success screen.
-        const result = await addDoc(
-            collection(db, "students"),
-            payload
-        );
-
-        console.log("Firestore document saved:", result.id);
+        // Save both records atomically. The verification code is a secret bearer code.
+        const batch = writeBatch(db);
+        const studentRef = doc(collection(db, "students"));
+        const lookupRef = doc(db, "studentLookups", verificationCode);
+        batch.set(studentRef, payload);
+        batch.set(lookupRef, lookupPayload);
+        await batch.commit();
+        latestVerificationCode = verificationCode;
+        generatedCodeEl.textContent = verificationCode;
+        copyCodeBtn.textContent = "COPY CODE";
+        console.log("Student details and verification lookup saved.");
 
         // Local preview is optional; Firestore is the main database.
         try {
