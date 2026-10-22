@@ -14,8 +14,13 @@ body{min-height:100vh;font-family:Arial,"Noto Sans Sinhala",sans-serif;color:#f5
 body.portal-locked{overflow:hidden}
 body.portal-locked main{visibility:hidden}
 main{position:relative;z-index:1;max-width:1000px;margin:auto}
+
 .bubbles span{position:fixed;bottom:-80px;width:22px;height:22px;border:1px solid var(--green);border-radius:50%;box-shadow:0 0 14px var(--green);animation:float 12s linear infinite;pointer-events:none;z-index:0}
-.bubbles span:nth-child(1){left:8%}.bubbles span:nth-child(2){left:28%;animation-duration:16s;width:34px;height:34px}.bubbles span:nth-child(3){left:53%;animation-duration:11s}.bubbles span:nth-child(4){left:76%;animation-duration:15s;width:28px;height:28px}.bubbles span:nth-child(5){left:91%;animation-duration:13s}
+.bubbles span:nth-child(1){left:8%}
+.bubbles span:nth-child(2){left:28%;animation-duration:16s;width:34px;height:34px}
+.bubbles span:nth-child(3){left:53%;animation-duration:11s}
+.bubbles span:nth-child(4){left:76%;animation-duration:15s;width:28px;height:28px}
+.bubbles span:nth-child(5){left:91%;animation-duration:13s}
 
 @keyframes float{0%{transform:translateY(0);opacity:0}20%{opacity:.7}100%{transform:translateY(-115vh);opacity:0}}
 @keyframes appear{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
@@ -24,6 +29,7 @@ main{position:relative;z-index:1;max-width:1000px;margin:auto}
 @keyframes iconFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes loaderGlow{0%,100%{box-shadow:0 0 18px #39ff1450}50%{box-shadow:0 0 38px #39ff14a0}}
+@keyframes loadingDots{0%,80%,100%{transform:scale(.55);opacity:.4}40%{transform:scale(1.15);opacity:1}}
 
 header,.card,.home-panel,.view-panel,.student-result{background:var(--panel);border:1px solid var(--green);border-radius:20px;box-shadow:0 0 22px #39ff1428}
 header{text-align:center;padding:26px 18px;margin-bottom:22px;animation:slideUp .7s ease,neonPulse 5s infinite}
@@ -67,12 +73,14 @@ button:disabled{opacity:.6;cursor:wait;transform:none}
 .success-screen p{color:#d7e8d9;font-size:14px;line-height:1.9;margin-bottom:20px}
 .loading-screen{display:none;text-align:center;padding:30px 12px}
 .loading-dots{display:flex;justify-content:center;gap:10px;margin:22px}
-.loading-dots span{width:12px;height:12px;border-radius:50%;background:var(--green);animation:iconFloat .8s infinite alternate}
+.loading-dots span{width:12px;height:12px;border-radius:50%;background:var(--green);animation:loadingDots .8s infinite}
+.loading-dots span:nth-child(2){animation-delay:.15s}
+.loading-dots span:nth-child(3){animation-delay:.3s}
+
 .blur-overlay{display:none;position:fixed;inset:0;z-index:1000;background:#0009;backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:20px}
 .blur-box{width:min(100%,460px);text-align:center;padding:35px 22px;border:2px solid var(--green);border-radius:24px;background:#030c06;box-shadow:0 0 35px #39ff1466}
-footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20px 4px}
 
-/* NEW INTRO LOADING SCREEN */
+/* INTRO SCREEN */
 .intro-screen{
  position:fixed;inset:0;z-index:5000;
  display:flex;align-items:center;justify-content:center;
@@ -81,11 +89,9 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
  text-align:center;
 }
 .intro-content{
- width:min(100%,520px);
- padding:35px 24px;
+ width:min(100%,520px);padding:35px 24px;
  background:rgba(3,12,6,.94);
- border:2px solid var(--green);
- border-radius:25px;
+ border:2px solid var(--green);border-radius:25px;
  box-shadow:0 0 35px #39ff1455;
  animation:appear .6s ease,loaderGlow 3s infinite;
 }
@@ -95,49 +101,49 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
  border-radius:50%;padding:5px;margin-bottom:20px;
  animation:iconFloat 3s infinite;
 }
-.intro-school{
- color:var(--yellow);
- font-size:clamp(21px,5vw,30px);
- line-height:1.5;margin-bottom:9px;
-}
-.intro-subtitle{
- color:#b9d2bd;letter-spacing:2px;
- font-size:12px;line-height:1.8;
-}
-.intro-spinner{
- width:34px;height:34px;margin:24px auto;
- border:3px solid #25492b;border-top-color:var(--green);
- border-radius:50%;animation:spin .8s linear infinite;
-}
-.progress-info{
- display:flex;justify-content:space-between;gap:10px;
- color:#d7e8d9;font-size:13px;margin-bottom:10px;
-}
+.intro-school{color:var(--yellow);font-size:clamp(21px,5vw,30px);line-height:1.5;margin-bottom:9px}
+.intro-subtitle{color:#b9d2bd;letter-spacing:2px;font-size:12px;line-height:1.8}
+.intro-spinner{width:34px;height:34px;margin:24px auto;border:3px solid #25492b;border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+.progress-info{display:flex;justify-content:space-between;gap:10px;color:#d7e8d9;font-size:13px;margin-bottom:10px}
 #introPercent{color:var(--yellow);font-weight:bold}
-.progress-track{
- height:13px;width:100%;overflow:hidden;
- border:1px solid #426647;border-radius:30px;
- background:#102315;
-}
-.progress-fill{
- height:100%;width:0%;
- background:linear-gradient(90deg,#168b13,var(--green),var(--yellow));
- border-radius:30px;
- box-shadow:0 0 15px #39ff1488;
- transition:width .05s linear;
-}
-#introContinue{
- display:none;width:100%;margin-top:25px;
- padding:15px;background:var(--green);color:#031003;
- border:1px solid var(--yellow);border-radius:12px;
- font-weight:900;font-size:15px;letter-spacing:1px;
- animation:neonPulse 1.5s infinite;
-}
+.progress-track{height:13px;width:100%;overflow:hidden;border:1px solid #426647;border-radius:30px;background:#102315}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#168b13,var(--green),var(--yellow));border-radius:30px;box-shadow:0 0 15px #39ff1488;transition:width .05s linear}
+#introContinue{display:none;width:100%;margin-top:25px;padding:15px;background:var(--green);color:#031003;border:1px solid var(--yellow);border-radius:12px;font-weight:900;font-size:15px;letter-spacing:1px;animation:neonPulse 1.5s infinite}
 #introContinue.show{display:block}
-#introHint{
- color:#b9d2bd;font-size:12px;line-height:1.8;margin-top:15px;
-}
+#introHint{color:#b9d2bd;font-size:12px;line-height:1.8;margin-top:15px}
 .intro-screen.finished .intro-spinner{display:none}
+
+/* NEW: BLUR + NEON LOADING TRANSITION */
+.transition-overlay{
+ display:none;position:fixed;inset:0;z-index:9000;
+ align-items:center;justify-content:center;padding:20px;
+ background:rgba(0,0,0,.58);backdrop-filter:blur(12px);
+ -webkit-backdrop-filter:blur(12px);
+}
+.transition-box{
+ width:min(100%,420px);padding:34px 22px;text-align:center;
+ border:2px solid var(--green);border-radius:23px;
+ background:rgba(3,12,6,.97);
+ box-shadow:0 0 35px #39ff1470;
+ animation:appear .25s ease,loaderGlow 2s infinite;
+}
+.transition-logo{
+ width:88px;height:88px;object-fit:contain;border-radius:50%;
+ border:2px solid var(--yellow);background:white;padding:4px;
+ margin-bottom:18px;animation:iconFloat 2s infinite;
+}
+.transition-spinner{
+ width:48px;height:48px;margin:22px auto;
+ border:4px solid #24442a;border-top-color:var(--green);
+ border-right-color:var(--yellow);border-radius:50%;
+ animation:spin .65s linear infinite;
+}
+.transition-title{color:var(--yellow);font-size:21px;margin-bottom:10px}
+.transition-message{color:#d7e8d9;font-size:13px;line-height:1.8}
+.transition-dots{display:flex;justify-content:center;gap:9px;margin-top:20px}
+.transition-dots span{width:9px;height:9px;background:var(--green);border-radius:50%;animation:loadingDots .8s infinite}
+.transition-dots span:nth-child(2){animation-delay:.15s}
+.transition-dots span:nth-child(3){animation-delay:.3s}
 
 @media(max-width:650px){
  .grid,.home-buttons,.result-grid{grid-template-columns:1fr}
@@ -160,7 +166,7 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 <!-- INTRO LOADING SCREEN -->
 <section class="intro-screen" id="introScreen" aria-label="Website loading screen">
  <div class="intro-content">
-  <img class="intro-logo" src="school-logo.png" alt="R/VIDYARAJA VIDYALAYA School Logo" onerror="this.style.display='none'">
+  <img class="intro-logo" src="school-logo.png" alt="School Logo" onerror="this.style.display='none'">
   <h1 class="intro-school">R/VIDYARAJA VIDYALAYA</h1>
   <p class="intro-subtitle">STUDENT INFORMATION PORTAL</p>
   <div class="intro-spinner" id="introSpinner"></div>
@@ -168,13 +174,22 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
    <span id="introMessage">INITIALIZING PORTAL...</span>
    <span id="introPercent">0%</span>
   </div>
-  <div class="progress-track">
-   <div class="progress-fill" id="introProgress"></div>
-  </div>
+  <div class="progress-track"><div class="progress-fill" id="introProgress"></div></div>
   <button id="introContinue" type="button">CLICK TO CONTINUE →</button>
   <p id="introHint">PLEASE WAIT WHILE WE PREPARE YOUR PORTAL</p>
  </div>
 </section>
+
+<!-- NEW: TRANSITION LOADING OVERLAY -->
+<div class="transition-overlay" id="transitionOverlay" aria-live="polite" aria-busy="true">
+ <div class="transition-box">
+  <img class="transition-logo" src="school-logo.png" alt="School Logo" onerror="this.style.display='none'">
+  <h2 class="transition-title">R/VIDYARAJA VIDYALAYA</h2>
+  <div class="transition-spinner"></div>
+  <p class="transition-message" id="transitionMessage">PLEASE WAIT...</p>
+  <div class="transition-dots"><span></span><span></span><span></span></div>
+ </div>
+</div>
 
 <div class="bubbles"><span></span><span></span><span></span><span></span><span></span></div>
 
@@ -258,14 +273,8 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 <div class="field"><label for="email">විද්‍යුත් තැපෑල<span>Email Address</span></label><input id="email" type="email" maxlength="150" placeholder="name@example.com"></div>
 <div class="field"><label for="gradeDisplay">ශ්‍රේණිය / පන්තිය<span>Selected Grade</span></label><input id="gradeDisplay" readonly></div>
 <div class="field full"><label for="address">ලිපිනය<span>Home Address</span></label><textarea id="address" maxlength="1000" placeholder="Enter home address"></textarea></div>
-<div class="field full" id="alField">
-<label for="al">උසස් පෙළ විෂයන්<span>A/L Subjects</span></label>
-<textarea id="al" maxlength="2000" placeholder="Enter A/L subjects"></textarea>
-</div>
-<div class="field full" id="olField">
-<label for="ol">සාමාන්‍ය පෙළ ප්‍රතිඵල<span>O/L Results</span></label>
-<textarea id="ol" maxlength="2000" placeholder="Enter O/L results"></textarea>
-</div>
+<div class="field full" id="alField"><label for="al">උසස් පෙළ විෂයන්<span>A/L Subjects</span></label><textarea id="al" maxlength="2000" placeholder="Enter A/L subjects"></textarea></div>
+<div class="field full" id="olField"><label for="ol">සාමාන්‍ය පෙළ ප්‍රතිඵල<span>O/L Results</span></label><textarea id="ol" maxlength="2000" placeholder="Enter O/L results"></textarea></div>
 <div class="field full"><label for="sports">ක්‍රීඩා දක්ෂතා<span>Sports Achievements</span></label><textarea id="sports" maxlength="2000" placeholder="Enter sports and achievements"></textarea></div>
 <div class="field full"><label for="extra">විෂය සමගාමී ක්‍රියාකාරකම්<span>Extracurricular Activities</span></label><textarea id="extra" maxlength="2000" placeholder="Clubs, societies and other activities"></textarea></div>
 <div class="field full"><label for="photo">ශිෂ්‍ය ඡායාරූපය<span>Student Photo (Optional)</span></label><input id="photo" type="file" accept="image/*"><p class="notice">Photo upload is not enabled yet. Leave this empty when submitting.</p></div>
@@ -306,7 +315,7 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 </div>
 </div>
 
-<!-- INTRO LOADING TIMER: 5 SECONDS -->
+<!-- INTRO LOADING: 5 SECONDS -->
 <script>
 (function(){
  const screen=document.getElementById("introScreen");
@@ -316,6 +325,8 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
  const button=document.getElementById("introContinue");
  const hint=document.getElementById("introHint");
  const spinner=document.getElementById("introSpinner");
+ const transition=document.getElementById("transitionOverlay");
+ const transitionMessage=document.getElementById("transitionMessage");
 
  let elapsed=0;
  const total=5000;
@@ -343,10 +354,17 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
   }
  },interval);
 
- button.addEventListener("click",function(){
+ button.addEventListener("click",async function(){
+  if(button.disabled)return;
+  button.disabled=true;
+  transitionMessage.textContent="OPENING STUDENT PORTAL...";
+  transition.style.display="flex";
+  await new Promise(resolve=>setTimeout(resolve,2000));
   screen.style.display="none";
+  transition.style.display="none";
   document.body.classList.remove("portal-locked");
   window.scrollTo({top:0,behavior:"instant"});
+  button.disabled=false;
  });
 })();
 </script>
@@ -381,11 +399,28 @@ const photoInput=$("photo");
 const saveBtn=$("saveBtn");
 const statusEl=$("status");
 const lookupStatus=$("lookupStatus");
+const transitionOverlay=$("transitionOverlay");
+const transitionMessage=$("transitionMessage");
 
 let db=null;
 let latestVerificationCode="";
 let selectedGrade="";
 let nextAction="";
+let transitionBusy=false;
+
+/* NEW: TWO-SECOND BLUR LOADING */
+async function showTransition(message="PLEASE WAIT...",duration=2000){
+ if(transitionBusy)return;
+ transitionBusy=true;
+ transitionMessage.textContent=message;
+ transitionOverlay.style.display="flex";
+ try{
+  await new Promise(resolve=>setTimeout(resolve,duration));
+ }finally{
+  transitionOverlay.style.display="none";
+  transitionBusy=false;
+ }
+}
 
 try{
 const app=initializeApp(firebaseConfig);
@@ -431,38 +466,55 @@ gradeSection.style.display="block";
 window.scrollTo({top:0,behavior:"smooth"});
 }
 
-$("fillInfoBtn").addEventListener("click",()=>openGrade("fill"));
-$("viewInfoBtn").addEventListener("click",()=>openGrade("view"));
+/* FILL INFORMATION: BLUR LOADING THEN OPEN GRADE SELECTOR */
+$("fillInfoBtn").addEventListener("click",async()=>{
+ await showTransition("OPENING FILL INFORMATION...");
+ openGrade("fill");
+});
+
+/* VIEW INFORMATION: BLUR LOADING THEN OPEN GRADE SELECTOR */
+$("viewInfoBtn").addEventListener("click",async()=>{
+ await showTransition("OPENING VIEW INFORMATION...");
+ openGrade("view");
+});
+
 $("gradeBackBtn").addEventListener("click",showHome);
 
+/* GRADE CONTINUE: BLUR LOADING THEN OPEN SELECTED PAGE */
 $("continueGradeBtn").addEventListener("click",async()=>{
-selectedGrade=$("selectedGrade").value;
-if(!selectedGrade){
-$("gradeStatus").textContent="Please select your grade first.";
-return;
-}
-$("gradeDisplay").value=selectedGrade;
-updateGradeFields();
-gradeSection.style.display="none";
+ selectedGrade=$("selectedGrade").value;
+ if(!selectedGrade){
+  $("gradeStatus").textContent="Please select your grade first.";
+  return;
+ }
 
-if(nextAction==="fill"){
-formSection.style.display="block";
-formSection.style.animation="none";
-void formSection.offsetWidth;
-formSection.style.animation="";
-window.scrollTo({top:0,behavior:"smooth"});
-}else{
-viewPanel.style.display="block";
-$("viewGradeLabel").textContent="Selected Grade: "+selectedGrade;
-admissionLookup.style.display="none";
-loadingScreen.style.display="block";
-lookupStatus.textContent="";
-window.scrollTo({top:0,behavior:"smooth"});
-await new Promise(resolve=>setTimeout(resolve,1200));
-loadingScreen.style.display="none";
-admissionLookup.style.display="block";
-$("lookupAdmission").focus();
-}
+ $("gradeDisplay").value=selectedGrade;
+ updateGradeFields();
+
+ $("continueGradeBtn").disabled=true;
+ try{
+  if(nextAction==="fill"){
+   await showTransition("PREPARING STUDENT FORM...");
+   gradeSection.style.display="none";
+   formSection.style.display="block";
+   formSection.style.animation="none";
+   void formSection.offsetWidth;
+   formSection.style.animation="";
+   window.scrollTo({top:0,behavior:"smooth"});
+  }else{
+   await showTransition("PREPARING STUDENT INFORMATION...");
+   gradeSection.style.display="none";
+   viewPanel.style.display="block";
+   $("viewGradeLabel").textContent="Selected Grade: "+selectedGrade;
+   admissionLookup.style.display="block";
+   loadingScreen.style.display="none";
+   lookupStatus.textContent="";
+   window.scrollTo({top:0,behavior:"smooth"});
+   $("lookupAdmission").focus();
+  }
+ }finally{
+  $("continueGradeBtn").disabled=false;
+ }
 });
 
 $("backHomeBtn").addEventListener("click",showHome);
@@ -476,73 +528,88 @@ $("lookupAdmission").value="";
 lookupStatus.textContent="";
 });
 
+/* VIEW MY INFORMATION: BLUR LOADING THEN VERIFY CODE */
 $("lookupBtn").addEventListener("click",async()=>{
 const code=$("lookupAdmission").value.trim().toUpperCase();
-if(!code){lookupStatus.textContent="Please enter your Verification Code.";return;}
-if(!db){lookupStatus.textContent="Firebase is not initialized. Reload and try again.";return;}
+
+if(!code){
+lookupStatus.textContent="Please enter your Verification Code.";
+return;
+}
+if(!db){
+lookupStatus.textContent="Firebase is not initialized. Reload and try again.";
+return;
+}
 
 $("lookupBtn").disabled=true;
 lookupStatus.textContent="Verifying code... Please wait.";
 
 try{
-const snap=await getDoc(doc(db,"studentLookups",code));
-if(!snap.exists()){
-lookupStatus.textContent="Invalid verification code. Please check the code and try again.";
-return;
-}
-const student=snap.data();
-if(student.grade!==selectedGrade){
-lookupStatus.textContent="This code does not belong to "+selectedGrade+". Please select the correct grade.";
-return;
-}
+ await showTransition("VERIFYING CODE...");
 
-const fields=[
-["Admission Number",student.admission],
-["Full Name",student.fullName],
-["Date of Birth",student.dob],
-["Grade",student.grade]
-];
-if(student.grade==="Grade 12"||student.grade==="Grade 13"){
-fields.push(["A/L Subjects",student.al]);
-fields.push(["O/L Results",student.ol]);
-}
-fields.push(
-["Telephone Number",student.phone],
-["Sports Achievements",student.sports],
-["Extracurricular Activities",student.extra]
-);
+ const snap=await getDoc(doc(db,"studentLookups",code));
+ if(!snap.exists()){
+  lookupStatus.textContent="Invalid verification code. Please check the code and try again.";
+  return;
+ }
 
-resultGrid.replaceChildren();
-fields.forEach(([label,value],i)=>{
-const item=document.createElement("div");
-item.className="result-item";
-item.style.animationDelay=(i*.07)+"s";
-const strong=document.createElement("strong");
-strong.textContent=label;
-const span=document.createElement("span");
-span.textContent=value||"Not provided";
-item.append(strong,span);
-resultGrid.appendChild(item);
-});
+ const student=snap.data();
+ if(student.grade!==selectedGrade){
+  lookupStatus.textContent="This code does not belong to "+selectedGrade+". Please select the correct grade.";
+  return;
+ }
 
-const termItem=document.createElement("div");
-termItem.className="result-item";
-const termLabel=document.createElement("strong");
-termLabel.textContent="Term Test Marks";
-const termValue=document.createElement("span");
-termValue.className="term-status";
-termValue.textContent="Not Yet Started";
-termItem.append(termLabel,termValue);
-resultGrid.appendChild(termItem);
+ const fields=[
+  ["Admission Number",student.admission],
+  ["Full Name",student.fullName],
+  ["Date of Birth",student.dob],
+  ["Grade",student.grade]
+ ];
 
-viewPanel.style.display="none";
-studentResult.style.display="block";
-window.scrollTo({top:0,behavior:"smooth"});
+ if(student.grade==="Grade 12"||student.grade==="Grade 13"){
+  fields.push(["A/L Subjects",student.al]);
+  fields.push(["O/L Results",student.ol]);
+ }
+
+ fields.push(
+  ["Telephone Number",student.phone],
+  ["Sports Achievements",student.sports],
+  ["Extracurricular Activities",student.extra]
+ );
+
+ resultGrid.replaceChildren();
+
+ fields.forEach(([label,value],i)=>{
+  const item=document.createElement("div");
+  item.className="result-item";
+  item.style.animationDelay=(i*.07)+"s";
+  const strong=document.createElement("strong");
+  strong.textContent=label;
+  const span=document.createElement("span");
+  span.textContent=value||"Not provided";
+  item.append(strong,span);
+  resultGrid.appendChild(item);
+ });
+
+ const termItem=document.createElement("div");
+ termItem.className="result-item";
+ const termLabel=document.createElement("strong");
+ termLabel.textContent="Term Test Marks";
+ const termValue=document.createElement("span");
+ termValue.className="term-status";
+ termValue.textContent="Not Yet Started";
+ termItem.append(termLabel,termValue);
+ resultGrid.appendChild(termItem);
+
+ viewPanel.style.display="none";
+ studentResult.style.display="block";
+ window.scrollTo({top:0,behavior:"smooth"});
+
 }catch(error){
-console.error(error);
-lookupStatus.textContent="Could not load information: "+(error.code||error.message||"Unknown error");
+ console.error(error);
+ lookupStatus.textContent="Could not load information: "+(error.code||error.message||"Unknown error");
 }finally{
-$("lookupBtn").disabled=false;
+ $("lookupBtn").disabled=false;
 }
 });
 
@@ -571,14 +638,21 @@ $("copyCodeBtn").textContent="Select and copy the code above";
 
 form.addEventListener("submit",async event=>{
 event.preventDefault();
-if(!db){statusEl.textContent="SAVE FAILED: Firebase is not initialized.";return;}
+
+if(!db){
+statusEl.textContent="SAVE FAILED: Firebase is not initialized.";
+return;
+}
 if(!form.reportValidity())return;
 
 if(photoInput.files&&photoInput.files.length){
 statusEl.textContent="Photo upload is not configured yet. Remove the photo and submit again.";
 return;
 }
-if(!selectedGrade){statusEl.textContent="Please select a grade first.";return;}
+if(!selectedGrade){
+statusEl.textContent="Please select a grade first.";
+return;
+}
 
 const data={
 admission:$("admission").value.trim(),
@@ -590,6 +664,7 @@ if(!data.admission||!data.fullName){
 statusEl.textContent="Please enter Admission Number and Full Name.";
 return;
 }
+
 if(selectedGrade!=="Grade 12"&&selectedGrade!=="Grade 13"){
 data.al="";
 data.ol="";
@@ -602,6 +677,7 @@ try{
 const submittedAt=new Date().toISOString();
 const payload={...data,submittedAt};
 const verificationCode=generateVerificationCode();
+
 const lookupPayload={
 admission:data.admission,
 fullName:data.fullName,
@@ -618,6 +694,7 @@ submittedAt
 const batch=writeBatch(db);
 const studentRef=doc(collection(db,"students"));
 const lookupRef=doc(db,"studentLookups",verificationCode);
+
 batch.set(studentRef,payload);
 batch.set(lookupRef,lookupPayload);
 await batch.commit();
@@ -628,12 +705,15 @@ $("copyCodeBtn").textContent="COPY CODE";
 
 try{
 localStorage.setItem("vidyaraja_student_"+data.admission,JSON.stringify(data));
-}catch(e){console.warn(e);}
+}catch(e){
+console.warn(e);
+}
 
 formSection.style.display="none";
 successScreen.style.display="block";
 window.scrollTo({top:0,behavior:"smooth"});
 form.reset();
+
 }catch(error){
 console.error(error);
 statusEl.textContent="SAVE FAILED: "+(error.code||error.message||"Unknown error");
@@ -659,11 +739,12 @@ blurOverlay.style.display="flex";
 
 $("overlayHomeBtn").addEventListener("click",showHome);
 
-/* Initial portal state */
+/* INITIAL PORTAL STATE */
 $("alField").style.display="none";
 $("olField").style.display="none";
 homeSection.style.display="block";
 gradeSection.style.display="none";
 </script>
+
 </body>
 </html>
