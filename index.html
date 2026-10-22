@@ -11,26 +11,14 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{min-height:100vh;font-family:Arial,"Noto Sans Sinhala",sans-serif;color:#f5fff5;background:radial-gradient(ellipse at top,#17351c,#07100a 50%,#030604);padding:24px 14px;overflow-x:hidden}
-body.portal-locked{overflow:hidden}
-body.portal-locked main{visibility:hidden}
 main{position:relative;z-index:1;max-width:1000px;margin:auto}
-
 .bubbles span{position:fixed;bottom:-80px;width:22px;height:22px;border:1px solid var(--green);border-radius:50%;box-shadow:0 0 14px var(--green);animation:float 12s linear infinite;pointer-events:none;z-index:0}
-.bubbles span:nth-child(1){left:8%}
-.bubbles span:nth-child(2){left:28%;animation-duration:16s;width:34px;height:34px}
-.bubbles span:nth-child(3){left:53%;animation-duration:11s}
-.bubbles span:nth-child(4){left:76%;animation-duration:15s;width:28px;height:28px}
-.bubbles span:nth-child(5){left:91%;animation-duration:13s}
-
+.bubbles span:nth-child(1){left:8%}.bubbles span:nth-child(2){left:28%;animation-duration:16s;width:34px;height:34px}.bubbles span:nth-child(3){left:53%;animation-duration:11s}.bubbles span:nth-child(4){left:76%;animation-duration:15s;width:28px;height:28px}.bubbles span:nth-child(5){left:91%;animation-duration:13s}
 @keyframes float{0%{transform:translateY(0);opacity:0}20%{opacity:.7}100%{transform:translateY(-115vh);opacity:0}}
 @keyframes appear{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
 @keyframes slideUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
 @keyframes neonPulse{0%,100%{box-shadow:0 0 12px #39ff1430}50%{box-shadow:0 0 22px #39ff1470}}
 @keyframes iconFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes loaderGlow{0%,100%{box-shadow:0 0 18px #39ff1450}50%{box-shadow:0 0 38px #39ff14a0}}
-@keyframes loadingDots{0%,80%,100%{transform:scale(.55);opacity:.4}40%{transform:scale(1.15);opacity:1}}
-
 header,.card,.home-panel,.view-panel,.student-result{background:var(--panel);border:1px solid var(--green);border-radius:20px;box-shadow:0 0 22px #39ff1428}
 header{text-align:center;padding:26px 18px;margin-bottom:22px;animation:slideUp .7s ease,neonPulse 5s infinite}
 .logo,.success-logo,.loading-logo{width:110px;height:110px;object-fit:contain;border-radius:50%;background:#fff;border:2px solid var(--yellow);padding:4px;margin-bottom:15px;animation:iconFloat 4s infinite}
@@ -58,6 +46,7 @@ button:disabled{opacity:.6;cursor:wait;transform:none}
 .home-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:22px}
 .home-button{min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;background:#061009;border:1px solid var(--green);color:var(--green);border-radius:16px;padding:22px 14px;font-size:17px;line-height:1.5;animation:neonPulse 3s infinite}
 .home-button.view{border-color:var(--yellow);color:var(--yellow)}
+.home-button.marks{border-color:#72d7ff;color:#72d7ff}
 .symbol{font-size:34px;animation:iconFloat 2.5s infinite}
 .home-button small{font-size:12px}
 .status{font-size:14px;color:var(--green);margin-top:12px;line-height:1.7;overflow-wrap:anywhere}
@@ -73,125 +62,32 @@ button:disabled{opacity:.6;cursor:wait;transform:none}
 .success-screen p{color:#d7e8d9;font-size:14px;line-height:1.9;margin-bottom:20px}
 .loading-screen{display:none;text-align:center;padding:30px 12px}
 .loading-dots{display:flex;justify-content:center;gap:10px;margin:22px}
-.loading-dots span{width:12px;height:12px;border-radius:50%;background:var(--green);animation:loadingDots .8s infinite}
-.loading-dots span:nth-child(2){animation-delay:.15s}
-.loading-dots span:nth-child(3){animation-delay:.3s}
-
+.loading-dots span{width:12px;height:12px;border-radius:50%;background:var(--green);animation:iconFloat .8s infinite alternate}
 .blur-overlay{display:none;position:fixed;inset:0;z-index:1000;background:#0009;backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:20px}
 .blur-box{width:min(100%,460px);text-align:center;padding:35px 22px;border:2px solid var(--green);border-radius:24px;background:#030c06;box-shadow:0 0 35px #39ff1466}
-
-/* INTRO SCREEN */
-.intro-screen{
- position:fixed;inset:0;z-index:5000;
- display:flex;align-items:center;justify-content:center;
- padding:22px;
- background:radial-gradient(ellipse at top,#17351c,#07100a 55%,#020503);
- text-align:center;
-}
-.intro-content{
- width:min(100%,520px);padding:35px 24px;
- background:rgba(3,12,6,.94);
- border:2px solid var(--green);border-radius:25px;
- box-shadow:0 0 35px #39ff1455;
- animation:appear .6s ease,loaderGlow 3s infinite;
-}
-.intro-logo{
- width:125px;height:125px;object-fit:contain;
- background:#fff;border:3px solid var(--yellow);
- border-radius:50%;padding:5px;margin-bottom:20px;
- animation:iconFloat 3s infinite;
-}
-.intro-school{color:var(--yellow);font-size:clamp(21px,5vw,30px);line-height:1.5;margin-bottom:9px}
-.intro-subtitle{color:#b9d2bd;letter-spacing:2px;font-size:12px;line-height:1.8}
-.intro-spinner{width:34px;height:34px;margin:24px auto;border:3px solid #25492b;border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
-.progress-info{display:flex;justify-content:space-between;gap:10px;color:#d7e8d9;font-size:13px;margin-bottom:10px}
-#introPercent{color:var(--yellow);font-weight:bold}
-.progress-track{height:13px;width:100%;overflow:hidden;border:1px solid #426647;border-radius:30px;background:#102315}
-.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#168b13,var(--green),var(--yellow));border-radius:30px;box-shadow:0 0 15px #39ff1488;transition:width .05s linear}
-#introContinue{display:none;width:100%;margin-top:25px;padding:15px;background:var(--green);color:#031003;border:1px solid var(--yellow);border-radius:12px;font-weight:900;font-size:15px;letter-spacing:1px;animation:neonPulse 1.5s infinite}
-#introContinue.show{display:block}
-#introHint{color:#b9d2bd;font-size:12px;line-height:1.8;margin-top:15px}
-.intro-screen.finished .intro-spinner{display:none}
-
-/* NEW: BLUR + NEON LOADING TRANSITION */
-.transition-overlay{
- display:none;position:fixed;inset:0;z-index:9000;
- align-items:center;justify-content:center;padding:20px;
- background:rgba(0,0,0,.58);backdrop-filter:blur(12px);
- -webkit-backdrop-filter:blur(12px);
-}
-.transition-box{
- width:min(100%,420px);padding:34px 22px;text-align:center;
- border:2px solid var(--green);border-radius:23px;
- background:rgba(3,12,6,.97);
- box-shadow:0 0 35px #39ff1470;
- animation:appear .25s ease,loaderGlow 2s infinite;
-}
-.transition-logo{
- width:88px;height:88px;object-fit:contain;border-radius:50%;
- border:2px solid var(--yellow);background:white;padding:4px;
- margin-bottom:18px;animation:iconFloat 2s infinite;
-}
-.transition-spinner{
- width:48px;height:48px;margin:22px auto;
- border:4px solid #24442a;border-top-color:var(--green);
- border-right-color:var(--yellow);border-radius:50%;
- animation:spin .65s linear infinite;
-}
-.transition-title{color:var(--yellow);font-size:21px;margin-bottom:10px}
-.transition-message{color:#d7e8d9;font-size:13px;line-height:1.8}
-.transition-dots{display:flex;justify-content:center;gap:9px;margin-top:20px}
-.transition-dots span{width:9px;height:9px;background:var(--green);border-radius:50%;animation:loadingDots .8s infinite}
-.transition-dots span:nth-child(2){animation-delay:.15s}
-.transition-dots span:nth-child(3){animation-delay:.3s}
-
-@media(max-width:650px){
- .grid,.home-buttons,.result-grid{grid-template-columns:1fr}
- .field.full{grid-column:auto}
- .card,.home-panel,.view-panel,.student-result{padding:17px}
- .actions button{width:100%}
- .home-button{min-height:105px}
- header{padding:22px 14px}
- .intro-content{padding:28px 18px}
- .intro-logo{width:105px;height:105px}
-}
-@media(prefers-reduced-motion:reduce){
- *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-}
+footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20px 4px}
+@media(max-width:650px){.grid,.home-buttons,.result-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.card,.home-panel,.view-panel,.student-result{padding:17px}.actions button{width:100%}.home-button{min-height:105px}header{padding:22px 14px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
 
-<body class="portal-locked">
-
-<!-- INTRO LOADING SCREEN -->
-<section class="intro-screen" id="introScreen" aria-label="Website loading screen">
- <div class="intro-content">
-  <img class="intro-logo" src="school-logo.png" alt="School Logo" onerror="this.style.display='none'">
-  <h1 class="intro-school">R/VIDYARAJA VIDYALAYA</h1>
-  <p class="intro-subtitle">STUDENT INFORMATION PORTAL</p>
-  <div class="intro-spinner" id="introSpinner"></div>
-  <div class="progress-info">
-   <span id="introMessage">INITIALIZING PORTAL...</span>
-   <span id="introPercent">0%</span>
-  </div>
-  <div class="progress-track"><div class="progress-fill" id="introProgress"></div></div>
-  <button id="introContinue" type="button">CLICK TO CONTINUE →</button>
-  <p id="introHint">PLEASE WAIT WHILE WE PREPARE YOUR PORTAL</p>
- </div>
-</section>
-
-<!-- NEW: TRANSITION LOADING OVERLAY -->
-<div class="transition-overlay" id="transitionOverlay" aria-live="polite" aria-busy="true">
- <div class="transition-box">
-  <img class="transition-logo" src="school-logo.png" alt="School Logo" onerror="this.style.display='none'">
-  <h2 class="transition-title">R/VIDYARAJA VIDYALAYA</h2>
-  <div class="transition-spinner"></div>
-  <p class="transition-message" id="transitionMessage">PLEASE WAIT...</p>
-  <div class="transition-dots"><span></span><span></span><span></span></div>
- </div>
-</div>
-
+<body>
 <div class="bubbles"><span></span><span></span><span></span><span></span><span></span></div>
+
+
+<!-- BACKGROUND MUSIC PLAYER: Upload music.mp3 beside index.html on GitHub -->
+<audio id="backgroundMusic" loop preload="none">
+  <source src="music.mp3" type="audio/mpeg">
+  Your browser does not support audio playback.
+</audio>
+
+<button id="musicToggle" type="button" aria-label="Play background music"
+style="position:fixed;right:16px;bottom:16px;z-index:2000;
+background:#39ff14;color:#041004;border:1px solid #eaff00;
+border-radius:999px;padding:13px 17px;font-weight:bold;
+box-shadow:0 0 18px #39ff1470;cursor:pointer;">
+🎵 Play Music
+</button>
 
 <main>
 <header>
@@ -231,6 +127,7 @@ button:disabled{opacity:.6;cursor:wait;transform:none}
 <div class="home-buttons">
 <button class="home-button" id="fillInfoBtn" type="button"><span class="symbol">✎</span><span>FILL INFORMATION</span><small>ශිෂ්‍ය තොරතුරු ඇතුළත් කරන්න</small></button>
 <button class="home-button view" id="viewInfoBtn" type="button"><span class="symbol">⌕</span><span>VIEW INFORMATION</span><small>ඇතුළත් කළ තොරතුරු බලන්න</small></button>
+<button class="home-button marks" id="viewMarksBtn" type="button"><span class="symbol">▤</span><span>VIEW MARKS</span><small>Term Test ප්‍රතිඵල බලන්න</small></button>
 </div>
 </section>
 
@@ -254,6 +151,27 @@ button:disabled{opacity:.6;cursor:wait;transform:none}
 </div>
 </section>
 
+<section class="view-panel" id="marksSection">
+<h2 class="section-title">VIEW TERM TEST MARKS / වාර විභාග ලකුණු</h2>
+<p class="notice">Enter the Admission / Index Number given by your school.</p>
+<label for="marksAdmission" style="display:block;color:var(--green);margin:14px 0 10px">ADMISSION / INDEX NUMBER</label>
+<input id="marksAdmission" maxlength="80" autocomplete="off" placeholder="Enter your Admission Number">
+<p class="status" id="marksLookupStatus" role="status" aria-live="polite"></p>
+<div class="actions">
+<button class="primary" id="lookupMarksBtn" type="button">VIEW MY MARKS</button>
+<button class="secondary" id="marksBackBtn" type="button">BACK / ආපසු</button>
+</div>
+<p class="notice">Privacy note: using only an admission number does not securely verify a student's identity.</p>
+</section>
+
+<section class="student-result" id="marksResult">
+<h2 class="section-title">TERM TEST RESULTS</h2>
+<p class="notice" id="marksStudentInfo"></p>
+<div class="tablewrap" style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:260px"><thead><tr><th style="text-align:left;padding:11px;color:var(--yellow)">Subject</th><th style="text-align:right;padding:11px;color:var(--yellow)">Marks</th></tr></thead><tbody id="marksRows"></tbody><tfoot id="marksSummary"></tfoot></table></div>
+<p class="notice" id="marksExamTitle"></p>
+<div class="actions"><button class="secondary" id="marksResultBackBtn" type="button">BACK / ආපසු</button></div>
+</section>
+
 <section class="student-result" id="studentResult">
 <h2 class="section-title">MY STUDENT INFORMATION</h2>
 <div class="result-grid" id="resultGrid"></div>
@@ -273,12 +191,22 @@ button:disabled{opacity:.6;cursor:wait;transform:none}
 <div class="field"><label for="email">විද්‍යුත් තැපෑල<span>Email Address</span></label><input id="email" type="email" maxlength="150" placeholder="name@example.com"></div>
 <div class="field"><label for="gradeDisplay">ශ්‍රේණිය / පන්තිය<span>Selected Grade</span></label><input id="gradeDisplay" readonly></div>
 <div class="field full"><label for="address">ලිපිනය<span>Home Address</span></label><textarea id="address" maxlength="1000" placeholder="Enter home address"></textarea></div>
-<div class="field full" id="alField"><label for="al">උසස් පෙළ විෂයන්<span>A/L Subjects</span></label><textarea id="al" maxlength="2000" placeholder="Enter A/L subjects"></textarea></div>
-<div class="field full" id="olField"><label for="ol">සාමාන්‍ය පෙළ ප්‍රතිඵල<span>O/L Results</span></label><textarea id="ol" maxlength="2000" placeholder="Enter O/L results"></textarea></div>
+
+<div class="field full" id="alField">
+<label for="al">උසස් පෙළ විෂයන්<span>A/L Subjects</span></label>
+<textarea id="al" maxlength="2000" placeholder="Enter A/L subjects"></textarea>
+</div>
+
+<div class="field full" id="olField">
+<label for="ol">සාමාන්‍ය පෙළ ප්‍රතිඵල<span>O/L Results</span></label>
+<textarea id="ol" maxlength="2000" placeholder="Enter O/L results"></textarea>
+</div>
+
 <div class="field full"><label for="sports">ක්‍රීඩා දක්ෂතා<span>Sports Achievements</span></label><textarea id="sports" maxlength="2000" placeholder="Enter sports and achievements"></textarea></div>
 <div class="field full"><label for="extra">විෂය සමගාමී ක්‍රියාකාරකම්<span>Extracurricular Activities</span></label><textarea id="extra" maxlength="2000" placeholder="Clubs, societies and other activities"></textarea></div>
 <div class="field full"><label for="photo">ශිෂ්‍ය ඡායාරූපය<span>Student Photo (Optional)</span></label><input id="photo" type="file" accept="image/*"><p class="notice">Photo upload is not enabled yet. Leave this empty when submitting.</p></div>
 </div>
+
 <div class="actions">
 <button class="primary" id="saveBtn" type="submit">SAVE DETAILS / විස්තර සුරකින්න</button>
 <button class="secondary" type="reset">CLEAR FORM / හිස් කරන්න</button>
@@ -315,60 +243,6 @@ button:disabled{opacity:.6;cursor:wait;transform:none}
 </div>
 </div>
 
-<!-- INTRO LOADING: 5 SECONDS -->
-<script>
-(function(){
- const screen=document.getElementById("introScreen");
- const progress=document.getElementById("introProgress");
- const percent=document.getElementById("introPercent");
- const message=document.getElementById("introMessage");
- const button=document.getElementById("introContinue");
- const hint=document.getElementById("introHint");
- const spinner=document.getElementById("introSpinner");
- const transition=document.getElementById("transitionOverlay");
- const transitionMessage=document.getElementById("transitionMessage");
-
- let elapsed=0;
- const total=5000;
- const interval=50;
-
- const timer=setInterval(function(){
-  elapsed+=interval;
-  const value=Math.min(100,Math.floor((elapsed/total)*100));
-  progress.style.width=value+"%";
-  percent.textContent=value+"%";
-
-  if(value<35){
-   message.textContent="INITIALIZING PORTAL...";
-  }else if(value<70){
-   message.textContent="PREPARING STUDENT PORTAL...";
-  }else if(value<100){
-   message.textContent="ALMOST READY...";
-  }else{
-   clearInterval(timer);
-   message.textContent="PORTAL READY!";
-   screen.classList.add("finished");
-   spinner.style.display="none";
-   button.classList.add("show");
-   hint.textContent="CLICK THE BUTTON BELOW TO ENTER THE STUDENT PORTAL";
-  }
- },interval);
-
- button.addEventListener("click",async function(){
-  if(button.disabled)return;
-  button.disabled=true;
-  transitionMessage.textContent="OPENING STUDENT PORTAL...";
-  transition.style.display="flex";
-  await new Promise(resolve=>setTimeout(resolve,2000));
-  screen.style.display="none";
-  transition.style.display="none";
-  document.body.classList.remove("portal-locked");
-  window.scrollTo({top:0,behavior:"instant"});
-  button.disabled=false;
- });
-})();
-</script>
-
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import {getFirestore,collection,getDoc,doc,writeBatch} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
@@ -392,6 +266,9 @@ const viewPanel=$("viewPanel");
 const loadingScreen=$("loadingScreen");
 const admissionLookup=$("admissionLookup");
 const studentResult=$("studentResult");
+const marksSection=$("marksSection");
+const marksResult=$("marksResult");
+const marksLookupStatus=$("marksLookupStatus");
 const resultGrid=$("resultGrid");
 const successScreen=$("successScreen");
 const blurOverlay=$("blurOverlay");
@@ -399,28 +276,11 @@ const photoInput=$("photo");
 const saveBtn=$("saveBtn");
 const statusEl=$("status");
 const lookupStatus=$("lookupStatus");
-const transitionOverlay=$("transitionOverlay");
-const transitionMessage=$("transitionMessage");
 
 let db=null;
 let latestVerificationCode="";
 let selectedGrade="";
 let nextAction="";
-let transitionBusy=false;
-
-/* NEW: TWO-SECOND BLUR LOADING */
-async function showTransition(message="PLEASE WAIT...",duration=2000){
- if(transitionBusy)return;
- transitionBusy=true;
- transitionMessage.textContent=message;
- transitionOverlay.style.display="flex";
- try{
-  await new Promise(resolve=>setTimeout(resolve,duration));
- }finally{
-  transitionOverlay.style.display="none";
-  transitionBusy=false;
- }
-}
 
 try{
 const app=initializeApp(firebaseConfig);
@@ -431,11 +291,19 @@ console.error(error);
 statusEl.textContent="Firebase initialization failed. Reload the website.";
 }
 
+/* Grade-specific fields */
 function updateGradeFields(){
-const showResults=selectedGrade==="Grade 12"||selectedGrade==="Grade 13";
+const showResults=
+selectedGrade==="Grade 12" ||
+selectedGrade==="Grade 13";
+
 $("alField").style.display=showResults?"flex":"none";
 $("olField").style.display=showResults?"flex":"none";
-if(!showResults){$("al").value="";$("ol").value="";}
+
+if(!showResults){
+$("al").value="";
+$("ol").value="";
+}
 }
 
 function showHome(){
@@ -444,6 +312,8 @@ homeSection.style.display="block";
 formSection.style.display="none";
 viewPanel.style.display="none";
 studentResult.style.display="none";
+marksSection.style.display="none";
+marksResult.style.display="none";
 successScreen.style.display="none";
 blurOverlay.style.display="none";
 loadingScreen.style.display="none";
@@ -461,60 +331,91 @@ homeSection.style.display="none";
 formSection.style.display="none";
 viewPanel.style.display="none";
 studentResult.style.display="none";
+marksSection.style.display="none";
+marksResult.style.display="none";
 successScreen.style.display="none";
 gradeSection.style.display="block";
 window.scrollTo({top:0,behavior:"smooth"});
 }
 
-/* FILL INFORMATION: BLUR LOADING THEN OPEN GRADE SELECTOR */
-$("fillInfoBtn").addEventListener("click",async()=>{
- await showTransition("OPENING FILL INFORMATION...");
- openGrade("fill");
+$("fillInfoBtn").addEventListener("click",()=>openGrade("fill"));
+$("viewInfoBtn").addEventListener("click",()=>openGrade("view"));
+$("viewMarksBtn").addEventListener("click",()=>{
+  homeSection.style.display="none"; gradeSection.style.display="none"; formSection.style.display="none";
+  viewPanel.style.display="none"; studentResult.style.display="none"; marksResult.style.display="none";
+  marksSection.style.display="block"; marksLookupStatus.textContent=""; $("marksAdmission").value="";
+  window.scrollTo({top:0,behavior:"smooth"}); $("marksAdmission").focus();
 });
+$("marksBackBtn").addEventListener("click",showHome);
+$("marksResultBackBtn").addEventListener("click",()=>{marksResult.style.display="none";marksSection.style.display="block";});
 
-/* VIEW INFORMATION: BLUR LOADING THEN OPEN GRADE SELECTOR */
-$("viewInfoBtn").addEventListener("click",async()=>{
- await showTransition("OPENING VIEW INFORMATION...");
- openGrade("view");
+$("lookupMarksBtn").addEventListener("click",async()=>{
+  const admission=$("marksAdmission").value.trim();
+  if(!admission){marksLookupStatus.textContent="Please enter your Admission / Index Number.";return;}
+  if(!db){marksLookupStatus.textContent="Firebase is not initialized. Reload and try again.";return;}
+  const btn=$("lookupMarksBtn"); btn.disabled=true; marksLookupStatus.textContent="Loading marks...";
+  try{
+    const marksSnap=await getDoc(doc(db,"termMarks",encodeURIComponent(admission)));
+    if(!marksSnap.exists()){marksLookupStatus.textContent="No marks have been published for this Admission Number yet.";return;}
+    const data=marksSnap.data();
+    if(String(data.admission||"").trim()!==admission){marksLookupStatus.textContent="No marks found for this Admission Number.";return;}
+    $("marksStudentInfo").textContent=(data.fullName||"Student")+" • Admission / Index No: "+admission;
+    $("marksExamTitle").textContent="Exam: "+(data.examTitle||"Term Test");
+    const subjects=Array.isArray(data.subjects)?data.subjects:[];
+    const rows=$("marksRows"); rows.replaceChildren(); let total=0,count=0;
+    subjects.forEach(item=>{
+      if(!item || !String(item.subject||"").trim() || item.mark==="" || item.mark===null || item.mark===undefined)return;
+      const mark=Number(item.mark); if(!Number.isFinite(mark))return;
+      total+=mark;count++;
+      const tr=document.createElement("tr"); const name=document.createElement("td"); const val=document.createElement("td");
+      name.style.cssText="padding:11px;border-bottom:1px solid #29472d"; val.style.cssText="padding:11px;text-align:right;border-bottom:1px solid #29472d";
+      name.textContent=item.subject;val.textContent=String(mark);tr.append(name,val);rows.appendChild(tr);
+    });
+    if(!count){marksLookupStatus.textContent="Marks have not been entered yet.";return;}
+    const avg=(total/count).toFixed(2); $("marksSummary").innerHTML="";
+    const tr=document.createElement("tr");
+    tr.innerHTML='<th style="padding:11px;text-align:left;color:var(--green)">Total</th><th style="padding:11px;text-align:right;color:var(--green)"></th>';
+    tr.lastElementChild.textContent=String(total); $("marksSummary").appendChild(tr);
+    const tr2=document.createElement("tr");
+    tr2.innerHTML='<th style="padding:11px;text-align:left;color:var(--yellow)">Average</th><th style="padding:11px;text-align:right;color:var(--yellow)"></th>';
+    tr2.lastElementChild.textContent=avg; $("marksSummary").appendChild(tr2);
+    marksLookupStatus.textContent=""; marksSection.style.display="none"; marksResult.style.display="block";
+    window.scrollTo({top:0,behavior:"smooth"});
+  }catch(error){console.error(error);marksLookupStatus.textContent="Could not load marks: "+(error.code||error.message||"Unknown error")+". Firestore Rules may need updating.";}
+  finally{btn.disabled=false;}
 });
-
 $("gradeBackBtn").addEventListener("click",showHome);
 
-/* GRADE CONTINUE: BLUR LOADING THEN OPEN SELECTED PAGE */
 $("continueGradeBtn").addEventListener("click",async()=>{
- selectedGrade=$("selectedGrade").value;
- if(!selectedGrade){
-  $("gradeStatus").textContent="Please select your grade first.";
-  return;
- }
+selectedGrade=$("selectedGrade").value;
 
- $("gradeDisplay").value=selectedGrade;
- updateGradeFields();
+if(!selectedGrade){
+$("gradeStatus").textContent="Please select your grade first.";
+return;
+}
 
- $("continueGradeBtn").disabled=true;
- try{
-  if(nextAction==="fill"){
-   await showTransition("PREPARING STUDENT FORM...");
-   gradeSection.style.display="none";
-   formSection.style.display="block";
-   formSection.style.animation="none";
-   void formSection.offsetWidth;
-   formSection.style.animation="";
-   window.scrollTo({top:0,behavior:"smooth"});
-  }else{
-   await showTransition("PREPARING STUDENT INFORMATION...");
-   gradeSection.style.display="none";
-   viewPanel.style.display="block";
-   $("viewGradeLabel").textContent="Selected Grade: "+selectedGrade;
-   admissionLookup.style.display="block";
-   loadingScreen.style.display="none";
-   lookupStatus.textContent="";
-   window.scrollTo({top:0,behavior:"smooth"});
-   $("lookupAdmission").focus();
-  }
- }finally{
-  $("continueGradeBtn").disabled=false;
- }
+$("gradeDisplay").value=selectedGrade;
+updateGradeFields();
+gradeSection.style.display="none";
+
+if(nextAction==="fill"){
+formSection.style.display="block";
+formSection.style.animation="none";
+void formSection.offsetWidth;
+formSection.style.animation="";
+window.scrollTo({top:0,behavior:"smooth"});
+}else{
+viewPanel.style.display="block";
+$("viewGradeLabel").textContent="Selected Grade: "+selectedGrade;
+admissionLookup.style.display="none";
+loadingScreen.style.display="block";
+lookupStatus.textContent="";
+window.scrollTo({top:0,behavior:"smooth"});
+await new Promise(resolve=>setTimeout(resolve,1200));
+loadingScreen.style.display="none";
+admissionLookup.style.display="block";
+$("lookupAdmission").focus();
+}
 });
 
 $("backHomeBtn").addEventListener("click",showHome);
@@ -528,7 +429,6 @@ $("lookupAdmission").value="";
 lookupStatus.textContent="";
 });
 
-/* VIEW MY INFORMATION: BLUR LOADING THEN VERIFY CODE */
 $("lookupBtn").addEventListener("click",async()=>{
 const code=$("lookupAdmission").value.trim().toUpperCase();
 
@@ -536,6 +436,7 @@ if(!code){
 lookupStatus.textContent="Please enter your Verification Code.";
 return;
 }
+
 if(!db){
 lookupStatus.textContent="Firebase is not initialized. Reload and try again.";
 return;
@@ -545,71 +446,77 @@ $("lookupBtn").disabled=true;
 lookupStatus.textContent="Verifying code... Please wait.";
 
 try{
- await showTransition("VERIFYING CODE...");
+const snap=await getDoc(doc(db,"studentLookups",code));
 
- const snap=await getDoc(doc(db,"studentLookups",code));
- if(!snap.exists()){
-  lookupStatus.textContent="Invalid verification code. Please check the code and try again.";
-  return;
- }
+if(!snap.exists()){
+lookupStatus.textContent="Invalid verification code. Please check the code and try again.";
+return;
+}
 
- const student=snap.data();
- if(student.grade!==selectedGrade){
-  lookupStatus.textContent="This code does not belong to "+selectedGrade+". Please select the correct grade.";
-  return;
- }
+const student=snap.data();
 
- const fields=[
-  ["Admission Number",student.admission],
-  ["Full Name",student.fullName],
-  ["Date of Birth",student.dob],
-  ["Grade",student.grade]
- ];
+if(student.grade!==selectedGrade){
+lookupStatus.textContent="This code does not belong to "+selectedGrade+". Please select the correct grade.";
+return;
+}
 
- if(student.grade==="Grade 12"||student.grade==="Grade 13"){
-  fields.push(["A/L Subjects",student.al]);
-  fields.push(["O/L Results",student.ol]);
- }
+const fields=[
+["Admission Number",student.admission],
+["Full Name",student.fullName],
+["Date of Birth",student.dob],
+["Grade",student.grade]
+];
 
- fields.push(
-  ["Telephone Number",student.phone],
-  ["Sports Achievements",student.sports],
-  ["Extracurricular Activities",student.extra]
- );
+if(student.grade==="Grade 12"||student.grade==="Grade 13"){
+fields.push(["A/L Subjects",student.al]);
+fields.push(["O/L Results",student.ol]);
+}
 
- resultGrid.replaceChildren();
+fields.push(
+["Telephone Number",student.phone],
+["Sports Achievements",student.sports],
+["Extracurricular Activities",student.extra]
+);
 
- fields.forEach(([label,value],i)=>{
-  const item=document.createElement("div");
-  item.className="result-item";
-  item.style.animationDelay=(i*.07)+"s";
-  const strong=document.createElement("strong");
-  strong.textContent=label;
-  const span=document.createElement("span");
-  span.textContent=value||"Not provided";
-  item.append(strong,span);
-  resultGrid.appendChild(item);
- });
+resultGrid.replaceChildren();
 
- const termItem=document.createElement("div");
- termItem.className="result-item";
- const termLabel=document.createElement("strong");
- termLabel.textContent="Term Test Marks";
- const termValue=document.createElement("span");
- termValue.className="term-status";
- termValue.textContent="Not Yet Started";
- termItem.append(termLabel,termValue);
- resultGrid.appendChild(termItem);
+fields.forEach(([label,value],i)=>{
+const item=document.createElement("div");
+item.className="result-item";
+item.style.animationDelay=(i*.07)+"s";
 
- viewPanel.style.display="none";
- studentResult.style.display="block";
- window.scrollTo({top:0,behavior:"smooth"});
+const strong=document.createElement("strong");
+strong.textContent=label;
+
+const span=document.createElement("span");
+span.textContent=value||"Not provided";
+
+item.append(strong,span);
+resultGrid.appendChild(item);
+});
+
+const termItem=document.createElement("div");
+termItem.className="result-item";
+
+const termLabel=document.createElement("strong");
+termLabel.textContent="Term Test Marks";
+
+const termValue=document.createElement("span");
+termValue.className="term-status";
+termValue.textContent="Not Yet Started";
+
+termItem.append(termLabel,termValue);
+resultGrid.appendChild(termItem);
+
+viewPanel.style.display="none";
+studentResult.style.display="block";
+window.scrollTo({top:0,behavior:"smooth"});
 
 }catch(error){
- console.error(error);
- lookupStatus.textContent="Could not load information: "+(error.code||error.message||"Unknown error");
+console.error(error);
+lookupStatus.textContent="Could not load information: "+(error.code||error.message||"Unknown error");
 }finally{
- $("lookupBtn").disabled=false;
+$("lookupBtn").disabled=false;
 }
 });
 
@@ -628,6 +535,7 @@ return "VR-"+chars.slice(0,4).join("")+"-"+chars.slice(4,8).join("")+"-"+chars.s
 
 $("copyCodeBtn").addEventListener("click",async()=>{
 if(!latestVerificationCode)return;
+
 try{
 await navigator.clipboard.writeText(latestVerificationCode);
 $("copyCodeBtn").textContent="COPIED!";
@@ -643,12 +551,14 @@ if(!db){
 statusEl.textContent="SAVE FAILED: Firebase is not initialized.";
 return;
 }
+
 if(!form.reportValidity())return;
 
 if(photoInput.files&&photoInput.files.length){
 statusEl.textContent="Photo upload is not configured yet. Remove the photo and submit again.";
 return;
 }
+
 if(!selectedGrade){
 statusEl.textContent="Please select a grade first.";
 return;
@@ -658,6 +568,7 @@ const data={
 admission:$("admission").value.trim(),
 grade:selectedGrade
 };
+
 fieldIds.forEach(id=>data[id]=$(id).value.trim());
 
 if(!data.admission||!data.fullName){
@@ -665,6 +576,7 @@ statusEl.textContent="Please enter Admission Number and Full Name.";
 return;
 }
 
+/* Never save A/L and O/L values for Grades 6–11 */
 if(selectedGrade!=="Grade 12"&&selectedGrade!=="Grade 13"){
 data.al="";
 data.ol="";
@@ -697,6 +609,7 @@ const lookupRef=doc(db,"studentLookups",verificationCode);
 
 batch.set(studentRef,payload);
 batch.set(lookupRef,lookupPayload);
+
 await batch.commit();
 
 latestVerificationCode=verificationCode;
@@ -739,12 +652,33 @@ blurOverlay.style.display="flex";
 
 $("overlayHomeBtn").addEventListener("click",showHome);
 
-/* INITIAL PORTAL STATE */
+/* Initial state */
 $("alField").style.display="none";
 $("olField").style.display="none";
 homeSection.style.display="block";
 gradeSection.style.display="none";
-</script>
 
+// BACKGROUND MUSIC PLAYER CONTROLS
+const backgroundMusic = document.getElementById("backgroundMusic");
+const musicToggle = document.getElementById("musicToggle");
+
+musicToggle.addEventListener("click", async () => {
+  if (backgroundMusic.paused) {
+    try {
+      await backgroundMusic.play();
+      musicToggle.textContent = "⏸ Pause Music";
+      musicToggle.setAttribute("aria-label", "Pause background music");
+    } catch (error) {
+      console.error("Music could not be played:", error);
+      musicToggle.textContent = "🎵 Tap to Play";
+    }
+  } else {
+    backgroundMusic.pause();
+    musicToggle.textContent = "🎵 Play Music";
+    musicToggle.setAttribute("aria-label", "Play background music");
+  }
+});
+
+</script>
 </body>
 </html>
