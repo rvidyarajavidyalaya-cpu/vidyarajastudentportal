@@ -353,36 +353,77 @@ $("lookupMarksBtn").addEventListener("click",async()=>{
   const admission=$("marksAdmission").value.trim();
   if(!admission){marksLookupStatus.textContent="Please enter your Admission / Index Number.";return;}
   if(!db){marksLookupStatus.textContent="Firebase is not initialized. Reload and try again.";return;}
-  const btn=$("lookupMarksBtn"); btn.disabled=true; marksLookupStatus.textContent="Loading marks...";
+  const btn=$("lookupMarksBtn");
+  btn.disabled=true;
+  marksLookupStatus.textContent="Loading marks...";
+  $("marksRows").replaceChildren();
+  $("marksSummary").replaceChildren();
   try{
+    // Uses the same termMarks document path as the Admin Dashboard.
     const marksSnap=await getDoc(doc(db,"termMarks",encodeURIComponent(admission)));
-    if(!marksSnap.exists()){marksLookupStatus.textContent="No marks have been published for this Admission Number yet.";return;}
+    if(!marksSnap.exists()){
+      marksLookupStatus.textContent="Marks Not Released Yet / තවම ලකුණු නිකුත් කර නැත.";
+      return;
+    }
     const data=marksSnap.data();
-    if(String(data.admission||"").trim()!==admission){marksLookupStatus.textContent="No marks found for this Admission Number.";return;}
-    $("marksStudentInfo").textContent=(data.fullName||"Student")+" • Admission / Index No: "+admission;
+    if(String(data.admission||"").trim()!==admission){
+      marksLookupStatus.textContent="No marks found for this Admission / Index Number.";
+      return;
+    }
+    $("marksStudentInfo").textContent=(data.fullName||"Student")+" • Grade: "+(data.grade||"Not provided")+" • Index No: "+admission;
     $("marksExamTitle").textContent="Exam: "+(data.examTitle||"Term Test");
     const subjects=Array.isArray(data.subjects)?data.subjects:[];
-    const rows=$("marksRows"); rows.replaceChildren(); let total=0,count=0;
+    const rows=$("marksRows");
+    let total=0,count=0;
     subjects.forEach(item=>{
       if(!item || !String(item.subject||"").trim() || item.mark==="" || item.mark===null || item.mark===undefined)return;
-      const mark=Number(item.mark); if(!Number.isFinite(mark))return;
-      total+=mark;count++;
-      const tr=document.createElement("tr"); const name=document.createElement("td"); const val=document.createElement("td");
-      name.style.cssText="padding:11px;border-bottom:1px solid #29472d"; val.style.cssText="padding:11px;text-align:right;border-bottom:1px solid #29472d";
-      name.textContent=item.subject;val.textContent=String(mark);tr.append(name,val);rows.appendChild(tr);
+      const mark=Number(item.mark);
+      if(!Number.isFinite(mark))return;
+      total+=mark;
+      count++;
+      const tr=document.createElement("tr");
+      const name=document.createElement("td");
+      const val=document.createElement("td");
+      name.style.cssText="padding:11px;border-bottom:1px solid #29472d";
+      val.style.cssText="padding:11px;text-align:right;border-bottom:1px solid #29472d";
+      name.textContent=item.subject;
+      val.textContent=String(mark);
+      tr.append(name,val);
+      rows.appendChild(tr);
     });
-    if(!count){marksLookupStatus.textContent="Marks have not been entered yet.";return;}
-    const avg=(total/count).toFixed(2); $("marksSummary").innerHTML="";
-    const tr=document.createElement("tr");
-    tr.innerHTML='<th style="padding:11px;text-align:left;color:var(--green)">Total</th><th style="padding:11px;text-align:right;color:var(--green)"></th>';
-    tr.lastElementChild.textContent=String(total); $("marksSummary").appendChild(tr);
-    const tr2=document.createElement("tr");
-    tr2.innerHTML='<th style="padding:11px;text-align:left;color:var(--yellow)">Average</th><th style="padding:11px;text-align:right;color:var(--yellow)"></th>';
-    tr2.lastElementChild.textContent=avg; $("marksSummary").appendChild(tr2);
-    marksLookupStatus.textContent=""; marksSection.style.display="none"; marksResult.style.display="block";
+    if(!count){
+      marksLookupStatus.textContent="Marks Not Released Yet / තවම ලකුණු නිකුත් කර නැත.";
+      return;
+    }
+    const avg=(total/count).toFixed(2);
+    const totalRow=document.createElement("tr");
+    const totalLabel=document.createElement("th");
+    const totalValue=document.createElement("th");
+    totalLabel.style.cssText="padding:11px;text-align:left;color:var(--green)";
+    totalValue.style.cssText="padding:11px;text-align:right;color:var(--green)";
+    totalLabel.textContent="Total";
+    totalValue.textContent=String(total);
+    totalRow.append(totalLabel,totalValue);
+    $("marksSummary").appendChild(totalRow);
+    const averageRow=document.createElement("tr");
+    const averageLabel=document.createElement("th");
+    const averageValue=document.createElement("th");
+    averageLabel.style.cssText="padding:11px;text-align:left;color:var(--yellow)";
+    averageValue.style.cssText="padding:11px;text-align:right;color:var(--yellow)";
+    averageLabel.textContent="Average";
+    averageValue.textContent=avg;
+    averageRow.append(averageLabel,averageValue);
+    $("marksSummary").appendChild(averageRow);
+    marksLookupStatus.textContent="";
+    marksSection.style.display="none";
+    marksResult.style.display="block";
     window.scrollTo({top:0,behavior:"smooth"});
-  }catch(error){console.error(error);marksLookupStatus.textContent="Could not load marks: "+(error.code||error.message||"Unknown error")+". Firestore Rules may need updating.";}
-  finally{btn.disabled=false;}
+  }catch(error){
+    console.error(error);
+    marksLookupStatus.textContent="Could not load marks: "+(error.code||error.message||"Unknown error")+". Firestore Rules may need updating.";
+  }finally{
+    btn.disabled=false;
+  }
 });
 $("gradeBackBtn").addEventListener("click",showHome);
 
