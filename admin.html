@@ -4,114 +4,295 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>R/VIDYARAJA VIDYALAYA | Admin Dashboard</title>
+
 <style>
-:root{--green:#39ff14;--yellow:#eaff00;--bg:#050a06;--panel:#0b160d;--muted:#b7c9ba;--red:#ff5757}
-*{box-sizing:border-box;margin:0;padding:0}body{min-height:100vh;background:radial-gradient(ellipse at top,#17351c,#07100a 50%,#030604);color:#f5fff5;font-family:Arial,"Noto Sans Sinhala",sans-serif;padding:22px 14px}main{max-width:1150px;margin:auto}header,.panel{background:rgba(7,19,10,.97);border:1px solid var(--green);border-radius:18px;box-shadow:0 0 22px #39ff1428;padding:22px;margin-bottom:20px}header{text-align:center}h1{color:var(--yellow);font-size:clamp(22px,4vw,32px)}h2{color:var(--yellow);font-size:20px;margin-bottom:16px}.sub{color:var(--muted);font-size:13px;margin-top:8px}.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}label{display:block;color:var(--green);font-size:13px;margin:0 0 6px}input{width:100%;padding:12px;border-radius:9px;border:1px solid #426647;background:#07100a;color:#fff;outline:none}input:focus{border-color:var(--green);box-shadow:0 0 10px #39ff1433}button{border:0;border-radius:9px;padding:11px 16px;font-weight:700;cursor:pointer;margin:6px 6px 0 0}.primary{background:var(--green);color:#031003}.secondary{background:#18251a;color:#fff;border:1px solid #58745b}.danger{background:#471414;color:#fff;border:1px solid var(--red)}button:disabled{opacity:.5;cursor:wait}.status{margin-top:12px;line-height:1.6;color:var(--muted);overflow-wrap:anywhere}.hidden{display:none!important}.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}.toolbar input{flex:1;min-width:220px}.tablewrap{overflow:auto;border:1px solid #29472d;border-radius:10px}table{border-collapse:collapse;width:100%;min-width:750px}th,td{padding:11px;text-align:left;border-bottom:1px solid #243b27;font-size:13px;vertical-align:top}th{background:#102315;color:var(--yellow)}tr:hover td{background:#0e1b10}.small{font-size:12px;color:var(--muted)}.detailgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}.detail{border:1px solid #29472d;border-radius:9px;padding:12px;background:#08120a;overflow-wrap:anywhere}.detail strong{display:block;color:var(--green);font-size:12px;margin-bottom:6px}.detail span{white-space:pre-wrap}.topline{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.pill{display:inline-block;border:1px solid #406444;border-radius:20px;padding:5px 9px;color:var(--green);font-size:12px}.markgrid{display:grid;grid-template-columns:2fr 1fr;gap:8px;margin:8px 0}.markgrid input{min-width:0}.markhead{color:var(--green);font-size:13px;margin:16px 0 6px}.wide{width:100%}
+:root {
+ --green:#39ff14;
+ --yellow:#eaff00;
+ --bg:#050a06;
+ --panel:#0b160d;
+ --muted:#b7c9ba;
+ --red:#ff5757;
+}
+* {box-sizing:border-box;margin:0;padding:0}
+body {
+ min-height:100vh;
+ background:radial-gradient(ellipse at top,#17351c,#07100a 50%,#030604);
+ color:#f5fff5;
+ font-family:Arial,"Noto Sans Sinhala",sans-serif;
+ padding:22px 14px;
+}
+main {max-width:1150px;margin:auto}
+header,.panel {
+ background:rgba(7,19,10,.97);
+ border:1px solid var(--green);
+ border-radius:18px;
+ box-shadow:0 0 22px #39ff1428;
+ padding:22px;
+ margin-bottom:20px;
+}
+header{text-align:center}
+h1 {color:var(--yellow);font-size:clamp(22px,4vw,32px)}
+h2 {color:var(--yellow);font-size:20px;margin-bottom:16px}
+.sub {color:var(--muted);font-size:13px;margin-top:8px}
+.formgrid {
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+ gap:12px;
+}
+label {
+ display:block;color:var(--green);
+ font-size:13px;margin:0 0 6px;
+}
+input {
+ width:100%;padding:12px;border-radius:9px;
+ border:1px solid #426647;background:#07100a;
+ color:#fff;outline:none;
+}
+input:focus {border-color:var(--green);box-shadow:0 0 10px #39ff1433}
+button {
+ border:0;border-radius:9px;padding:11px 16px;
+ font-weight:700;cursor:pointer;margin:6px 6px 0 0;
+}
+.primary {background:var(--green);color:#031003}
+.secondary {background:#18251a;color:#fff;border:1px solid #58745b}
+.danger {background:#471414;color:#fff;border:1px solid var(--red)}
+button:disabled {opacity:.5;cursor:wait}
+.status {
+ margin-top:12px;line-height:1.6;
+ color:var(--muted);overflow-wrap:anywhere;
+}
+.hidden {display:none!important}
+.toolbar {
+ display:flex;gap:10px;flex-wrap:wrap;
+ align-items:center;margin-bottom:14px;
+}
+.toolbar input {flex:1;min-width:220px}
+.tablewrap {overflow:auto;border:1px solid #29472d;border-radius:10px}
+table {border-collapse:collapse;width:100%;min-width:750px}
+th,td {
+ padding:11px;text-align:left;border-bottom:1px solid #243b27;
+ font-size:13px;vertical-align:top;
+}
+th {background:#102315;color:var(--yellow)}
+tr:hover td {background:#0e1b10}
+.small {font-size:12px;color:var(--muted)}
+.detailgrid {
+ display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+ gap:10px;
+}
+.detail {
+ border:1px solid #29472d;border-radius:9px;
+ padding:12px;background:#08120a;overflow-wrap:anywhere;
+}
+.detail strong {
+ display:block;color:var(--green);font-size:12px;margin-bottom:6px;
+}
+.detail span {white-space:pre-wrap}
+.topline {
+ display:flex;justify-content:space-between;
+ gap:10px;align-items:center;flex-wrap:wrap;
+}
+.pill {
+ display:inline-block;border:1px solid #406444;
+ border-radius:20px;padding:5px 9px;
+ color:var(--green);font-size:12px;
+}
+.markgrid {
+ display:grid;grid-template-columns:2fr 1fr;
+ gap:8px;margin:8px 0;
+}
+.markgrid input {min-width:0}
+.markhead {color:var(--green);font-size:13px;margin:16px 0 6px}
+.wide {width:100%}
+@media(max-width:500px) {
+ header,.panel {padding:15px}
+ .markgrid {grid-template-columns:1.4fr 1fr}
+}
 </style>
 </head>
-<body><main>
-<header><h1>R/VIDYARAJA VIDYALAYA</h1><p class="sub">STUDENT INFORMATION • ADMIN DASHBOARD</p></header>
-<section class="panel" id="loginPanel"><h2>ADMIN LOGIN</h2><form id="loginForm"><div class="formgrid"><div><label for="email">Admin Email</label><input id="email" type="email" autocomplete="username" required></div><div><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div></div><button class="primary" id="loginBtn" type="submit">LOGIN</button><p class="status" id="loginStatus" role="status"></p></form></section>
-<section class="panel hidden" id="dashboard"><div class="topline"><div><h2>STUDENT RECORDS</h2><p class="small" id="adminIdentity"></p></div><div><span class="pill" id="recordCount">0 records</span><button class="secondary" id="refreshBtn" type="button">REFRESH</button><button class="danger" id="logoutBtn" type="button">LOG OUT</button></div></div><div class="toolbar"><input id="searchInput" placeholder="Search admission number, name, grade, phone..."><button class="primary" id="searchBtn" type="button">SEARCH</button></div><p class="status" id="listStatus" role="status"></p><div class="tablewrap"><table><thead><tr><th>Admission No.</th><th>Full Name</th><th>Grade</th><th>Telephone</th><th>Submitted</th><th>Actions</th></tr></thead><tbody id="studentRows"><tr><td colspan="6">Login to view records.</td></tr></tbody></table></div></section>
-<section class="panel hidden" id="marksPanel">
-<div class="topline"><h2>TERM TEST MARKS ENTRY / UPDATE</h2><button class="secondary" id="closeMarksBtn" type="button">CLOSE</button></div>
-<p class="small">Use the same Admission Number stored in the student record. Saving again updates the existing marks record for that student.</p>
-<form id="marksForm">
-<div class="formgrid" style="margin-top:14px">
-<div><label for="marksAdmission">Admission / Index Number</label><input id="marksAdmission" required maxlength="80" placeholder="Student admission number"></div>
-<div><label for="marksStudentName">Student Name</label><input id="marksStudentName" readonly placeholder="Auto-filled from student records"></div>
-<div><label for="examTitle">Term Test Name</label><input id="examTitle" required maxlength="120" value="Term Test 1" placeholder="e.g. First Term Test 2026"></div>
-</div>
-<p class="markhead">SUBJECTS AND MARKS (0–100)</p>
-<div id="subjectFields"></div>
-<button class="secondary" id="addSubjectBtn" type="button">+ ADD SUBJECT</button>
-<p class="status" id="marksStatus" role="status" aria-live="polite"></p>
-<div><button class="primary" id="saveMarksBtn" type="submit">SAVE / UPDATE MARKS</button><button class="secondary" id="clearMarksBtn" type="button">CLEAR FORM</button></div>
-</form>
-</section>
-<section class="panel hidden" id="detailPanel"><div class="topline"><h2>STUDENT DETAILS</h2><button class="secondary" id="closeDetailBtn" type="button">CLOSE</button></div><div class="detailgrid" id="detailGrid"></div></section>
-</main>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, deleteDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
+<body>
+<main>
+
+<header>
+ <h1>R/VIDYARAJA VIDYALAYA</h1>
+ <p class="sub">STUDENT INFORMATION • ADMIN DASHBOARD</p>
+</header>
+
+<!-- ADMIN LOGIN -->
+<section class="panel" id="loginPanel">
+ <h2>ADMIN LOGIN</h2>
+ <form id="loginForm">
+  <div class="formgrid">
+   <div>
+    <label for="email">Admin Email</label>
+    <input id="email" type="email" autocomplete="username" required>
+   </div>
+   <div>
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password" required>
+   </div>
+  </div>
+  <button class="primary" id="loginBtn" type="submit">LOGIN</button>
+  <p class="status" id="loginStatus" role="status"></p>
+ </form>
+</section>
+
+<!-- STUDENT RECORDS -->
+<section class="panel hidden" id="dashboard">
+ <div class="topline">
+  <div>
+   <h2>STUDENT RECORDS</h2>
+   <p class="small" id="adminIdentity"></p>
+  </div>
+  <div>
+   <span class="pill" id="recordCount">0 records</span>
+   <button class="secondary" id="refreshBtn" type="button">REFRESH</button>
+   <button class="danger" id="logoutBtn" type="button">LOG OUT</button>
+  </div>
+ </div>
+
+ <div class="toolbar">
+  <input id="searchInput" placeholder="Search admission number, name, grade, phone...">
+  <button class="primary" id="searchBtn" type="button">SEARCH</button>
+ </div>
+
+ <p class="status" id="listStatus" role="status"></p>
+
+ <div class="tablewrap">
+  <table>
+   <thead>
+    <tr>
+     <th>Admission No.</th>
+     <th>Full Name</th>
+     <th>Grade</th>
+     <th>Telephone</th>
+     <th>Submitted</th>
+     <th>Actions</th>
+    </tr>
+   </thead>
+   <tbody id="studentRows">
+    <tr><td colspan="6">Login to view records.</td></tr>
+   </tbody>
+  </table>
+ </div>
+</section>
+
+<!-- MARKS ENTRY / UPDATE -->
+<section class="panel hidden" id="marksPanel">
+ <div class="topline">
+  <h2>FILL MARKS / UPDATE MARKS</h2>
+  <button class="secondary" id="closeMarksBtn" type="button">CLOSE</button>
+ </div>
+
+ <p class="small">
+  Enter the student's Admission / Index Number. Add each subject and its
+  marks out of 100. Saving again updates the existing marks.
+ </p>
+
+ <form id="marksForm">
+  <div class="formgrid" style="margin-top:14px">
+   <div>
+    <label for="marksAdmission">Admission / Index Number</label>
+    <input id="marksAdmission" required maxlength="80"
+     placeholder="Student admission number">
+   </div>
+
+   <div>
+    <label for="marksStudentName">Student Name</label>
+    <input id="marksStudentName" readonly
+     placeholder="Student name appears here">
+   </div>
+
+   <div>
+    <label for="examTitle">Term Test Name</label>
+    <input id="examTitle" required maxlength="120"
+     value="Term Test 1" placeholder="Term Test 1">
+   </div>
+  </div>
+
+  <p class="markhead">SUBJECTS AND MARKS (0–100)</p>
+
+  <div id="subjectFields"></div>
+
+  <button class="secondary" id="addSubjectBtn" type="button">
+   + ADD SUBJECT
+  </button>
+
+  <p class="status" id="marksStatus" role="status" aria-live="polite"></p>
+
+  <div>
+   <button class="primary" id="saveMarksBtn" type="submit">
+    SAVE / UPDATE MARKS
+   </button>
+   <button class="secondary" id="clearMarksBtn" type="button">
+    CLEAR FORM
+   </button>
+  </div>
+ </form>
+</section>
+
+<!-- STUDENT DETAILS -->
+<section class="panel hidden" id="detailPanel">
+ <div class="topline">
+  <h2>STUDENT DETAILS</h2>
+  <button class="secondary" id="closeDetailBtn" type="button">CLOSE</button>
+ </div>
+ <div class="detailgrid" id="detailGrid"></div>
+</section>
+
+</main>
+
+<script type="module">
+import { initializeApp }
+ from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+ getAuth,
+ signInWithEmailAndPassword,
+ onAuthStateChanged,
+ signOut
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+import {
+ getFirestore,
+ collection,
+ getDocs,
+ doc,
+ deleteDoc,
+ setDoc,
+ getDoc
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+/* FIREBASE CONFIGURATION */
 const firebaseConfig = {
-  apiKey: "AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
-  authDomain: "vidyarajastudentsystem.firebaseapp.com",
-  projectId: "vidyarajastudentsystem",
-  storageBucket: "vidyarajastudentsystem.firebasestorage.app",
-  messagingSenderId: "580500123852",
-  appId: "1:580500123852:web:f3c6f3f80f03fd1e21d269",
-  measurementId: "G-YWQNDRM4E1"
+ apiKey: "AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
+ authDomain: "vidyarajastudentsystem.firebaseapp.com",
+ projectId: "vidyarajastudentsystem",
+ storageBucket: "vidyarajastudentsystem.firebasestorage.app",
+ messagingSenderId: "580500123852",
+ appId: "1:580500123852:web:f3c6f3f80f03fd1e21d269",
+ measurementId: "G-YWQNDRM4E1"
 };
+
+/* AUTHORIZED ADMIN UID */
 const ADMIN_UID = "IpFcr0JLloUN2ENuJ70k8wgBzp22";
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
 const $ = id => document.getElementById(id);
+
 let allStudents = [];
 
-function showStatus(id, message, isError=false){ $(id).textContent=message; $(id).style.color=isError?'#ff8585':'#b7c9ba'; }
-function escapeHtml(value){return String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function getText(data,key){return data[key] == null ? '' : String(data[key]);}
-function makeSubjectRow(subject='',mark=''){const row=document.createElement('div');row.className='markgrid';const sub=document.createElement('input');sub.type='text';sub.maxLength=100;sub.placeholder='Subject name';sub.value=subject;sub.className='subject-name';sub.setAttribute('aria-label','Subject name');const score=document.createElement('input');score.type='number';score.min='0';score.max='100';score.step='1';score.placeholder='Marks / 100';score.value=mark;score.className='subject-mark';score.setAttribute('aria-label','Marks out of 100');row.append(sub,score);$('subjectFields').appendChild(row);}
-function resetSubjectRows(){ $('subjectFields').replaceChildren(); for(let i=0;i<6;i++)makeSubjectRow();}
-resetSubjectRows();
-
-$('loginForm').addEventListener('submit',async e=>{
- e.preventDefault(); $('loginBtn').disabled=true; showStatus('loginStatus','Signing in...');
- try{await signInWithEmailAndPassword(auth,$('email').value.trim(),$('password').value);}
- catch(err){showStatus('loginStatus','Login failed: '+(err.code||err.message),true);}
- finally{$('loginBtn').disabled=false;}
-});
-
-onAuthStateChanged(auth,async user=>{
- if(!user){$('loginPanel').classList.remove('hidden');$('dashboard').classList.add('hidden');$('detailPanel').classList.add('hidden');return;}
- if(user.uid!==ADMIN_UID){showStatus('loginStatus','Access denied: this account is not an authorized administrator.',true);await signOut(auth);return;}
- $('loginPanel').classList.add('hidden');$('dashboard').classList.remove('hidden');$('adminIdentity').textContent='Signed in as '+(user.email||'authorized admin');
- await loadStudents();
-});
-
-async function loadStudents(){
- showStatus('listStatus','Loading student records...');$('refreshBtn').disabled=true;
- try{
-  const snap=await getDocs(collection(db,'students'));
-  allStudents=snap.docs.map(d=>({id:d.id,...d.data()}));
-  allStudents.sort((a,b)=>String(b.submittedAt||'').localeCompare(String(a.submittedAt||'')));
-  renderStudents(allStudents);showStatus('listStatus','Records loaded successfully.');
- }catch(err){allStudents=[];renderStudents([]);showStatus('listStatus','Could not load records: '+(err.code||err.message)+'. Check Firestore Rules and admin UID.',true);}
- finally{$('refreshBtn').disabled=false;}
+function showStatus(id,message,isError=false) {
+ $(id).textContent = message;
+ $(id).style.color = isError ? '#ff8585' : '#b7c9ba';
 }
-function renderStudents(items){
- $('recordCount').textContent=items.length+' record'+(items.length===1?'':'s');
- if(!items.length){$('studentRows').innerHTML='<tr><td colspan="6">No student records found.</td></tr>';return;}
- $('studentRows').innerHTML=items.map(s=>`<tr><td>${escapeHtml(s.admission)}</td><td>${escapeHtml(s.fullName)}</td><td>${escapeHtml(s.grade)}</td><td>${escapeHtml(s.phone)}</td><td>${escapeHtml(s.submittedAt)}</td><td><button class="secondary" data-view="${escapeHtml(s.id)}">VIEW</button><button class="primary" data-marks="${escapeHtml(s.id)}">MARKS</button><button class="danger" data-delete="${escapeHtml(s.id)}">DELETE</button></td></tr>`).join('');
-}
-function search(){const term=$('searchInput').value.trim().toLowerCase();renderStudents(allStudents.filter(s=>['admission','fullName','grade','phone','email'].some(k=>getText(s,k).toLowerCase().includes(term))));}
-$('searchBtn').addEventListener('click',search);$('searchInput').addEventListener('input',search);$('refreshBtn').addEventListener('click',loadStudents);$('logoutBtn').addEventListener('click',()=>signOut(auth));$('closeDetailBtn').addEventListener('click',()=>$('detailPanel').classList.add('hidden'));
-$('addSubjectBtn').addEventListener('click',()=>makeSubjectRow());
-$('closeMarksBtn').addEventListener('click',()=>$('marksPanel').classList.add('hidden'));
-$('clearMarksBtn').addEventListener('click',()=>{ $('marksForm').reset(); $('marksAdmission').readOnly=false; $('marksStudentName').value=''; resetSubjectRows(); showStatus('marksStatus',''); });
-$('marksAdmission').addEventListener('change',()=>{const n=$('marksAdmission').value.trim();const st=allStudents.find(x=>String(x.admission||'').trim()===n);$('marksStudentName').value=st?.fullName||'';});
-$('marksForm').addEventListener('submit',async e=>{
- e.preventDefault(); const admission=$('marksAdmission').value.trim();
- if(!admission){showStatus('marksStatus','Enter the Admission / Index Number.',true);return;}
- const student=allStudents.find(x=>String(x.admission||'').trim()===admission);
- if(!student){showStatus('marksStatus','No student record found for this Admission Number. Refresh records and check the number.',true);return;}
- const subjects=Array.from($('subjectFields').querySelectorAll('.markgrid')).map(row=>({subject:row.querySelector('.subject-name').value.trim(),mark:row.querySelector('.subject-mark').value.trim()})).filter(x=>x.subject||x.mark);
- if(!subjects.length){showStatus('marksStatus','Enter at least one subject and its marks.',true);return;}
- for(const item of subjects){if(!item.subject||item.mark===''){showStatus('marksStatus','Complete both subject name and marks for each row.',true);return;}const n=Number(item.mark);if(!Number.isFinite(n)||n<0||n>100){showStatus('marksStatus','Marks must be between 0 and 100.',true);return;}item.mark=n;}
- const btn=$('saveMarksBtn');btn.disabled=true;showStatus('marksStatus','Saving marks to Firebase...');
- try{const payload={admission,fullName:student.fullName||'',grade:student.grade||'',examTitle:$('examTitle').value.trim(),subjects,updatedAt:new Date().toISOString(),updatedBy:auth.currentUser?.uid||''};await setDoc(doc(db,'termMarks',encodeURIComponent(admission)),payload);showStatus('marksStatus','Marks saved successfully. Student can now use VIEW MARKS.');}
- catch(err){showStatus('marksStatus','Could not save marks: '+(err.code||err.message)+'. Check Firestore Rules.',true);}
- finally{btn.disabled=false;}
-});
-$('studentRows').addEventListener('click',async e=>{
- const viewId=e.target.dataset.view,deleteId=e.target.dataset.delete,marksId=e.target.dataset.marks;
- if(marksId){const s=allStudents.find(x=>x.id===marksId);if(!s)return;$('marksPanel').classList.remove('hidden');$('marksPanel').scrollIntoView({behavior:'smooth'});$('marksAdmission').value=s.admission||'';$('marksAdmission').readOnly=true;$('marksStudentName').value=s.fullName||'';$('examTitle').value='Term Test 1';showStatus('marksStatus','Checking existing marks...');try{const snap=await getDoc(doc(db,'termMarks',encodeURIComponent(String(s.admission||''))));resetSubjectRows();if(snap.exists()){const m=snap.data();$('examTitle').value=m.examTitle||'Term Test 1';$('subjectFields').replaceChildren();(m.subjects||[]).forEach(x=>makeSubjectRow(x.subject||'',x.mark??''));if(!(m.subjects||[]).length)resetSubjectRows();showStatus('marksStatus','Existing marks loaded. Edit values and save to update.');}else{showStatus('marksStatus','No marks saved yet. Enter subjects and marks below.');}}catch(err){showStatus('marksStatus','Could not load existing marks: '+(err.code||err.message),true);}return;}
- if(viewId){const s=allStudents.find(x=>x.id===viewId);if(!s)return;const fields=[['Admission Number','admission'],['Full Name','fullName'],['Date of Birth','dob'],['Guardian','guardian'],['Telephone','phone'],['WhatsApp','whatsapp'],['Email','email'],['Grade','grade'],['Address','address'],['A/L Subjects','al'],['O/L Results','ol'],['Sports Achievements','sports'],['Extracurricular Activities','extra'],['Submitted At','submittedAt']];$('detailGrid').innerHTML=fields.map(([label,key])=>`<div class="detail"><strong>${escapeHtml(label)}</strong><span>${escapeHtml(s[key])||'—'}</span></div>`).join('');$('detailPanel').classList.remove('hidden');$('detailPanel').scrollIntoView({behavior:'smooth'});}
- if(deleteId){const s=allStudents.find(x=>x.id===deleteId);if(!s)return;if(!confirm('Delete student record for '+(s.fullName||s.admission||'this student')+'? This cannot be undone.'))return;try{await deleteDoc(doc(db,'students',deleteId));allStudents=allStudents.filter(x=>x.id!==deleteId);search();showStatus('listStatus','Student record deleted.');$('detailPanel').classList.add('hidden');}catch(err){showStatus('listStatus','Delete failed: '+(err.code||err.message),true);}}
-});
-</script>
-</body></html>
+
+function escapeHtml(value) {
+ return String(value ?? '').replace(/[&<>"']/g,c=>({
+  '&':'&amp;',
+  '<':'&lt
