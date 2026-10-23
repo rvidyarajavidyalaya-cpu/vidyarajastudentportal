@@ -117,6 +117,10 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
     <h2>R/VIDYARAJA VIDYALAYA</h2>
     <p class="start-subtitle">STUDENT INFORMATION PORTAL</p>
     <p class="start-message">Welcome to the Student Portal<br>ශිෂ්‍ය තොරතුරු පද්ධතියට සාදරයෙන් පිළිගනිමු</p>
+    <div class="live-datetime" aria-label="Current Sri Lanka date and time">
+      <div id="welcomeDate">Loading date...</div>
+      <div id="welcomeTime">Loading time...</div>
+    </div>
     <button class="start-button" id="startContinueBtn" type="button">▶ CLICK TO CONTINUE</button>
     <div class="start-loading" id="startLoading" aria-live="polite">
       <strong>LOADING PORTAL...</strong><br>
@@ -1164,19 +1168,25 @@ musicToggle.addEventListener("click",async()=>{
 <script>
 /* Live date and clock in Sri Lanka time (Asia/Colombo) */
 (function(){
-  const dateEl = document.getElementById('liveDate');
-  const timeEl = document.getElementById('liveTime');
+  const dateElements = [document.getElementById('liveDate'), document.getElementById('welcomeDate')];
+  const timeElements = [document.getElementById('liveTime'), document.getElementById('welcomeTime')];
   function updateSriLankaDateTime(){
     const now = new Date();
-    dateEl.textContent = new Intl.DateTimeFormat('en-GB', {
+    const dateText = new Intl.DateTimeFormat('en-GB', {
       timeZone: 'Asia/Colombo', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
     }).format(now);
-    timeEl.textContent = new Intl.DateTimeFormat('en-GB', {
+    const timeText = new Intl.DateTimeFormat('en-GB', {
       timeZone: 'Asia/Colombo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
     }).format(now);
+    dateElements.forEach(el => { if (el) el.textContent = dateText; });
+    timeElements.forEach(el => { if (el) el.textContent = timeText; });
   }
-  updateSriLankaDateTime();
-  setInterval(updateSriLankaDateTime, 1000);
+  try {
+    updateSriLankaDateTime();
+    setInterval(updateSriLankaDateTime, 1000);
+  } catch (error) {
+    console.error('Could not update Sri Lanka date/time:', error);
+  }
 })();
 </script>
 </body>
