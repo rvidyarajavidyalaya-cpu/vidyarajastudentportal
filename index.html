@@ -57,7 +57,7 @@ button:disabled{opacity:.6;cursor:wait;transform:none}
 .symbol{font-size:34px;animation:iconFloat 2.5s infinite}
 .home-button small{font-size:12px}
 .status{font-size:14px;color:var(--green);margin-top:12px;line-height:1.7;overflow-wrap:anywhere}
-.view-panel,.student-result,#formSection,#successScreen,#gradeSection{display:none}
+.view-panel,.student-result,#formSection,#successScreen,#gradeSection,#librarySection{display:none}
 .result-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .result-item{padding:13px;border:1px solid #39ff1455;border-radius:11px;background:#061009;overflow-wrap:anywhere;animation:slideUp .5s ease}
 .result-item strong{display:block;color:var(--green);font-size:12px;margin-bottom:7px}
@@ -84,6 +84,18 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 .start-button{min-width:210px;background:var(--green);color:#041004;border:1px solid var(--yellow);box-shadow:0 0 18px #39ff1470}
 .start-loading{display:none;margin-top:22px;color:var(--green);line-height:1.8}
 .start-loading .loading-dots{margin:14px 0}
+
+/* ADDED: language switch and digital library */
+.language-switch{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 auto 20px}
+.language-switch button{min-width:115px}
+.language-switch button.active{background:var(--yellow);color:#071006;border-color:var(--yellow)}
+.library-book{padding:15px;border:1px solid #39ff1455;border-radius:12px;background:#061009;display:flex;flex-direction:column;gap:9px;overflow-wrap:anywhere}
+.library-book h3{color:var(--yellow);font-size:16px;line-height:1.5}
+.library-book p{color:#d7e8d9;font-size:13px;line-height:1.6}
+.library-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}
+.library-tools{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:14px}
+@media(max-width:650px){.library-grid,.library-tools{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -119,6 +131,11 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 <p class="notice">ඔබගේ ශිෂ්‍ය තොරතුරු ඇතුළත් කරන්න<br>Enter Student Information</p>
 </header>
 
+<div class="language-switch" aria-label="Language selection">
+  <button class="secondary active" id="langEnglishBtn" type="button">🇬🇧 English</button>
+  <button class="secondary" id="langSinhalaBtn" type="button">🇱🇰 සිංහල</button>
+</div>
+
 <section class="home-panel" id="gradeSection">
 <h2 class="section-title">SELECT YOUR GRADE / ශ්‍රේණිය තෝරන්න</h2>
 <p class="notice">Please select your grade before continuing.</p>
@@ -146,7 +163,30 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 <button class="home-button" id="fillInfoBtn" type="button"><span class="symbol">✎</span><span>FILL INFORMATION</span><small>ශිෂ්‍ය තොරතුරු ඇතුළත් කරන්න</small></button>
 <button class="home-button view" id="viewInfoBtn" type="button"><span class="symbol">⌕</span><span>VIEW INFORMATION</span><small>ඇතුළත් කළ තොරතුරු බලන්න</small></button>
 <button class="home-button marks" id="viewMarksBtn" type="button"><span class="symbol">▤</span><span>VIEW MARKS</span><small>Term Test ප්‍රතිඵල බලන්න</small></button>
+<button class="home-button" id="digitalLibraryBtn" type="button"><span class="symbol">📚</span><span data-i18n="libraryHomeTitle">DIGITAL LIBRARY</span><small data-i18n="libraryHomeSub">Search and open study materials</small></button>
 </div>
+</section>
+
+<section class="view-panel" id="librarySection">
+  <h2 class="section-title" data-i18n="libraryTitle">📚 DIGITAL LIBRARY / ඩිජිටල් පුස්තකාලය</h2>
+  <p class="notice" data-i18n="libraryIntro">Search books or add a study resource using its title and PDF/web link.</p>
+  <div class="library-tools">
+    <div class="field"><label for="librarySearch" data-i18n="searchBooks">Search books</label><input id="librarySearch" type="search" placeholder="Enter a book title..." data-i18n-placeholder="searchPlaceholder"></div>
+    <div class="field"><label for="libraryCategory" data-i18n="category">Category</label><select id="libraryCategory"><option value="all" data-i18n="allCategories">All categories</option><option value="Textbooks" data-i18n="textbooks">Textbooks</option><option value="Past Papers" data-i18n="pastPapers">Past Papers</option><option value="Notes" data-i18n="notes">Notes</option><option value="Other" data-i18n="other">Other</option></select></div>
+  </div>
+  <div class="card" style="margin-top:18px;margin-bottom:0">
+    <h3 class="section-title" style="font-size:17px" data-i18n="addResource">➕ Add a book / resource</h3>
+    <div class="grid">
+      <div class="field"><label for="libraryBookTitle" data-i18n="bookTitle">Book / resource title</label><input id="libraryBookTitle" maxlength="150" placeholder="Enter title" data-i18n-placeholder="titlePlaceholder"></div>
+      <div class="field"><label for="libraryBookCategory" data-i18n="category">Category</label><select id="libraryBookCategory"><option value="Textbooks" data-i18n="textbooks">Textbooks</option><option value="Past Papers" data-i18n="pastPapers">Past Papers</option><option value="Notes" data-i18n="notes">Notes</option><option value="Other" data-i18n="other">Other</option></select></div>
+      <div class="field full"><label for="libraryBookUrl" data-i18n="resourceLink">PDF / website link</label><input id="libraryBookUrl" type="url" placeholder="https://..." data-i18n-placeholder="urlPlaceholder"></div>
+    </div>
+    <div class="actions"><button class="primary" id="addLibraryBookBtn" type="button" data-i18n="addResourceBtn">ADD RESOURCE</button></div>
+    <p class="notice" data-i18n="libraryLocalNote">Resources added here are kept in this page only and may disappear when the page is refreshed.</p>
+  </div>
+  <div class="library-grid" id="libraryBooksGrid"></div>
+  <p class="status" id="libraryStatus" role="status" aria-live="polite"></p>
+  <div class="actions"><button class="secondary" id="libraryBackBtn" type="button" data-i18n="backHome">BACK / ආපසු</button></div>
 </section>
 
 <section class="view-panel" id="viewPanel">
@@ -922,6 +962,134 @@ $("alField").style.display="none";
 $("olField").style.display="none";
 homeSection.style.display="block";
 gradeSection.style.display="none";
+
+/* ADDED: Sinhala / English switch and Digital Library */
+const translations={
+  libraryHomeTitle:{en:"DIGITAL LIBRARY",si:"ඩිජිටල් පුස්තකාලය"},
+  libraryHomeSub:{en:"Search and open study materials",si:"අධ්‍යයන පොත් සොයන්න සහ විවෘත කරන්න"},
+  libraryTitle:{en:"📚 DIGITAL LIBRARY / ඩිජිටල් පුස්තකාලය",si:"📚 ඩිජිටල් පුස්තකාලය"},
+  libraryIntro:{en:"Search books or add a study resource using its title and PDF/web link.",si:"පොත් සොයන්න, නැතහොත් නම සහ PDF/වෙබ් සබැඳිය භාවිතයෙන් අධ්‍යයන සම්පතක් එක් කරන්න."},
+  searchBooks:{en:"Search books",si:"පොත් සොයන්න"}, searchPlaceholder:{en:"Enter a book title...",si:"පොතේ නම ඇතුළත් කරන්න..."},
+  category:{en:"Category",si:"වර්ගය"}, allCategories:{en:"All categories",si:"සියලුම වර්ග"},
+  textbooks:{en:"Textbooks",si:"පෙළපොත්"}, pastPapers:{en:"Past Papers",si:"පසුගිය ප්‍රශ්න පත්‍ර"}, notes:{en:"Notes",si:"සටහන්"}, other:{en:"Other",si:"වෙනත්"},
+  addResource:{en:"➕ Add a book / resource",si:"➕ පොතක් / අධ්‍යයන සම්පතක් එක් කරන්න"},
+  bookTitle:{en:"Book / resource title",si:"පොතේ / සම්පතේ නම"}, titlePlaceholder:{en:"Enter title",si:"නම ඇතුළත් කරන්න"},
+  resourceLink:{en:"PDF / website link",si:"PDF / වෙබ් අඩවි සබැඳිය"}, urlPlaceholder:{en:"https://...",si:"https://... සබැඳිය ඇතුළත් කරන්න"},
+  addResourceBtn:{en:"ADD RESOURCE",si:"සම්පත එක් කරන්න"},
+  libraryLocalNote:{en:"Resources added here are kept in this page only and may disappear when the page is refreshed.",si:"මෙහි එක් කරන සම්පත් මෙම පිටුවේ පමණක් පවතින අතර පිටුව නැවත පූරණය කළ විට මැකී යා හැකිය."},
+  backHome:{en:"BACK / ආපසු",si:"ආපසු"}
+};
+let currentLanguage="en";
+const pageTranslations={
+  "STUDENT INFORMATION PORTAL":"ශිෂ්‍ය තොරතුරු පද්ධතිය",
+  "Enter Student Information":"ශිෂ්‍ය තොරතුරු ඇතුළත් කරන්න",
+  "SELECT YOUR GRADE / ශ්‍රේණිය තෝරන්න":"ඔබගේ ශ්‍රේණිය තෝරන්න",
+  "Please select your grade before continuing.":"ඉදිරියට යාමට පෙර ඔබගේ ශ්‍රේණිය තෝරන්න.",
+  "ශ්‍රේණිය / Grade":"ශ්‍රේණිය",
+  "-- Select Grade 6–13 --":"-- 6–13 ශ්‍රේණිය තෝරන්න --",
+  "CONTINUE / ඉදිරියට":"ඉදිරියට",
+  "BACK / ආපසු":"ආපසු",
+  "STUDENT PORTAL / ශිෂ්‍ය පිවිසුම":"ශිෂ්‍ය පිවිසුම",
+  "Choose an option below / පහත විකල්පයෙන් එකක් තෝරන්න.":"පහත විකල්පයෙන් එකක් තෝරන්න.",
+  "FILL INFORMATION":"තොරතුරු ඇතුළත් කරන්න",
+  "ශිෂ්‍ය තොරතුරු ඇතුළත් කරන්න":"ශිෂ්‍ය තොරතුරු ඇතුළත් කරන්න",
+  "VIEW INFORMATION":"තොරතුරු බලන්න",
+  "ඇතුළත් කළ තොරතුරු බලන්න":"ඇතුළත් කළ තොරතුරු බලන්න",
+  "VIEW MARKS":"ලකුණු බලන්න",
+  "Term Test ප්‍රතිඵල බලන්න":"වාර විභාග ප්‍රතිඵල බලන්න",
+  "LOADING INFORMATION":"තොරතුරු පූරණය වෙමින් පවතී",
+  "Please wait / කරුණාකර රැඳී සිටින්න":"කරුණාකර රැඳී සිටින්න",
+  "ENTER YOUR VERIFICATION CODE":"ඔබගේ සත්‍යාපන කේතය ඇතුළත් කරන්න",
+  "VIEW MY INFORMATION":"මගේ තොරතුරු බලන්න",
+  "VIEW TERM TEST MARKS / වාර විභාග ලකුණු":"වාර විභාග ලකුණු බලන්න",
+  "Enter the Admission / Index Number given by your school.":"පාසලෙන් ලබාදුන් ඇතුළත් වීමේ / දර්ශක අංකය ඇතුළත් කරන්න.",
+  "ADMISSION / INDEX NUMBER":"ඇතුළත් වීමේ / දර්ශක අංකය",
+  "VIEW MY MARKS":"මගේ ලකුණු බලන්න",
+  "TERM TEST RESULTS":"වාර විභාග ප්‍රතිඵල",
+  "📄 DOWNLOAD MARKS PDF":"📄 ලකුණු PDF බාගන්න",
+  "MY STUDENT INFORMATION":"මගේ ශිෂ්‍ය තොරතුරු",
+  "Student Information / ශිෂ්‍ය තොරතුරු":"ශිෂ්‍ය තොරතුරු",
+  "Admission Number":"ඇතුළත් වීමේ අංකය",
+  "Full Name":"සම්පූර්ණ නම",
+  "Date of Birth":"උපන් දිනය",
+  "Mother / Father / Guardian":"මව / පියා / භාරකරු",
+  "Telephone Number":"දුරකථන අංකය",
+  "WhatsApp Number":"වට්ස්ඇප් අංකය",
+  "Email Address":"විද්‍යුත් තැපැල් ලිපිනය",
+  "Selected Grade":"තෝරාගත් ශ්‍රේණිය",
+  "Home Address":"නිවසේ ලිපිනය",
+  "A/L Subjects":"උසස් පෙළ විෂයන්",
+  "O/L Results":"සාමාන්‍ය පෙළ ප්‍රතිඵල",
+  "Sports Achievements":"ක්‍රීඩා ජයග්‍රහණ",
+  "Extracurricular Activities":"විෂය සමගාමී ක්‍රියාකාරකම්",
+  "Student Photo (Optional)":"ශිෂ්‍ය ඡායාරූපය (අත්‍යවශ්‍ය නොවේ)",
+  "SAVE DETAILS / විස්තර සුරකින්න":"විස්තර සුරකින්න",
+  "CLEAR FORM / හිස් කරන්න":"පෝරමය හිස් කරන්න",
+  "SUCCESSFULLY SAVED!":"සාර්ථකව සුරකින ලදී!",
+  "Student details have been saved successfully.":"ශිෂ්‍ය තොරතුරු සාර්ථකව සුරකින ලදී.",
+  "YOUR VERIFICATION CODE":"ඔබගේ සත්‍යාපන කේතය",
+  "COPY CODE":"කේතය පිටපත් කරන්න",
+  "DONE / අවසන්":"අවසන්",
+  "THANK YOU!":"ස්තුතියි!",
+  "HOME":"මුල් පිටුව",
+  "🎵 Play Music":"🎵 සංගීතය වාදනය කරන්න",
+  "⏸ Pause Music":"⏸ සංගීතය නවත්වන්න"
+};
+function setLanguage(language){
+  currentLanguage=language;
+  document.documentElement.lang=language==="si"?"si":"en";
+  document.querySelectorAll("[data-i18n]").forEach(el=>{const item=translations[el.dataset.i18n];if(item)el.textContent=item[language];});
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{const item=translations[el.dataset.i18nPlaceholder];if(item)el.placeholder=item[language];});
+  /* Translate matching page text while preserving the original structure. */
+  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+  const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+  nodes.forEach(node=>{
+    const raw=node.nodeValue;const trimmed=raw.trim();
+    if(!trimmed||node.parentElement.closest("script,style"))return;
+    let translated=trimmed;
+    if(language==="si"&&pageTranslations[trimmed])translated=pageTranslations[trimmed];
+    else if(language==="en"){
+      const entry=Object.entries(pageTranslations).find(([,si])=>si===trimmed);
+      if(entry)translated=entry[0];
+    }
+    if(translated!==trimmed)node.nodeValue=raw.replace(trimmed,translated);
+  });
+  $("langEnglishBtn").classList.toggle("active",language==="en");
+  $("langSinhalaBtn").classList.toggle("active",language==="si");
+}
+$("langEnglishBtn").addEventListener("click",()=>setLanguage("en"));
+$("langSinhalaBtn").addEventListener("click",()=>setLanguage("si"));
+
+const librarySection=$("librarySection");
+const libraryBooksGrid=$("libraryBooksGrid");
+let libraryBooks=[];
+function renderLibrary(){
+  const query=$("librarySearch").value.trim().toLowerCase();
+  const category=$("libraryCategory").value;
+  libraryBooksGrid.replaceChildren();
+  const filtered=libraryBooks.filter(book=>(category==="all"||book.category===category)&&book.title.toLowerCase().includes(query));
+  if(!filtered.length){$("libraryStatus").textContent=currentLanguage==="si"?"සම්පත් හමු නොවීය. නම සහ සබැඳිය යොදා සම්පතක් එක් කරන්න.":"No resources found. Add a resource using its title and link.";return;}
+  $("libraryStatus").textContent="";
+  filtered.forEach(book=>{
+    const card=document.createElement("article");card.className="library-book";
+    const title=document.createElement("h3");title.textContent=book.title;
+    const cat=document.createElement("p");cat.textContent=(currentLanguage==="si"?"වර්ගය: ":"Category: ")+book.category;
+    const open=document.createElement("a");open.href=book.url;open.target="_blank";open.rel="noopener noreferrer";open.textContent=currentLanguage==="si"?"📖 විවෘත කරන්න / බාගන්න":"📖 OPEN / DOWNLOAD";open.style.cssText="display:inline-block;color:#041004;background:var(--green);padding:11px 13px;border-radius:9px;text-decoration:none;font-weight:bold;text-align:center";
+    card.append(title,cat,open);libraryBooksGrid.appendChild(card);
+  });
+}
+$("digitalLibraryBtn").addEventListener("click",()=>{
+  homeSection.style.display="none";gradeSection.style.display="none";formSection.style.display="none";viewPanel.style.display="none";studentResult.style.display="none";marksSection.style.display="none";marksResult.style.display="none";successScreen.style.display="none";librarySection.style.display="block";renderLibrary();window.scrollTo({top:0,behavior:"smooth"});
+});
+$("libraryBackBtn").addEventListener("click",()=>{librarySection.style.display="none";showHome();});
+$("librarySearch").addEventListener("input",renderLibrary);
+$("libraryCategory").addEventListener("change",renderLibrary);
+$("addLibraryBookBtn").addEventListener("click",()=>{
+  const title=$("libraryBookTitle").value.trim();const url=$("libraryBookUrl").value.trim();const category=$("libraryBookCategory").value;
+  if(!title||!url){$("libraryStatus").textContent=currentLanguage==="si"?"කරුණාකර පොතේ නම සහ සබැඳිය ඇතුළත් කරන්න.":"Please enter a title and a PDF / website link.";return;}
+  try{const parsed=new URL(url);if(!["http:","https:"].includes(parsed.protocol))throw new Error("Invalid URL");}catch{$("libraryStatus").textContent=currentLanguage==="si"?"කරුණාකර නිවැරදි https:// හෝ http:// සබැඳියක් ඇතුළත් කරන්න.":"Please enter a valid http:// or https:// link.";return;}
+  libraryBooks.push({title,url,category});$("libraryBookTitle").value="";$("libraryBookUrl").value="";$("librarySearch").value="";$("libraryCategory").value="all";renderLibrary();
+});
 
 /* BACKGROUND MUSIC PLAYER */
 const backgroundMusic=$("backgroundMusic");
