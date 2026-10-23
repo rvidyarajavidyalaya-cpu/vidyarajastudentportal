@@ -1382,305 +1382,404 @@ musicToggle.addEventListener("click",async()=>{
   }
 })();
 </script>
-</body
   
-<!-- AUTO STUDY TIMETABLE GENERATOR -->
-<section id="autoStudyPlanner">
-  <style>
-    #autoStudyPlanner {
-      --st-blue: #2563eb;
-      --st-dark: #172554;
-      --st-bg: #f4f7ff;
-      font-family: Arial, sans-serif;
-      color: #172033;
-      padding: 24px 12px;
-      box-sizing: border-box;
-    }
+<!-- AUTO EXAM PREPARATION PLANNER -->
+<section id="examPlanner" class="exam-planner">
+  <div class="planner-header">
+    <span class="planner-label">STUDENT TOOLS</span>
+    <h2>📚 Auto Exam Preparation Planner</h2>
+    <p>Plan your study time and get ready for your exams.</p>
+  </div>
 
-    #autoStudyPlanner * { box-sizing: border-box; }
+  <div class="planner-form">
+    <label for="examDate">📅 Exam Date</label>
+    <input type="date" id="examDate">
 
-    #autoStudyPlanner .st-container {
-      max-width: 1000px;
-      margin: auto;
-      background: #fff;
-      border: 1px solid #e1e8f5;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 12px 35px rgba(37, 99, 235, .09);
-    }
+    <label for="dailyHours">⏰ Daily Study Hours</label>
+    <input type="number" id="dailyHours" min="1" max="16" value="3">
 
-    #autoStudyPlanner .st-hero {
-      background: linear-gradient(135deg, #172554, #2563eb);
-      color: white;
-      padding: 30px 22px;
-      text-align: center;
-    }
+    <label for="subjectsInput">📚 Subjects</label>
+    <p class="planner-hint">Enter each subject on a separate line.</p>
+    <textarea id="subjectsInput" rows="5"
+      placeholder="Mathematics&#10;Science&#10;English&#10;Sinhala"></textarea>
 
-    #autoStudyPlanner .st-hero h2 {
-      font-size: clamp(23px, 4vw, 34px);
-      margin: 0 0 10px;
-    }
+    <button type="button" id="generatePlanBtn"
+      class="planner-btn">✨ Generate My Timetable</button>
+  </div>
 
-    #autoStudyPlanner .st-hero p {
-      margin: 0;
-      line-height: 1.6;
-      color: #dbeafe;
-    }
+  <div id="plannerMessage" class="planner-message" aria-live="polite"></div>
 
-    #autoStudyPlanner .st-form {
-      padding: 22px;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 17px;
-    }
+  <div id="plannerResults" hidden>
+    <div class="planner-summary">
+      <div>
+        <strong id="daysLeft">0</strong>
+        <span>Days Until Exam</span>
+      </div>
+      <div>
+        <strong id="totalSessions">0</strong>
+        <span>Study Sessions</span>
+      </div>
+      <div>
+        <strong id="completedSessions">0</strong>
+        <span>Completed</span>
+      </div>
+    </div>
 
-    #autoStudyPlanner .st-field { min-width: 0; }
+    <div class="planner-progress">
+      <div class="planner-progress-track">
+        <div id="plannerProgressBar"></div>
+      </div>
+      <p id="plannerProgressText">0% completed</p>
+    </div>
 
-    #autoStudyPlanner .st-full { grid-column: 1 / -1; }
+    <div id="timetableList"></div>
 
-    #autoStudyPlanner label {
-      display: block;
-      font-weight: 700;
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
+    <button type="button" id="printPlanBtn" class="planner-btn">
+      🖨️ Print / Save as PDF
+    </button>
+  </div>
+</section>
 
-    #autoStudyPlanner input,
-    #autoStudyPlanner textarea,
-    #autoStudyPlanner select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 10px;
-      background: white;
-      color: #172033;
-      font: inherit;
-      outline: none;
-    }
+<style>
+.exam-planner {
+  --planner-accent: var(--primary-color, #2563eb);
+  --planner-text: var(--text-color, #172033);
+  --planner-card: var(--card-bg, #ffffff);
+  --planner-border: var(--border-color, #dbe3ef);
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 24px;
+  border: 1px solid var(--planner-border);
+  border-radius: 20px;
+  background: var(--planner-card);
+  color: var(--planner-text);
+  font-family: inherit;
+  box-sizing: border-box;
+  box-shadow: 0 8px 30px rgba(20, 40, 80, .08);
+}
+.exam-planner * { box-sizing: border-box; }
+.planner-header { text-align: center; margin-bottom: 24px; }
+.planner-label {
+  color: var(--planner-accent);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+.planner-header h2 { margin: 10px 0; font-size: clamp(22px, 4vw, 30px); }
+.planner-header p, .planner-hint { opacity: .75; font-size: 14px; }
+.planner-form { display: grid; gap: 10px; }
+.planner-form label { font-weight: 700; margin-top: 8px; }
+.planner-form input, .planner-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--planner-border);
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+.planner-form textarea { resize: vertical; }
+.planner-hint { margin: 0; }
+.planner-btn {
+  border: none;
+  border-radius: 11px;
+  background: var(--planner-accent);
+  color: white;
+  padding: 13px 18px;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+  margin-top: 12px;
+}
+.planner-btn:hover { filter: brightness(.92); }
+.planner-message { margin: 12px 0; color: #dc2626; font-size: 14px; }
+.planner-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 22px 0;
+}
+.planner-summary > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 16px 10px;
+  text-align: center;
+  border: 1px solid var(--planner-border);
+  border-radius: 13px;
+}
+.planner-summary strong { font-size: 26px; color: var(--planner-accent); }
+.planner-summary span { font-size: 12px; }
+.planner-progress-track {
+  height: 10px;
+  overflow: hidden;
+  background: var(--planner-border);
+  border-radius: 20px;
+}
+#plannerProgressBar {
+  width: 0;
+  height: 100%;
+  background: var(--planner-accent);
+  transition: width .2s ease;
+}
+#plannerProgressText { font-size: 13px; text-align: right; }
+.planner-day {
+  border: 1px solid var(--planner-border);
+  border-radius: 13px;
+  padding: 16px;
+  margin: 14px 0;
+}
+.planner-day h3 { margin: 0 0 12px; font-size: 17px; }
+.planner-session {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 0;
+  border-top: 1px solid var(--planner-border);
+}
+.planner-session input { margin-top: 5px; accent-color: var(--planner-accent); }
+.planner-session label { cursor: pointer; line-height: 1.5; }
+.planner-session small { display: block; opacity: .7; }
+.planner-session.done label { text-decoration: line-through; opacity: .6; }
+@media (max-width: 520px) {
+  .exam-planner { padding: 16px; margin: 16px auto; }
+  .planner-summary { gap: 6px; }
+  .planner-summary > div { padding: 12px 4px; }
+  .planner-summary strong { font-size: 21px; }
+  .planner-summary span { font-size: 11px; }
+}
+@media print {
+  body * { visibility: hidden !important; }
+  #examPlanner, #examPlanner * { visibility: visible !important; }
+  #examPlanner {
+    position: absolute;
+    left: 0; top: 0;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border: none;
+    box-shadow: none;
+    color: #111 !important;
+    background: #fff !important;
+  }
+  #examPlanner .planner-form,
+  #examPlanner #printPlanBtn,
+  #examPlanner .planner-progress { display: none !important; }
+  #examPlanner .planner-day { break-inside: avoid; }
+}
+</style>
 
-    #autoStudyPlanner input:focus,
-    #autoStudyPlanner textarea:focus,
-    #autoStudyPlanner select:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px #dbeafe;
-    }
+<script>
+(() => {
+  const root = document.getElementById("examPlanner");
+  if (!root || root.dataset.initialized) return;
+  root.dataset.initialized = "true";
 
-    #autoStudyPlanner .st-hint {
-      display: block;
-      margin-top: 6px;
-      font-size: 12px;
-      color: #64748b;
-      line-height: 1.5;
-    }
+  const $ = id => document.getElementById(id);
+  const dateInput = $("examDate");
+  const today = new Date();
+  const localDate = d => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  };
+  dateInput.min = localDate(today);
 
-    #autoStudyPlanner .st-button {
-      border: 0;
-      border-radius: 11px;
-      padding: 13px 17px;
-      font-weight: 700;
-      font-size: 15px;
-      cursor: pointer;
-      transition: .2s;
-    }
+  let sessions = [];
+  let planGenerated = false;
 
-    #autoStudyPlanner .st-button:hover { transform: translateY(-1px); }
+  function showMessage(message) {
+    $("plannerMessage").textContent = message;
+  }
 
-    #autoStudyPlanner .st-primary {
-      background: #2563eb;
-      color: white;
-      width: 100%;
-    }
+  function updateProgress() {
+    const total = sessions.length;
+    const completed = sessions.filter(s => s.done).length;
+    const percent = total ? Math.round(completed / total * 100) : 0;
 
-    #autoStudyPlanner .st-secondary {
-      background: #e8efff;
-      color: #1d4ed8;
-    }
+    $("totalSessions").textContent = total;
+    $("completedSessions").textContent = completed;
+    $("plannerProgressBar").style.width = percent + "%";
+    $("plannerProgressText").textContent = percent + "% completed";
 
-    #autoStudyPlanner .st-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 17px;
-    }
-
-    #autoStudyPlanner .st-results {
-      padding: 0 22px 25px;
-    }
-
-    #autoStudyPlanner .st-results[hidden] { display: none; }
-
-    #autoStudyPlanner .st-summary {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 22px;
-    }
-
-    #autoStudyPlanner .st-stat {
-      padding: 16px 12px;
-      background: #eff6ff;
-      border-radius: 13px;
-      text-align: center;
-    }
-
-    #autoStudyPlanner .st-stat strong {
-      display: block;
-      color: #1d4ed8;
-      font-size: 25px;
-      margin-bottom: 5px;
-    }
-
-    #autoStudyPlanner .st-stat span {
-      font-size: 12px;
-      color: #475569;
-    }
-
-    #autoStudyPlanner .st-day {
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      margin: 14px 0;
-      overflow: hidden;
-    }
-
-    #autoStudyPlanner .st-day-header {
-      background: #f8fafc;
-      padding: 14px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      border-bottom: 1px solid #e2e8f0;
-    }
-
-    #autoStudyPlanner .st-day-header h3 {
-      margin: 0;
-      font-size: 16px;
-    }
-
-    #autoStudyPlanner .st-day-header span {
-      font-size: 12px;
-      color: #64748b;
-    }
-
-    #autoStudyPlanner .st-task {
-      padding: 15px 16px;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      border-bottom: 1px solid #edf2f7;
-    }
-
-    #autoStudyPlanner .st-task:last-child { border-bottom: 0; }
-
-    #autoStudyPlanner .st-task input[type="checkbox"] {
-      width: 19px;
-      height: 19px;
-      flex: 0 0 19px;
-      margin-top: 2px;
-      accent-color: #2563eb;
-      cursor: pointer;
-    }
-
-    #autoStudyPlanner .st-task-content { flex: 1; }
-
-    #autoStudyPlanner .st-task-title {
-      font-weight: 700;
-      margin-bottom: 5px;
-      line-height: 1.4;
-    }
-
-    #autoStudyPlanner .st-task-meta {
-      font-size: 12px;
-      color: #64748b;
-      line-height: 1.6;
-    }
-
-    #autoStudyPlanner .st-task.st-completed {
-      background: #f0fdf4;
-    }
-
-    #autoStudyPlanner .st-task.st-completed .st-task-title {
-      text-decoration: line-through;
-      color: #15803d;
-    }
-
-    #autoStudyPlanner .st-progress-wrap {
-      margin: 15px 0 20px;
-      background: #e2e8f0;
-      height: 9px;
-      border-radius: 99px;
-      overflow: hidden;
-    }
-
-    #autoStudyPlanner .st-progress {
-      height: 100%;
-      width: 0;
-      background: #22c55e;
-      transition: width .2s;
-    }
-
-    #autoStudyPlanner .st-progress-label {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      font-size: 13px;
-      color: #475569;
-    }
-
-    #autoStudyPlanner .st-message {
-      margin: 0 22px 20px;
-      padding: 12px;
-      border-radius: 10px;
-      background: #fff7ed;
-      color: #9a3412;
-      line-height: 1.5;
-      font-size: 14px;
-    }
-
-    #autoStudyPlanner .st-message[hidden] { display: none; }
-
-    @media (max-width: 600px) {
-      #autoStudyPlanner { padding: 12px 6px; }
-      #autoStudyPlanner .st-form { grid-template-columns: 1fr; padding: 16px; }
-      #autoStudyPlanner .st-full { grid-column: auto; }
-      #autoStudyPlanner .st-results { padding: 0 14px 18px; }
-      #autoStudyPlanner .st-summary { gap: 7px; }
-      #autoStudyPlanner .st-stat { padding: 12px 5px; }
-      #autoStudyPlanner .st-stat strong { font-size: 21px; }
-      #autoStudyPlanner .st-stat span { font-size: 11px; }
-      #autoStudyPlanner .st-message { margin: 0 14px 16px; }
-    }
-
-    @media print {
-      body * { visibility: hidden !important; }
-      #autoStudyPlanner,
-      #autoStudyPlanner * { visibility: visible !important; }
-      #autoStudyPlanner {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        padding: 0;
-        background: white;
-      }
-      #autoStudyPlanner .st-container {
-        box-shadow: none;
-        border: 0;
-      }
-      #autoStudyPlanner .st-form,
-      #autoStudyPlanner .st-actions,
-      #autoStudyPlanner .st-message { display: none !important; }
-      #autoStudyPlanner .st-results[hidden] { display: block !important; }
-      #autoStudyPlanner .st-day { break-inside: avoid; }
-      #autoStudyPlanner .st-hero {
-        background: #172554 !important;
-        print-color-adjust: exact;
+    if (planGenerated) {
+      try {
+        localStorage.setItem("examPlannerProgress", JSON.stringify({
+          examDate: dateInput.value,
+          subjects: $("subjectsInput").value,
+          dailyHours: $("dailyHours").value,
+          sessions
+        }));
+      } catch (e) {
+        // The planner still works if browser storage is unavailable.
       }
     }
-  </style>
+  }
 
-  <div class="st-container">
+  function generatePlan() {
+    showMessage("");
+
+    const examValue = dateInput.value;
+    const hours = Number($("dailyHours").value);
+    const subjects = [...new Set(
+      $("subjectsInput").value.split(/\n/)
+        .map(s => s.trim()).filter(Boolean)
+    )];
+
+    if (!examValue) return showMessage("Please select your exam date.");
+    if (subjects.length === 0) return showMessage("Please enter at least one subject.");
+    if (!Number.isFinite(hours) || hours < 1 || hours > 16)
+      return showMessage("Daily study hours must be between 1 and 16.");
+
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const exam = new Date(examValue + "T00:00:00");
+    const dayCount = Math.round((exam - todayStart) / 86400000);
+
+    if (dayCount < 0) return showMessage("Please choose today or a future exam date.");
+    if (dayCount === 0)
+      return showMessage("Your exam date is today. Choose a future date to generate a revision timetable.");
+
+    // Create up to 180 days of sessions to keep the plan practical.
+    const studyDays = Math.min(dayCount, 180);
+    const sessionCountPerDay = Math.max(1, Math.min(8, Math.ceil(hours)));
+    const newSessions = [];
+
+    for (let d = 0; d < studyDays; d++) {
+      const date = new Date(todayStart);
+      date.setDate(date.getDate() + d);
+
+      for (let n = 0; n < sessionCountPerDay; n++) {
+        const subject = subjects[(d * sessionCountPerDay + n) % subjects.length];
+        const minutes = Math.round(hours * 60 / sessionCountPerDay);
+        const mins = Math.max(15, minutes);
+        const sessionNo = n + 1;
+        const startHour = 8 + n * Math.max(1, Math.floor(12 / sessionCountPerDay));
+        const endHour = startHour + Math.max(1, Math.round(mins / 60));
+        const formatHour = h => {
+          const hour = h % 24;
+          return `${String(hour).padStart(2, "0")}:00`;
+        };
+
+        newSessions.push({
+          id: `${localDate(date)}-${n}-${subject}`,
+          date: localDate(date),
+          subject,
+          minutes: mins,
+          time: `${formatHour(startHour)} – ${formatHour(endHour)}`,
+          task: n % 3 === 0 ? "Review notes and learn key concepts"
+              : n % 3 === 1 ? "Practice questions and exercises"
+              : "Revise mistakes and test your memory",
+          done: false
+        });
+      }
+    }
+
+    // Keep the last day available for final review.
+    const lastDate = new Date(exam);
+    lastDate.setDate(lastDate.getDate() - 1);
+    if (studyDays > 1) {
+      newSessions.forEach(s => {
+        if (s.date === localDate(lastDate)) {
+          s.task = "Final revision and exam preparation";
+        }
+      });
+    }
+
+    sessions = newSessions;
+    planGenerated = true;
+    $("daysLeft").textContent = dayCount;
+    $("plannerResults").hidden = false;
+    renderSessions();
+    updateProgress();
+  }
+
+  function renderSessions() {
+    const container = $("timetableList");
+    container.replaceChildren();
+
+    const groups = {};
+    sessions.forEach((s, i) => {
+      if (!groups[s.date]) groups[s.date] = [];
+      groups[s.date].push({ ...s, index: i });
+    });
+
+    Object.keys(groups).forEach(date => {
+      const day = document.createElement("section");
+      day.className = "planner-day";
+
+      const heading = document.createElement("h3");
+      const dateObj = new Date(date + "T00:00:00");
+      heading.textContent = dateObj.toLocaleDateString(undefined, {
+        weekday: "long", year: "numeric", month: "short", day: "numeric"
+      });
+      day.appendChild(heading);
+
+      groups[date].forEach(s => {
+        const row = document.createElement("div");
+        row.className = "planner-session" + (s.done ? " done" : "");
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = s.done;
+        checkbox.id = "planner-check-" + s.index;
+        checkbox.addEventListener("change", () => {
+          sessions[s.index].done = checkbox.checked;
+          row.classList.toggle("done", checkbox.checked);
+          updateProgress();
+        });
+
+        const label = document.createElement("label");
+        label.htmlFor = checkbox.id;
+
+        const title = document.createElement("strong");
+        title.textContent = `${s.time} · ${s.subject}`;
+        const detail = document.createElement("small");
+        detail.textContent = `${s.task} · ${s.minutes} min`;
+
+        label.append(title, detail);
+        row.append(checkbox, label);
+        day.appendChild(row);
+      });
+
+      container.appendChild(day);
+    });
+  }
+
+  $("generatePlanBtn").addEventListener("click", generatePlan);
+  $("printPlanBtn").addEventListener("click", () => window.print());
+
+  // Restore the last plan if browser storage is available.
+  try {
+    const saved = JSON.parse(localStorage.getItem("examPlannerProgress") || "null");
+    if (saved && Array.isArray(saved.sessions) &&
+        saved.sessions.length && saved.sessions.length <= 1500) {
+      dateInput.value = saved.examDate || "";
+      $("subjectsInput").value = saved.subjects || "";
+      $("dailyHours").value = saved.dailyHours || 3;
+      sessions = saved.sessions;
+      planGenerated = true;
+      $("daysLeft").textContent = Math.max(0, Math.round(
+        (new Date(saved.examDate + "T00:00:00") -
+         new Date(new Date().toDateString())) / 86400000
+      ));
+      $("plannerResults").hidden = false;
+      renderSessions();
+      updateProgress();
+    }
+  } catch (e) {
+    // Ignore invalid or unavailable saved data.
+  }
+})();
+</script>
+<!-- END AUTO EXAM PREPARATION PLANNER -->
+
+</body
+
+  
+
+ <div class="st-container">
     <div class="st-hero">
       <h2>📚 Auto Study Timetable Generator</h2>
       <p>Plan smarter, study better and get ready for your exams.</p>
