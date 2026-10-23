@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,8 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>R/VIDYARAJA VIDYALAYA | Student Portal</title>
 
-<!-- PDF DOWNLOAD LIBRARIES -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- PDF DOWNLOAD LIBRARY -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
@@ -622,140 +621,178 @@ $("lookupBtn").addEventListener("click",async()=>{
   }
 });
 
-/* PDF DOWNLOAD FEATURE */
-$("downloadMarksPdfBtn").addEventListener("click",async()=>{
+/* FIXED PDF DOWNLOAD
+   Reads the visible subject rows and summary rows directly.
+   No screenshot/canvas is used.
+*/
+$("downloadMarksPdfBtn").addEventListener("click",()=>{
   const btn=$("downloadMarksPdfBtn");
 
-  if(!window.html2canvas||!window.jspdf){
+  if(!window.jspdf||!window.jspdf.jsPDF){
     alert("PDF library failed to load. Check your internet connection and reload the website.");
     return;
   }
 
-  if(!$("marksRows").children.length){
-    alert("No marks are available to download.");
+  const rows=$("marksRows");
+  const summary=$("marksSummary");
+
+  if(!rows||rows.rows.length===0){
+    alert("No subject marks found. Please load your marks first.");
     return;
   }
 
   btn.disabled=true;
   btn.textContent="GENERATING PDF...";
 
-  let report=null;
-
   try{
-    report=document.createElement("div");
-    report.style.cssText="position:fixed;left:-10000px;top:0;width:760px;padding:36px;background:#fff;color:#111;font-family:Arial,sans-serif;box-sizing:border-box;";
-
-    const heading=document.createElement("h1");
-    heading.textContent="R/VIDYARAJA VIDYALAYA";
-    heading.style.cssText="text-align:center;color:#176b25;font-size:25px;margin-bottom:10px;";
-
-    const subtitle=document.createElement("h2");
-    subtitle.textContent="TERM TEST MARKS REPORT";
-    subtitle.style.cssText="text-align:center;font-size:19px;margin-bottom:25px;";
-
-    const studentInfo=document.createElement("p");
-    studentInfo.textContent=$("marksStudentInfo").textContent;
-    studentInfo.style.cssText="font-size:15px;line-height:2;margin-bottom:12px;";
-
-    const examInfo=document.createElement("p");
-    examInfo.textContent=$("marksExamTitle").textContent;
-    examInfo.style.cssText="font-size:15px;margin-bottom:20px;";
-
-    const table=document.createElement("table");
-    table.style.cssText="width:100%;border-collapse:collapse;font-size:14px;";
-
-    const thead=document.createElement("thead");
-    const headerRow=document.createElement("tr");
-
-    ["Subject","Marks"].forEach((label,index)=>{
-      const th=document.createElement("th");
-      th.textContent=label;
-      th.style.cssText="padding:12px;border:1px solid #888;background:#e5f5e7;text-align:"+(index===0?"left":"right")+";";
-      headerRow.appendChild(th);
-    });
-
-    thead.appendChild(headerRow);
-
-    const tbody=document.createElement("tbody");
-
-    Array.from($("marksRows").rows).forEach(row=>{
-      const tr=document.createElement("tr");
-
-      Array.from(row.cells).forEach((cell,index)=>{
-        const td=document.createElement("td");
-        td.textContent=cell.textContent;
-        td.style.cssText="padding:12px;border:1px solid #888;text-align:"+(index===0?"left":"right")+";";
-        tr.appendChild(td);
-      });
-
-      tbody.appendChild(tr);
-    });
-
-    const tfoot=document.createElement("tfoot");
-
-    Array.from($("marksSummary").rows).forEach(row=>{
-      const tr=document.createElement("tr");
-
-      Array.from(row.cells).forEach((cell,index)=>{
-        const td=document.createElement("td");
-        td.textContent=cell.textContent;
-        td.style.cssText="padding:12px;border:1px solid #888;font-weight:bold;background:#f0f7f0;text-align:"+(index===0?"left":"right")+";";
-        tr.appendChild(td);
-      });
-
-      tfoot.appendChild(tr);
-    });
-
-    table.append(thead,tbody,tfoot);
-
-    const footer=document.createElement("p");
-    footer.textContent="R/VIDYARAJA VIDYALAYA | Student Information Portal";
-    footer.style.cssText="margin-top:30px;text-align:center;color:#555;font-size:11px;";
-
-    report.append(heading,subtitle,studentInfo,examInfo,table,footer);
-    document.body.appendChild(report);
-
-    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-
-    const canvas=await window.html2canvas(report,{
-      scale:2,
-      backgroundColor:"#ffffff",
-      useCORS:true,
-      logging:false
-    });
-
     const {jsPDF}=window.jspdf;
-    const pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+    const pdf=new jsPDF({
+      orientation:"portrait",
+      unit:"mm",
+      format:"a4"
+    });
 
-    const image=canvas.toDataURL("image/jpeg",0.95);
     const pageWidth=pdf.internal.pageSize.getWidth();
     const pageHeight=pdf.internal.pageSize.getHeight();
-    const margin=10;
-    const imageWidth=pageWidth-margin*2;
-    const imageHeight=canvas.height*imageWidth/canvas.width;
-    const printableHeight=pageHeight-margin*2;
+    const left=16;
+    const right=pageWidth-16;
+    const contentWidth=right-left;
+    const rowHeight=9;
+    let y=20;
 
-    let remainingHeight=imageHeight;
-    let position=margin;
-
-    pdf.addImage(image,"JPEG",margin,position,imageWidth,imageHeight);
-    remainingHeight-=printableHeight;
-
-    while(remainingHeight>0){
-      pdf.addPage();
-      position=margin-(imageHeight-remainingHeight);
-      pdf.addImage(image,"JPEG",margin,position,imageWidth,imageHeight);
-      remainingHeight-=printableHeight;
+    function addPageIfNeeded(requiredHeight){
+      if(y+requiredHeight>pageHeight-18){
+        pdf.addPage();
+        y=20;
+      }
     }
 
-    const index=$("marksAdmission").value.trim().replace(/[^a-zA-Z0-9_-]/g,"_");
+    function drawHeader(){
+      pdf.setFont("helvetica","bold");
+      pdf.setFontSize(18);
+      pdf.setTextColor(23,107,37);
+      pdf.text("R/VIDYARAJA VIDYALAYA",pageWidth/2,y,{align:"center"});
+
+      y+=9;
+      pdf.setFontSize(12);
+      pdf.setTextColor(25,25,25);
+      pdf.text("TERM TEST MARKS REPORT",pageWidth/2,y,{align:"center"});
+
+      y+=12;
+    }
+
+    function drawTableHeader(){
+      pdf.setFillColor(225,243,228);
+      pdf.setDrawColor(130,150,130);
+      pdf.rect(left,y,contentWidth,rowHeight,"FD");
+
+      pdf.setFont("helvetica","bold");
+      pdf.setFontSize(10);
+      pdf.setTextColor(20,80,30);
+      pdf.text("Subject",left+3,y+5.8);
+      pdf.text("Marks",right-3,y+5.8,{align:"right"});
+
+      y+=rowHeight;
+    }
+
+    drawHeader();
+
+    // Student details
+    pdf.setFont("helvetica","normal");
+    pdf.setFontSize(10);
+    pdf.setTextColor(25,25,25);
+
+    const studentInfo=$("marksStudentInfo").textContent.trim();
+    const studentLines=pdf.splitTextToSize(studentInfo,contentWidth);
+
+    addPageIfNeeded(studentLines.length*5+12);
+    pdf.text(studentLines,left,y);
+    y+=studentLines.length*5+4;
+
+    const examInfo=$("marksExamTitle").textContent.trim();
+    const examLines=pdf.splitTextToSize(examInfo,contentWidth);
+
+    addPageIfNeeded(examLines.length*5+10);
+    pdf.text(examLines,left,y);
+    y+=examLines.length*5+7;
+
+    drawTableHeader();
+
+    // SUBJECT MARKS: take actual values from the page
+    Array.from(rows.rows).forEach(row=>{
+      const subject=(row.cells[0]?.textContent||"").trim();
+      const mark=(row.cells[1]?.textContent||"").trim();
+
+      if(!subject||!mark)return;
+
+      const subjectLines=pdf.splitTextToSize(subject,contentWidth-42);
+      const actualHeight=Math.max(rowHeight,subjectLines.length*5+4);
+
+      addPageIfNeeded(actualHeight+rowHeight);
+
+      // Repeat table heading after a page break
+      if(y===20){
+        drawTableHeader();
+      }
+
+      pdf.setDrawColor(190,200,190);
+      pdf.rect(left,y,contentWidth,actualHeight);
+
+      pdf.setFont("helvetica","normal");
+      pdf.setFontSize(10);
+      pdf.setTextColor(25,25,25);
+      pdf.text(subjectLines,left+3,y+5);
+
+      pdf.text(mark,right-3,y+5,{align:"right"});
+
+      y+=actualHeight;
+    });
+
+    // TOTAL AND AVERAGE
+    Array.from(summary.rows).forEach(row=>{
+      const label=(row.cells[0]?.textContent||"").trim();
+      const value=(row.cells[1]?.textContent||"").trim();
+
+      if(!label||!value)return;
+
+      addPageIfNeeded(rowHeight);
+
+      pdf.setFillColor(240,248,240);
+      pdf.setDrawColor(130,150,130);
+      pdf.rect(left,y,contentWidth,rowHeight,"FD");
+
+      pdf.setFont("helvetica","bold");
+      pdf.setFontSize(10);
+      pdf.setTextColor(20,80,30);
+      pdf.text(label,left+3,y+5.8);
+      pdf.text(value,right-3,y+5.8,{align:"right"});
+
+      y+=rowHeight;
+    });
+
+    // Footer
+    addPageIfNeeded(15);
+    y+=7;
+
+    pdf.setFont("helvetica","normal");
+    pdf.setFontSize(8);
+    pdf.setTextColor(100,100,100);
+    pdf.text(
+      "R/VIDYARAJA VIDYALAYA | Student Information Portal",
+      pageWidth/2,
+      y,
+      {align:"center"}
+    );
+
+    const index=$("marksAdmission").value.trim()
+      .replace(/[^a-zA-Z0-9_-]/g,"_")||"Student";
+
     pdf.save("Vidy raja_Term_Test_Marks_"+index+".pdf");
 
   }catch(error){
     console.error("PDF generation failed:",error);
-    alert("PDF could not be generated. Please try again.");
+    alert("PDF generation failed: "+(error.message||"Please reload and try again."));
   }finally{
-    if(report)report.remove();
     btn.disabled=false;
     btn.textContent="📄 DOWNLOAD MARKS PDF";
   }
@@ -909,4 +946,3 @@ musicToggle.addEventListener("click",async()=>{
 </script>
 </body>
 </html>
-```
