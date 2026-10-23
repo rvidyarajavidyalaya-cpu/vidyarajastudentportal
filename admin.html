@@ -5,57 +5,211 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>R/VIDYARAJA VIDYALAYA | Admin Dashboard</title>
+
 <style>
-:root{--green:#39ff14;--yellow:#eaff00;--bg:#050a06;--panel:#0b160d;--muted:#b7c9ba;--red:#ff5757}
+:root{
+  --green:#39ff14;
+  --yellow:#eaff00;
+  --bg:#050a06;
+  --panel:#0b160d;
+  --muted:#b7c9ba;
+  --red:#ff5757
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{min-height:100vh;background:radial-gradient(ellipse at top,#17351c,#07100a 50%,#030604);color:#f5fff5;font-family:Arial,"Noto Sans Sinhala",sans-serif;padding:22px 14px}
+body{
+  min-height:100vh;
+  background:radial-gradient(ellipse at top,#17351c,#07100a 50%,#030604);
+  color:#f5fff5;
+  font-family:Arial,"Noto Sans Sinhala",sans-serif;
+  padding:22px 14px
+}
 main{max-width:1200px;margin:auto}
-header,.panel{background:rgba(7,19,10,.97);border:1px solid #39ff1466;border-radius:18px;box-shadow:0 0 22px #39ff1428;padding:22px;margin-bottom:20px}
+header,.panel{
+  background:rgba(7,19,10,.97);
+  border:1px solid #39ff1466;
+  border-radius:18px;
+  box-shadow:0 0 22px #39ff1428;
+  padding:22px;
+  margin-bottom:20px
+}
 header{text-align:center}
 h1{color:var(--yellow);font-size:clamp(22px,4vw,32px)}
 h2{color:var(--yellow);font-size:20px;margin-bottom:16px}
 h3{color:var(--green)}
 .sub{color:var(--muted);font-size:13px;margin-top:8px}
-.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-label{display:block;color:var(--green);font-size:13px;margin:13px 0 6px}
-input,select{width:100%;padding:12px;border-radius:9px;border:1px solid #426647;background:#07100a;color:#fff;outline:none}
-input:focus,select:focus{border-color:var(--green);box-shadow:0 0 10px #39ff1433}
-button{border:0;border-radius:9px;padding:11px 16px;font-weight:700;cursor:pointer;margin:6px 6px 0 0}
-.primary{background:var(--green);color:#031003}.secondary{background:#18251a;color:#fff;border:1px solid #58745b}.danger{background:#471414;color:#fff;border:1px solid var(--red)}
+.formgrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:12px
+}
+label{
+  display:block;
+  color:var(--green);
+  font-size:13px;
+  margin:13px 0 6px
+}
+input,select{
+  width:100%;
+  padding:12px;
+  border-radius:9px;
+  border:1px solid #426647;
+  background:#07100a;
+  color:#fff;
+  outline:none
+}
+input:focus,select:focus{
+  border-color:var(--green);
+  box-shadow:0 0 10px #39ff1433
+}
+button{
+  border:0;
+  border-radius:9px;
+  padding:11px 16px;
+  font-weight:700;
+  cursor:pointer;
+  margin:6px 6px 0 0
+}
+.primary{background:var(--green);color:#031003}
+.secondary{background:#18251a;color:#fff;border:1px solid #58745b}
+.danger{background:#471414;color:#fff;border:1px solid var(--red)}
 button:disabled{opacity:.5;cursor:wait}
-.status{margin-top:12px;line-height:1.6;color:var(--muted);overflow-wrap:anywhere}.error{color:#ff8585!important}.success{color:var(--green)!important}
+.status{
+  margin-top:12px;
+  line-height:1.6;
+  color:var(--muted);
+  overflow-wrap:anywhere
+}
+.error{color:#ff8585!important}
+.success{color:var(--green)!important}
 .hidden{display:none!important}
-.toolbar{display:grid;grid-template-columns:minmax(220px,1fr) minmax(150px,220px) auto auto;gap:10px;align-items:end;margin-bottom:14px}
-.toolbar label{margin-top:0}.toolbar input,.toolbar select{min-width:0}
+.toolbar{
+  display:grid;
+  grid-template-columns:minmax(220px,1fr) minmax(150px,220px) auto auto;
+  gap:10px;
+  align-items:end;
+  margin-bottom:14px
+}
+.toolbar label{margin-top:0}
+.toolbar input,.toolbar select{min-width:0}
 .tablewrap{overflow:auto;border:1px solid #29472d;border-radius:10px}
 table{border-collapse:collapse;width:100%;min-width:780px}
-th,td{padding:11px;text-align:left;border-bottom:1px solid #243b27;font-size:13px;vertical-align:top}
-th{background:#102315;color:var(--yellow)}tr:hover td{background:#0e1b10}
+th,td{
+  padding:11px;
+  text-align:left;
+  border-bottom:1px solid #243b27;
+  font-size:13px;
+  vertical-align:top
+}
+th{background:#102315;color:var(--yellow)}
+tr:hover td{background:#0e1b10}
 .small{font-size:12px;color:var(--muted);line-height:1.6}
-.detailgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
-.detail{border:1px solid #29472d;border-radius:9px;padding:12px;background:#08120a;overflow-wrap:anywhere}
-.detail strong{display:block;color:var(--green);font-size:12px;margin-bottom:6px}.detail span{white-space:pre-wrap;overflow-wrap:anywhere}
-.topline{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
-.pill{display:inline-block;border:1px solid #406444;border-radius:20px;padding:5px 9px;color:var(--green);font-size:12px}
-.markgrid{display:grid;grid-template-columns:2fr 1fr;gap:8px;margin:8px 0}.markgrid input{min-width:0}
-.markhead{color:var(--green);font-size:13px;margin:16px 0 6px}.wide{width:100%}
-.subject-row{display:grid;grid-template-columns:minmax(0,2fr) minmax(80px,1fr) auto;gap:9px;align-items:end;margin:8px 0}
-.subject-row button{margin:0}.subject-row label{margin-top:0}
-#loadingOverlay{position:fixed;inset:0;z-index:9999;background:rgba(2,8,3,.96);display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;transition:opacity .25s}
-.loading-card{width:min(340px,100%);padding:28px;border:1px solid #39ff1477;border-radius:20px;background:#08120a;box-shadow:0 0 35px #39ff1433}
-.loading-logo{width:90px;height:90px;object-fit:contain;margin:0 auto 15px;display:block;filter:drop-shadow(0 0 10px #39ff14)}
-.spinner{width:46px;height:46px;border:4px solid #27472b;border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:18px auto}
-.loading-title{color:var(--yellow);font-weight:bold;letter-spacing:1px}.loading-text{color:var(--muted);font-size:13px;margin-top:8px}
+.detailgrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:10px
+}
+.detail{
+  border:1px solid #29472d;
+  border-radius:9px;
+  padding:12px;
+  background:#08120a;
+  overflow-wrap:anywhere
+}
+.detail strong{
+  display:block;
+  color:var(--green);
+  font-size:12px;
+  margin-bottom:6px
+}
+.detail span{white-space:pre-wrap;overflow-wrap:anywhere}
+.topline{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap
+}
+.pill{
+  display:inline-block;
+  border:1px solid #406444;
+  border-radius:20px;
+  padding:5px 9px;
+  color:var(--green);
+  font-size:12px
+}
+.markgrid{display:grid;grid-template-columns:2fr 1fr;gap:8px;margin:8px 0}
+.markgrid input{min-width:0}
+.markhead{color:var(--green);font-size:13px;margin:16px 0 6px}
+.wide{width:100%}
+.subject-row{
+  display:grid;
+  grid-template-columns:minmax(0,2fr) minmax(80px,1fr) auto;
+  gap:9px;
+  align-items:end;
+  margin:8px 0
+}
+.subject-row button{margin:0}
+.subject-row label{margin-top:0}
+#loadingOverlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:rgba(2,8,3,.96);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px;
+  transition:opacity .25s
+}
+.loading-card{
+  width:min(340px,100%);
+  padding:28px;
+  border:1px solid #39ff1477;
+  border-radius:20px;
+  background:#08120a;
+  box-shadow:0 0 35px #39ff1433
+}
+.loading-logo{
+  width:90px;
+  height:90px;
+  object-fit:contain;
+  margin:0 auto 15px;
+  display:block;
+  filter:drop-shadow(0 0 10px #39ff14)
+}
+.spinner{
+  width:46px;
+  height:46px;
+  border:4px solid #27472b;
+  border-top-color:var(--green);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+  margin:18px auto
+}
+.loading-title{color:var(--yellow);font-weight:bold;letter-spacing:1px}
+.loading-text{color:var(--muted);font-size:13px;margin-top:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:760px){.toolbar{grid-template-columns:1fr 1fr}.toolbar button{width:100%;margin-right:0}.panel,header{padding:15px}}
-@media(max-width:500px){.toolbar{grid-template-columns:1fr}.subject-row{grid-template-columns:1fr 90px auto}.topline{align-items:flex-start}}
+
+@media(max-width:760px){
+  .toolbar{grid-template-columns:1fr 1fr}
+  .toolbar button{width:100%;margin-right:0}
+  .panel,header{padding:15px}
+}
+@media(max-width:500px){
+  .toolbar{grid-template-columns:1fr}
+  .subject-row{grid-template-columns:1fr 90px auto}
+  .topline{align-items:flex-start}
+}
 </style>
 </head>
+
 <body>
 
 <div id="loadingOverlay" role="status" aria-live="polite">
   <div class="loading-card">
-    <img class="loading-logo" src="school-logo.png" alt="School logo" onerror="this.style.display='none'">
+    <img class="loading-logo" src="school-logo.png" alt="School logo"
+         onerror="this.style.display='none'">
     <div class="loading-title">R/VIDYARAJA VIDYALAYA</div>
     <div class="spinner"></div>
     <div class="loading-text" id="loadingText">Loading Admin Portal...</div>
@@ -68,13 +222,21 @@ th{background:#102315;color:var(--yellow)}tr:hover td{background:#0e1b10}
 </header>
 
 <main>
+
 <section class="panel" id="loginPanel">
   <h2>ADMIN LOGIN</h2>
   <p class="small">Sign in using the authorized administrator's Firebase email and password.</p>
+
   <form id="loginForm">
     <div class="formgrid">
-      <div><label for="email">Admin Email</label><input id="email" type="email" autocomplete="username" required></div>
-      <div><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div>
+      <div>
+        <label for="email">Admin Email</label>
+        <input id="email" type="email" autocomplete="username" required>
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+      </div>
     </div>
     <button class="primary" id="loginBtn" type="submit">LOGIN</button>
     <p class="status" id="loginStatus" role="status" aria-live="polite"></p>
@@ -83,43 +245,116 @@ th{background:#102315;color:var(--yellow)}tr:hover td{background:#0e1b10}
 
 <section class="panel hidden" id="dashboard">
   <div class="topline">
-    <div><h2 style="margin-bottom:5px">STUDENT RECORDS</h2><p class="small" id="adminIdentity"></p></div>
-    <div><span class="pill" id="recordCount">0 records</span><button class="secondary" id="refreshBtn" type="button">REFRESH</button><button class="danger" id="logoutBtn" type="button">LOG OUT</button></div>
+    <div>
+      <h2 style="margin-bottom:5px">STUDENT RECORDS</h2>
+      <p class="small" id="adminIdentity"></p>
+    </div>
+    <div>
+      <span class="pill" id="recordCount">0 records</span>
+      <button class="secondary" id="refreshBtn" type="button">REFRESH</button>
+      <button class="danger" id="logoutBtn" type="button">LOG OUT</button>
+    </div>
   </div>
-  <p class="small">Choose a grade to filter students. Use VIEW to see the submitted information or REMOVE to delete a record.</p>
+
+  <p class="small">
+    Choose a grade to filter students. Use VIEW to see submitted information
+    or REMOVE to delete a record.
+  </p>
+
   <div class="toolbar">
-    <div><label for="searchInput">Search students</label><input id="searchInput" placeholder="Admission number, name, phone..."></div>
-    <div><label for="gradeFilter">Filter by grade</label><select id="gradeFilter"><option value="">All Grades</option><option value="6">Grade 6</option><option value="7">Grade 7</option><option value="8">Grade 8</option><option value="9">Grade 9</option><option value="10">Grade 10</option><option value="11">Grade 11</option><option value="12">Grade 12</option><option value="13">Grade 13</option></select></div>
+    <div>
+      <label for="searchInput">Search students</label>
+      <input id="searchInput" placeholder="Admission number, name, phone...">
+    </div>
+    <div>
+      <label for="gradeFilter">Filter by grade</label>
+      <select id="gradeFilter">
+        <option value="">All Grades</option>
+        <option value="6">Grade 6</option>
+        <option value="7">Grade 7</option>
+        <option value="8">Grade 8</option>
+        <option value="9">Grade 9</option>
+        <option value="10">Grade 10</option>
+        <option value="11">Grade 11</option>
+        <option value="12">Grade 12</option>
+        <option value="13">Grade 13</option>
+      </select>
+    </div>
     <button class="primary" id="searchBtn" type="button">SEARCH</button>
     <button class="secondary" id="clearFiltersBtn" type="button">CLEAR FILTERS</button>
   </div>
+
   <p class="status" id="listStatus" role="status" aria-live="polite"></p>
+
   <div class="tablewrap">
     <table>
-      <thead><tr><th>Admission / Index No.</th><th>Full Name</th><th>Grade</th><th>Telephone</th><th>Submitted</th><th>Actions</th></tr></thead>
-      <tbody id="studentRows"><tr><td colspan="6">Login to view records.</td></tr></tbody>
+      <thead>
+        <tr>
+          <th>Admission / Index No.</th>
+          <th>Full Name</th>
+          <th>Grade</th>
+          <th>Telephone</th>
+          <th>Submitted</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="studentRows">
+        <tr><td colspan="6">Login to view records.</td></tr>
+      </tbody>
     </table>
   </div>
 </section>
 
 <section class="panel hidden" id="detailPanel">
-  <div class="topline"><h2>STUDENT DETAILS</h2><button class="secondary" id="closeDetailBtn" type="button">CLOSE DETAILS</button></div>
+  <div class="topline">
+    <h2>STUDENT DETAILS</h2>
+    <button class="secondary" id="closeDetailBtn" type="button">CLOSE DETAILS</button>
+  </div>
   <p class="small">Information submitted through the student portal.</p>
   <div class="detailgrid" id="detailGrid"></div>
 </section>
 
 <section class="panel hidden" id="marksPanel">
-  <div class="topline"><h2>FILL MARKS / UPDATE MARKS</h2><button class="secondary" id="closeMarksBtn" type="button">CLOSE</button></div>
-  <p class="small">Enter the student's admission/index number, add subjects and marks out of 100. Saving again updates the marks record.</p>
+  <div class="topline">
+    <h2>FILL MARKS / UPDATE MARKS</h2>
+    <button class="secondary" id="closeMarksBtn" type="button">CLOSE</button>
+  </div>
+
+  <p class="small">
+    Enter the student's admission/index number, add subjects and marks out of 100.
+    Saving again updates the marks record.
+  </p>
+
   <form id="marksForm">
     <div class="formgrid" style="margin-top:14px">
-      <div><label for="marksAdmission">Admission / Index Number</label><input id="marksAdmission" required maxlength="80" placeholder="Student admission number"></div>
-      <div><label for="marksStudentName">Student Name</label><input id="marksStudentName" readonly placeholder="Student name appears here"></div>
-      <div><label for="marksGrade">Grade</label><select id="marksGrade" required><option value="">Select Grade</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option></select></div>
-      <div><label for="examTitle">Term Test Name</label><input id="examTitle" required maxlength="120" value="Term Test 1"></div>
+      <div>
+        <label for="marksAdmission">Admission / Index Number</label>
+        <input id="marksAdmission" required maxlength="80"
+               placeholder="Student admission number">
+      </div>
+      <div>
+        <label for="marksStudentName">Student Name</label>
+        <input id="marksStudentName" readonly placeholder="Student name appears here">
+      </div>
+      <div>
+        <label for="marksGrade">Grade</label>
+        <select id="marksGrade" required>
+          <option value="">Select Grade</option>
+          <option value="6">6</option><option value="7">7</option>
+          <option value="8">8</option><option value="9">9</option>
+          <option value="10">10</option><option value="11">11</option>
+          <option value="12">12</option><option value="13">13</option>
+        </select>
+      </div>
+      <div>
+        <label for="examTitle">Term Test Name</label>
+        <input id="examTitle" required maxlength="120" value="Term Test 1">
+      </div>
     </div>
+
     <p class="markhead">SUBJECTS AND MARKS (0–100)</p>
     <div id="subjectFields"></div>
+
     <button class="secondary" id="addSubjectBtn" type="button">+ ADD SUBJECT</button>
     <p class="status" id="marksStatus" role="status" aria-live="polite"></p>
     <button class="primary" id="saveMarksBtn" type="submit">SAVE / UPDATE MARKS</button>
@@ -127,12 +362,29 @@ th{background:#102315;color:var(--yellow)}tr:hover td{background:#0e1b10}
     <button class="secondary" id="clearMarksBtn" type="button">CLEAR FORM</button>
   </form>
 </section>
+
 </main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, deleteDoc, setDoc, getDoc, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+  setDoc,
+  getDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
@@ -145,10 +397,13 @@ const firebaseConfig = {
 };
 
 const ADMIN_UID = "IpFcr0JLloUN2ENuJ70k8wgBzp22";
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
 const $ = id => document.getElementById(id);
+
 let allStudents = [];
 let isAdmin = false;
 
@@ -157,25 +412,64 @@ function showStatus(id, message, isError=false, isSuccess=false) {
   el.textContent = message;
   el.className = "status" + (isError ? " error" : isSuccess ? " success" : "");
 }
-function setHidden(id, hidden) { $(id).classList.toggle("hidden", hidden); }
+
+function setHidden(id, hidden) {
+  $(id).classList.toggle("hidden", hidden);
+}
+
 function showLoading(message="Loading...") {
   $("loadingText").textContent = message;
   $("loadingOverlay").classList.remove("hidden");
 }
-function hideLoading() { $("loadingOverlay").classList.add("hidden"); }
-function norm(value) { return String(value ?? "").trim(); }
-function admissionOf(s) { return norm(s.admission ?? s.admissionNumber ?? s.indexNumber ?? s.studentIndexNumber ?? s.index ?? ""); }
-function nameOf(s) { return norm(s.fullName ?? s.name ?? s.studentName ?? ""); }
-function gradeOf(s) { return norm(s.grade ?? "").replace(/^Grade\s*/i, ""); }
-function phoneOf(s) { return norm(s.telephone ?? s.phone ?? s.telephoneNumber ?? s.telephoneNo ?? ""); }
+
+function hideLoading() {
+  $("loadingOverlay").classList.add("hidden");
+}
+
+function norm(value) {
+  return String(value ?? "").trim();
+}
+
+function admissionOf(s) {
+  return norm(
+    s.admission ??
+    s.admissionNumber ??
+    s.indexNumber ??
+    s.studentIndexNumber ??
+    s.index ??
+    ""
+  );
+}
+
+function nameOf(s) {
+  return norm(s.fullName ?? s.name ?? s.studentName ?? "");
+}
+
+function gradeOf(s) {
+  return norm(s.grade ?? "").replace(/^Grade\s*/i, "");
+}
+
+function phoneOf(s) {
+  return norm(
+    s.telephone ??
+    s.phone ??
+    s.telephoneNumber ??
+    s.telephoneNo ??
+    ""
+  );
+}
 
 function displayDate(value) {
   if (!value) return "—";
   try {
-    if (typeof value.toDate === "function") return value.toDate().toLocaleString();
+    if (typeof value.toDate === "function") {
+      return value.toDate().toLocaleString();
+    }
     const d = new Date(value);
     return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleString();
-  } catch { return String(value); }
+  } catch {
+    return String(value);
+  }
 }
 
 function addCell(tr, value) {
@@ -186,21 +480,35 @@ function addCell(tr, value) {
 }
 
 function matchesSearch(s, query) {
-  const fields = [admissionOf(s),nameOf(s),gradeOf(s),phoneOf(s),norm(s.whatsapp),norm(s.email)];
+  const fields = [
+    admissionOf(s),
+    nameOf(s),
+    gradeOf(s),
+    phoneOf(s),
+    norm(s.whatsapp),
+    norm(s.email)
+  ];
   return fields.some(v => v.toLowerCase().includes(query));
 }
 
 function renderStudents() {
   const tbody = $("studentRows");
   tbody.replaceChildren();
+
   const q = $("searchInput").value.trim().toLowerCase();
   const grade = $("gradeFilter").value;
-  const filtered = allStudents.filter(s => (!grade || gradeOf(s) === grade) && (!q || matchesSearch(s,q)));
-  $("recordCount").textContent = `${filtered.length} / ${allStudents.length} records`;
+
+  const filtered = allStudents.filter(s =>
+    (!grade || gradeOf(s) === grade) &&
+    (!q || matchesSearch(s, q))
+  );
+
+  $("recordCount").textContent =
+    `${filtered.length} / ${allStudents.length} records`;
 
   if (!filtered.length) {
     const tr = document.createElement("tr");
-    const td = addCell(tr,"No matching student records.");
+    const td = addCell(tr, "No matching student records.");
     td.colSpan = 6;
     tbody.appendChild(tr);
     return;
@@ -208,11 +516,12 @@ function renderStudents() {
 
   filtered.forEach(s => {
     const tr = document.createElement("tr");
-    addCell(tr,admissionOf(s) || s.id);
-    addCell(tr,nameOf(s));
-    addCell(tr,gradeOf(s) ? "Grade " + gradeOf(s) : "—");
-    addCell(tr,phoneOf(s));
-    addCell(tr,displayDate(s.submittedAt ?? s.createdAt ?? s.timestamp));
+
+    addCell(tr, admissionOf(s) || s.id);
+    addCell(tr, nameOf(s));
+    addCell(tr, gradeOf(s) ? "Grade " + gradeOf(s) : "—");
+    addCell(tr, phoneOf(s));
+    addCell(tr, displayDate(s.submittedAt ?? s.createdAt ?? s.timestamp));
 
     const actions = document.createElement("td");
 
@@ -220,21 +529,21 @@ function renderStudents() {
     view.type = "button";
     view.className = "primary";
     view.textContent = "VIEW";
-    view.addEventListener("click",() => viewStudent(s));
+    view.addEventListener("click", () => viewStudent(s));
 
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "danger";
     remove.textContent = "REMOVE";
-    remove.addEventListener("click",() => removeStudent(s));
+    remove.addEventListener("click", () => removeStudent(s));
 
     const marks = document.createElement("button");
     marks.type = "button";
     marks.className = "secondary";
     marks.textContent = "MARKS";
-    marks.addEventListener("click",() => openMarksForStudent(s));
+    marks.addEventListener("click", () => openMarksForStudent(s));
 
-    actions.append(view,remove,marks);
+    actions.append(view, remove, marks);
     tr.appendChild(actions);
     tbody.appendChild(tr);
   });
@@ -242,17 +551,29 @@ function renderStudents() {
 
 async function loadStudents() {
   if (!isAdmin) return;
+
   showLoading("Loading student information...");
-  showStatus("listStatus","Loading student records...");
+  showStatus("listStatus", "Loading student records...");
 
   try {
-    const snapshot = await getDocs(collection(db,"students"));
-    allStudents = snapshot.docs.map(d => ({ id:d.id, ...d.data() }));
+    const snapshot = await getDocs(collection(db, "students"));
+    allStudents = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+
     renderStudents();
-    showStatus("listStatus",`Loaded ${allStudents.length} student record(s).`,false,true);
-  } catch(err) {
-    console.error("Load students error:",err);
-    showStatus("listStatus",`Could not load student records: ${err.code || err.message}. Check Firestore rules.`,true);
+
+    showStatus(
+      "listStatus",
+      `Loaded ${allStudents.length} student record(s).`,
+      false,
+      true
+    );
+  } catch (err) {
+    console.error("Load students error:", err);
+    showStatus(
+      "listStatus",
+      `Could not load student records: ${err.code || err.message}. Check Firestore rules.`,
+      true
+    );
   } finally {
     hideLoading();
   }
@@ -263,44 +584,51 @@ function viewStudent(s) {
   grid.replaceChildren();
 
   const labels = [
-    ["Admission / Index Number",admissionOf(s) || s.id],
-    ["Full Name",s.fullName ?? s.name ?? s.studentName],
-    ["Date of Birth",s.dob ?? s.dateOfBirth ?? s.birthDate],
-    ["Parent / Guardian",s.parent ?? s.parentName ?? s.motherFatherGuardian ?? s.guardian],
-    ["Telephone",s.telephone ?? s.phone ?? s.telephoneNumber],
-    ["WhatsApp",s.whatsapp ?? s.whatsappNumber],
-    ["Email",s.email],
-    ["Grade",gradeOf(s)],
-    ["Address",s.address],
-    ["A/L Subjects",s.alSubjects ?? s.alSubjectsText ?? s.subjects],
-    ["O/L Results",s.olResults ?? s.olResultsText],
-    ["Sports Achievements",s.sports ?? s.sportsAchievements],
-    ["Extracurricular Activities",s.extra ?? s.extracurricularActivities],
-    ["Verification Code",s.verificationCode ?? s.code],
-    ["Submitted At",displayDate(s.submittedAt ?? s.createdAt ?? s.timestamp)]
+    ["Admission / Index Number", admissionOf(s) || s.id],
+    ["Full Name", s.fullName ?? s.name ?? s.studentName],
+    ["Date of Birth", s.dob ?? s.dateOfBirth ?? s.birthDate],
+    ["Parent / Guardian", s.parent ?? s.parentName ?? s.motherFatherGuardian ?? s.guardian],
+    ["Telephone", s.telephone ?? s.phone ?? s.telephoneNumber],
+    ["WhatsApp", s.whatsapp ?? s.whatsappNumber],
+    ["Email", s.email],
+    ["Grade", gradeOf(s)],
+    ["Address", s.address],
+    ["A/L Subjects", s.alSubjects ?? s.alSubjectsText ?? s.al],
+    ["O/L Results", s.olResults ?? s.olResultsText ?? s.ol],
+    ["Sports Achievements", s.sports ?? s.sportsAchievements],
+    ["Extracurricular Activities", s.extra ?? s.extracurricularActivities],
+    ["Verification Code", s.verificationCode ?? s.code],
+    ["Submitted At", displayDate(s.submittedAt ?? s.createdAt ?? s.timestamp)]
   ];
 
-  labels.forEach(([label,value]) => {
+  labels.forEach(([label, value]) => {
     const box = document.createElement("div");
     box.className = "detail";
+
     const strong = document.createElement("strong");
     strong.textContent = label;
+
     const span = document.createElement("span");
 
-    if (value && typeof value === "object") span.textContent = JSON.stringify(value,null,2);
-    else span.textContent = norm(value) || "Not provided";
+    if (value && typeof value === "object") {
+      span.textContent = JSON.stringify(value, null, 2);
+    } else {
+      span.textContent = norm(value) || "Not provided";
+    }
 
-    box.append(strong,span);
+    box.append(strong, span);
     grid.appendChild(box);
   });
 
-  setHidden("detailPanel",false);
-  $("detailPanel").scrollIntoView({behavior:"smooth",block:"start"});
+  setHidden("detailPanel", false);
+  $("detailPanel").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /*
-  DELETE STUDENT + RELATED VERIFICATION LOOKUPS + TERM TEST MARKS.
-  Student document IDs are not assumed to be admission numbers.
+  REMOVE STUDENT AND RELATED DATA.
+
+  Marks are deleted first, followed by verification lookups,
+  then the student record. Errors are reported if any step fails.
 */
 async function removeStudent(s) {
   if (!isAdmin || !auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
@@ -315,77 +643,101 @@ async function removeStudent(s) {
     `REMOVE STUDENT RECORD?\n\n` +
     `Name: ${studentName}\n` +
     `Admission / Index No.: ${admission}\n\n` +
-    `This permanently deletes the student document, related verification lookup(s), and Term Test marks. This action cannot be undone.`
+    `This permanently deletes the student record, related verification lookup(s), and Term Test marks. This action cannot be undone.`
   );
 
   if (!confirmed) return;
 
   showLoading("Removing student and related records...");
 
+  let currentStep = "checking verification records";
+
   try {
-    // Find verification codes linked to this admission number.
-    const lookupSnapshot = await getDocs(collection(db,"studentLookups"));
+    // Verify the linked lookup records first.
+    const lookupSnapshot = await getDocs(collection(db, "studentLookups"));
 
     const matchingLookups = lookupSnapshot.docs.filter(lookupDoc => {
       const data = lookupDoc.data();
       return norm(data.admission) === admission;
     });
 
-    // Remove the student's document, the corresponding marks,
-    // and every verification lookup found for the same admission.
-    const batch = writeBatch(db);
+    // Delete the marks document using the exact same ID
+    // format used by the student portal and marks form.
+    currentStep = "deleting Term Test marks";
 
-    batch.delete(doc(db,"students",s.id));
-    batch.delete(doc(db,"termMarks",encodeURIComponent(admission)));
+    const marksRef = doc(
+      db,
+      "termMarks",
+      encodeURIComponent(admission)
+    );
 
-    matchingLookups.forEach(lookupDoc => {
-      batch.delete(lookupDoc.ref);
-    });
+    await deleteDoc(marksRef);
 
-    await batch.commit();
+    // Delete linked verification lookup records.
+    currentStep = "deleting verification lookup records";
 
+    for (const lookupDoc of matchingLookups) {
+      await deleteDoc(lookupDoc.ref);
+    }
+
+    // Delete the student document last.
+    currentStep = "deleting the student record";
+
+    await deleteDoc(doc(db, "students", s.id));
+
+    // Update the dashboard after the database steps succeed.
     allStudents = allStudents.filter(item => item.id !== s.id);
     renderStudents();
 
-    setHidden("detailPanel",true);
-    setHidden("marksPanel",true);
+    setHidden("detailPanel", true);
+    setHidden("marksPanel", true);
 
     showStatus(
       "listStatus",
-      `Student ${admission}, related verification lookup(s), and Term Test marks removed successfully.`,
+      `Student ${admission} and related records were removed successfully.`,
       false,
       true
     );
 
-  } catch(err) {
-    console.error("Delete student error:",err);
+  } catch (err) {
+    console.error("Delete student error:", err);
+
     showStatus(
       "listStatus",
-      `Could not remove the complete record: ${err.code || err.message}. Check Firestore rules.`,
+      `Failed while ${currentStep}: ${err.code || err.message}. Check Firestore Data before trying again.`,
       true
     );
+
+    // Reload the list to show the current database state.
+    await loadStudents();
+
   } finally {
     hideLoading();
   }
 }
 
-function addSubjectRow(subject="",mark="") {
+function addSubjectRow(subject="", mark="") {
   const row = document.createElement("div");
   row.className = "subject-row";
 
   const left = document.createElement("div");
+
   const l1 = document.createElement("label");
   l1.textContent = "Subject";
+
   const name = document.createElement("input");
   name.className = "subjectName";
   name.placeholder = "Subject name";
   name.value = subject;
   name.required = true;
-  left.append(l1,name);
+
+  left.append(l1, name);
 
   const right = document.createElement("div");
+
   const l2 = document.createElement("label");
   l2.textContent = "Mark / 100";
+
   const score = document.createElement("input");
   score.className = "subjectMark";
   score.type = "number";
@@ -394,31 +746,36 @@ function addSubjectRow(subject="",mark="") {
   score.step = "1";
   score.value = mark;
   score.required = true;
-  right.append(l2,score);
+
+  right.append(l2, score);
 
   const del = document.createElement("button");
   del.type = "button";
   del.className = "danger";
   del.textContent = "REMOVE";
-  del.addEventListener("click",() => row.remove());
+  del.addEventListener("click", () => row.remove());
 
-  row.append(left,right,del);
+  row.append(left, right, del);
   $("subjectFields").appendChild(row);
 }
 
 function clearMarksForm(keepAdmission=false) {
   const admission = keepAdmission ? $("marksAdmission").value : "";
+
   $("marksForm").reset();
   $("examTitle").value = "Term Test 1";
   $("marksAdmission").value = admission;
   $("subjectFields").replaceChildren();
+
   addSubjectRow();
-  showStatus("marksStatus","");
+  showStatus("marksStatus", "");
+
   if (keepAdmission) fillNameAndGrade();
 }
 
 function fillNameAndGrade() {
   const key = $("marksAdmission").value.trim().toLowerCase();
+
   const s = allStudents.find(x =>
     admissionOf(x).toLowerCase() === key ||
     x.id.toLowerCase() === key
@@ -426,7 +783,9 @@ function fillNameAndGrade() {
 
   if (s) {
     $("marksStudentName").value = nameOf(s);
+
     const g = gradeOf(s);
+
     if (["6","7","8","9","10","11","12","13"].includes(g)) {
       $("marksGrade").value = g;
     }
@@ -436,50 +795,72 @@ function fillNameAndGrade() {
 }
 
 function openMarksForStudent(s) {
-  setHidden("marksPanel",false);
+  setHidden("marksPanel", false);
+
   $("marksAdmission").value = admissionOf(s) || s.id;
   $("marksStudentName").value = nameOf(s);
   $("marksGrade").value = gradeOf(s);
-  $("marksPanel").scrollIntoView({behavior:"smooth",block:"start"});
-  loadMarks($("marksAdmission").value.trim(),true);
+
+  $("marksPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+
+  loadMarks($("marksAdmission").value.trim(), true);
 }
 
-async function loadMarks(admission,quiet=false) {
+async function loadMarks(admission, quiet=false) {
   if (!isAdmin) return;
 
   if (!admission) {
-    if (!quiet) showStatus("marksStatus","Enter the student's admission/index number.",true);
+    if (!quiet) {
+      showStatus("marksStatus", "Enter the student's admission/index number.", true);
+    }
     return;
   }
 
   if (!quiet) showLoading("Loading saved marks...");
 
   try {
-    const snap = await getDoc(doc(db,"termMarks",encodeURIComponent(admission)));
+    const snap = await getDoc(
+      doc(db, "termMarks", encodeURIComponent(admission))
+    );
 
     if (!snap.exists()) {
-      if (!quiet) showStatus("marksStatus","No saved marks found. You can enter new marks.",false);
+      if (!quiet) {
+        showStatus("marksStatus", "No saved marks found. You can enter new marks.");
+      }
       return;
     }
 
     const data = snap.data();
+
     $("marksAdmission").value = data.admission || admission;
     $("marksStudentName").value = data.fullName || $("marksStudentName").value;
-    $("marksGrade").value = String(data.grade ?? "").replace(/^Grade\s*/i,"");
+    $("marksGrade").value = String(data.grade ?? "").replace(/^Grade\s*/i, "");
     $("examTitle").value = data.examTitle || "Term Test 1";
+
     $("subjectFields").replaceChildren();
 
     if (Array.isArray(data.subjects) && data.subjects.length) {
-      data.subjects.forEach(x => addSubjectRow(x.subject ?? "",x.mark ?? ""));
+      data.subjects.forEach(x => addSubjectRow(x.subject ?? "", x.mark ?? ""));
     } else {
       addSubjectRow();
     }
 
-    showStatus("marksStatus","Saved marks loaded. You can update and save them again.",false,true);
+    showStatus(
+      "marksStatus",
+      "Saved marks loaded. You can update and save them again.",
+      false,
+      true
+    );
 
-  } catch(err) {
-    console.error("Load marks error:",err);
-    showStatus("marksStatus",`Could not load marks: ${err.code || err.message}. Check Firestore rules.`,true);
+  } catch (err) {
+    console.error("Load marks error:", err);
+
+    showStatus(
+      "marksStatus",
+      `Could not load marks: ${err.code || err.message}. Check Firestore rules.`,
+      true
+    );
+
   } finally {
     if (!quiet) hideLoading();
   }
@@ -487,6 +868,7 @@ async function loadMarks(admission,quiet=false) {
 
 function readSubjects() {
   const rows = [...$("subjectFields").querySelectorAll(".subject-row")];
+
   if (!rows.length) throw new Error("Add at least one subject.");
 
   const subjects = rows.map(row => {
@@ -495,11 +877,12 @@ function readSubjects() {
     const mark = Number(raw);
 
     if (!subject) throw new Error("Enter every subject name.");
+
     if (raw === "" || !Number.isInteger(mark) || mark < 0 || mark > 100) {
       throw new Error("Marks must be whole numbers from 0 to 100.");
     }
 
-    return {subject,mark};
+    return { subject, mark };
   });
 
   if (new Set(subjects.map(s => s.subject.toLowerCase())).size !== subjects.length) {
@@ -509,88 +892,122 @@ function readSubjects() {
   return subjects;
 }
 
-$("loginForm").addEventListener("submit",async e => {
+$("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
+
   $("loginBtn").disabled = true;
-  showStatus("loginStatus","Signing in...");
+  showStatus("loginStatus", "Signing in...");
   showLoading("Signing in to Admin Portal...");
 
   try {
-    await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);
-  } catch(err) {
-    console.error("Login error:",err);
-    showStatus("loginStatus",`Login failed: ${err.code || err.message}`,true);
+    await signInWithEmailAndPassword(
+      auth,
+      $("email").value.trim(),
+      $("password").value
+    );
+
+  } catch (err) {
+    console.error("Login error:", err);
+    showStatus("loginStatus", `Login failed: ${err.code || err.message}`, true);
+
   } finally {
     $("loginBtn").disabled = false;
     hideLoading();
   }
 });
 
-onAuthStateChanged(auth,async user => {
+onAuthStateChanged(auth, async user => {
   if (!user) {
     isAdmin = false;
-    setHidden("loginPanel",false);
-    setHidden("dashboard",true);
-    setHidden("marksPanel",true);
+
+    setHidden("loginPanel", false);
+    setHidden("dashboard", true);
+    setHidden("marksPanel", true);
+
     $("adminIdentity").textContent = "";
+
     hideLoading();
     return;
   }
 
   if (user.uid !== ADMIN_UID) {
     isAdmin = false;
-    showStatus("loginStatus","Access denied: this account is not the authorized administrator.",true);
+
+    showStatus(
+      "loginStatus",
+      "Access denied: this account is not the authorized administrator.",
+      true
+    );
+
     try {
       await signOut(auth);
-    } catch(err) {
+    } catch (err) {
       console.error(err);
     }
+
     hideLoading();
     return;
   }
 
   isAdmin = true;
-  setHidden("loginPanel",true);
-  setHidden("dashboard",false);
+
+  setHidden("loginPanel", true);
+  setHidden("dashboard", false);
+
   $("adminIdentity").textContent = user.email || "Administrator";
+
   await loadStudents();
 });
 
-$("logoutBtn").addEventListener("click",async () => {
+$("logoutBtn").addEventListener("click", async () => {
   showLoading("Signing out...");
+
   try {
     await signOut(auth);
-  } catch(err) {
-    alert("Logout failed: "+(err.code || err.message));
+  } catch (err) {
+    alert("Logout failed: " + (err.code || err.message));
   } finally {
     hideLoading();
   }
 });
 
-$("refreshBtn").addEventListener("click",loadStudents);
-$("searchBtn").addEventListener("click",renderStudents);
-$("searchInput").addEventListener("input",renderStudents);
-$("gradeFilter").addEventListener("change",renderStudents);
+$("refreshBtn").addEventListener("click", loadStudents);
+$("searchBtn").addEventListener("click", renderStudents);
+$("searchInput").addEventListener("input", renderStudents);
+$("gradeFilter").addEventListener("change", renderStudents);
 
-$("clearFiltersBtn").addEventListener("click",() => {
+$("clearFiltersBtn").addEventListener("click", () => {
   $("searchInput").value = "";
   $("gradeFilter").value = "";
   renderStudents();
 });
 
-$("closeDetailBtn").addEventListener("click",() => setHidden("detailPanel",true));
-$("closeMarksBtn").addEventListener("click",() => setHidden("marksPanel",true));
-$("marksAdmission").addEventListener("change",fillNameAndGrade);
-$("marksAdmission").addEventListener("blur",fillNameAndGrade);
-$("addSubjectBtn").addEventListener("click",() => addSubjectRow());
-$("clearMarksBtn").addEventListener("click",() => clearMarksForm(true));
-$("loadMarksBtn").addEventListener("click",() => loadMarks($("marksAdmission").value.trim()));
+$("closeDetailBtn").addEventListener("click", () => {
+  setHidden("detailPanel", true);
+});
 
-$("marksForm").addEventListener("submit",async e => {
+$("closeMarksBtn").addEventListener("click", () => {
+  setHidden("marksPanel", true);
+});
+
+$("marksAdmission").addEventListener("change", fillNameAndGrade);
+$("marksAdmission").addEventListener("blur", fillNameAndGrade);
+
+$("addSubjectBtn").addEventListener("click", () => addSubjectRow());
+
+$("clearMarksBtn").addEventListener("click", () => {
+  clearMarksForm(true);
+});
+
+$("loadMarksBtn").addEventListener("click", () => {
+  loadMarks($("marksAdmission").value.trim());
+});
+
+$("marksForm").addEventListener("submit", async e => {
   e.preventDefault();
 
   if (!isAdmin || !auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
-    showStatus("marksStatus","Administrator login required.",true);
+    showStatus("marksStatus", "Administrator login required.", true);
     return;
   }
 
@@ -607,33 +1024,50 @@ $("marksForm").addEventListener("submit",async e => {
       throw new Error("Enter a valid student index number and complete all fields.");
     }
 
-    // Prevent creating marks for a student who no longer exists.
+    // Ensure the student still exists before saving marks.
     const studentExists = allStudents.some(s =>
       admissionOf(s).toLowerCase() === admission.toLowerCase() ||
       s.id.toLowerCase() === admission.toLowerCase()
     );
 
     if (!studentExists) {
-      throw new Error("Student record not found. Refresh the student list and select an existing student.");
+      throw new Error(
+        "Student record not found. Refresh the student list and select an existing student."
+      );
     }
 
     const subjects = readSubjects();
 
-    await setDoc(doc(db,"termMarks",encodeURIComponent(admission)),{
-      admission,
-      fullName,
-      grade,
-      examTitle,
-      subjects,
-      updatedAt:serverTimestamp(),
-      updatedBy:auth.currentUser.uid
-    },{merge:true});
+    await setDoc(
+      doc(db, "termMarks", encodeURIComponent(admission)),
+      {
+        admission,
+        fullName,
+        grade,
+        examTitle,
+        subjects,
+        updatedAt: serverTimestamp(),
+        updatedBy: auth.currentUser.uid
+      },
+      { merge: true }
+    );
 
-    showStatus("marksStatus","Marks saved successfully. You can update them any time.",false,true);
+    showStatus(
+      "marksStatus",
+      "Marks saved successfully. You can update them any time.",
+      false,
+      true
+    );
 
-  } catch(err) {
-    console.error("Save marks error:",err);
-    showStatus("marksStatus",`Could not save marks: ${err.code || err.message}`,true);
+  } catch (err) {
+    console.error("Save marks error:", err);
+
+    showStatus(
+      "marksStatus",
+      `Could not save marks: ${err.code || err.message}`,
+      true
+    );
+
   } finally {
     $("saveMarksBtn").disabled = false;
     hideLoading();
@@ -642,5 +1076,6 @@ $("marksForm").addEventListener("submit",async e => {
 
 addSubjectRow();
 </script>
+
 </body>
 </html>
