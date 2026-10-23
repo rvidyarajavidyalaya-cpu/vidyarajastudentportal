@@ -68,10 +68,37 @@ button:disabled{opacity:.6;cursor:wait;transform:none}
 footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20px 4px}
 @media(max-width:650px){.grid,.home-buttons,.result-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.card,.home-panel,.view-panel,.student-result{padding:17px}.actions button{width:100%}.home-button{min-height:105px}header{padding:22px 14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* START / CLICK TO CONTINUE LOADING INTERFACE */
+.start-overlay{position:fixed;inset:0;z-index:3000;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(ellipse at top,#17351c,#07100a 58%,#030604);text-align:center}
+.start-box{width:min(100%,560px);padding:34px 22px;border:2px solid var(--green);border-radius:24px;background:rgba(3,12,6,.96);box-shadow:0 0 35px #39ff1455;animation:appear .65s ease}
+.start-logo{width:120px;height:120px;object-fit:contain;border-radius:50%;background:#fff;border:2px solid var(--yellow);padding:4px;margin-bottom:18px;animation:iconFloat 3s infinite}
+.start-box h2{color:var(--yellow);font-size:clamp(23px,5vw,32px);line-height:1.4;margin-bottom:8px}
+.start-subtitle{color:#b9d2bd;letter-spacing:2px;font-size:12px;margin-bottom:18px}
+.start-message{color:#d7e8d9;line-height:1.8;margin-bottom:24px}
+.start-button{min-width:210px;background:var(--green);color:#041004;border:1px solid var(--yellow);box-shadow:0 0 18px #39ff1470}
+.start-loading{display:none;margin-top:22px;color:var(--green);line-height:1.8}
+.start-loading .loading-dots{margin:14px 0}
+
 </style>
 </head>
 
 <body>
+
+<div class="start-overlay" id="startOverlay">
+  <div class="start-box">
+    <img class="start-logo" src="school-logo.png" alt="School Logo" onerror="this.style.display='none'">
+    <h2>R/VIDYARAJA VIDYALAYA</h2>
+    <p class="start-subtitle">STUDENT INFORMATION PORTAL</p>
+    <p class="start-message">Welcome to the Student Portal<br>ශිෂ්‍ය තොරතුරු පද්ධතියට සාදරයෙන් පිළිගනිමු</p>
+    <button class="start-button" id="startContinueBtn" type="button">▶ CLICK TO CONTINUE</button>
+    <div class="start-loading" id="startLoading" aria-live="polite">
+      <strong>LOADING PORTAL...</strong><br>
+      <span>කරුණාකර මොහොතක් රැඳී සිටින්න</span>
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</div>
 <div class="bubbles"><span></span><span></span><span></span><span></span><span></span></div>
 
 
@@ -281,6 +308,25 @@ let db=null;
 let latestVerificationCode="";
 let selectedGrade="";
 let nextAction="";
+
+
+/* START SCREEN: CLICK TO CONTINUE, THEN SHOW LOADING INTERFACE */
+const startOverlay = $("startOverlay");
+const startContinueBtn = $("startContinueBtn");
+const startLoading = $("startLoading");
+startContinueBtn.addEventListener("click", () => {
+  startContinueBtn.disabled = true;
+  startContinueBtn.textContent = "PLEASE WAIT...";
+  startLoading.style.display = "block";
+  setTimeout(() => {
+    startOverlay.style.opacity = "0";
+    startOverlay.style.transition = "opacity .45s ease";
+    setTimeout(() => {
+      startOverlay.style.display = "none";
+    }, 460);
+  }, 1400);
+});
+
 
 try{
 const app=initializeApp(firebaseConfig);
