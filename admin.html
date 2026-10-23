@@ -137,10 +137,7 @@ tr:hover td{background:#0e1b10}
   color:var(--green);
   font-size:12px
 }
-.markgrid{display:grid;grid-template-columns:2fr 1fr;gap:8px;margin:8px 0}
-.markgrid input{min-width:0}
 .markhead{color:var(--green);font-size:13px;margin:16px 0 6px}
-.wide{width:100%}
 .subject-row{
   display:grid;
   grid-template-columns:minmax(0,2fr) minmax(80px,1fr) auto;
@@ -159,8 +156,7 @@ tr:hover td{background:#0e1b10}
   align-items:center;
   justify-content:center;
   text-align:center;
-  padding:20px;
-  transition:opacity .25s
+  padding:20px
 }
 .loading-card{
   width:min(340px,100%);
@@ -257,8 +253,8 @@ tr:hover td{background:#0e1b10}
   </div>
 
   <p class="small">
-    Choose a grade to filter students. Use VIEW to see submitted information
-    or REMOVE to delete a record.
+    Choose a grade to filter students. Use VIEW to see submitted information,
+    MARKS to manage marks, or REMOVE to delete a student and related records.
   </p>
 
   <div class="toolbar">
@@ -322,7 +318,7 @@ tr:hover td{background:#0e1b10}
 
   <p class="small">
     Enter the student's admission/index number, add subjects and marks out of 100.
-    Saving again updates the marks record.
+    Saving again updates the marks record. DELETE MARKS removes marks only, not the student.
   </p>
 
   <form id="marksForm">
@@ -359,6 +355,7 @@ tr:hover td{background:#0e1b10}
     <p class="status" id="marksStatus" role="status" aria-live="polite"></p>
     <button class="primary" id="saveMarksBtn" type="submit">SAVE / UPDATE MARKS</button>
     <button class="secondary" id="loadMarksBtn" type="button">LOAD SAVED MARKS</button>
+    <button class="danger" id="deleteMarksBtn" type="button">DELETE MARKS</button>
     <button class="secondary" id="clearMarksBtn" type="button">CLEAR FORM</button>
   </form>
 </section>
@@ -609,12 +606,10 @@ function viewStudent(s) {
     strong.textContent = label;
 
     const span = document.createElement("span");
-
-    if (value && typeof value === "object") {
-      span.textContent = JSON.stringify(value, null, 2);
-    } else {
-      span.textContent = norm(value) || "Not provided";
-    }
+    span.textContent =
+      value && typeof value === "object"
+        ? JSON.stringify(value, null, 2)
+        : norm(value) || "Not provided";
 
     box.append(strong, span);
     grid.appendChild(box);
@@ -624,68 +619,83 @@ function viewStudent(s) {
   $("detailPanel").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-/*
-  REMOVE STUDENT AND RELATED DATA.
-
-  Marks are deleted first, followed by verification lookups,
-  then the student record. Errors are reported if any step fails.
-*/
+/* REMOVE STUDENT AND ALL MATCHING RELATED RECORDS */
 async function removeStudent(s) {
-  if (!isAdmin || !auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
+  if (
+    !isAdmin ||
+    !auth.currentUser ||
+    auth.currentUser.uid !== ADMIN_UID
+  ) {
     alert("Administrator login required.");
     return;
   }
 
-  const studentName = nameOf(s) || "this student";
   const admission = admissionOf(s) || s.id;
+  const studentName = nameOf(s) || "this student";
 
   const confirmed = confirm(
-    `REMOVE STUDENT RECORD?\n\n` +
+    `REMOVE STUDENT?\n\n` +
     `Name: ${studentName}\n` +
     `Admission / Index No.: ${admission}\n\n` +
-    `This permanently deletes the student record, related verification lookup(s), and Term Test marks. This action cannot be undone.`
+    `This will permanently delete this student's record, ` +
+    `matching verification records, and matching Term Test marks.\n\n` +
+    `Continue?`
   );
 
   if (!confirmed) return;
 
-  showLoading("Removing student and related records...");
-
-  let currentStep = "checking verification records";
+  showLoading("Removing student and all related records...");
 
   try {
-    // Verify the linked lookup records first.
+    const key = String(admission).trim().toLowerCase();
+    const encodedId = encodeURIComponent(String(admission).trim());
+
+    // 1. Find every marks document linked to this admission number.
+    const marksSnapshot = await getDocs(collection(db, "termMarks"));
+
+    const matchingMarks = marksSnapshot.docs.filter(markDoc => {
+      const data = markDoc.data();
+      const storedAdmission = String(data.admission ?? "")
+        .trim()
+        .toLowerCase();
+
+      let decodedId = markDoc.id;
+      try {
+        decodedId = decodeURIComponent(markDoc.id);
+      } catch (_) {}
+
+      return (
+        storedAdmission === key ||
+        markDoc.id === encodedId ||
+        decodedId.trim().toLowerCase() === key
+      );
+    });
+
+    // 2. Find linked verification lookup documents.
     const lookupSnapshot = await getDocs(collection(db, "studentLookups"));
 
     const matchingLookups = lookupSnapshot.docs.filter(lookupDoc => {
       const data = lookupDoc.data();
-      return norm(data.admission) === admission;
+
+      return String(data.admission ?? "")
+        .trim()
+        .toLowerCase() === key;
     });
 
-    // Delete the marks document using the exact same ID
-    // format used by the student portal and marks form.
-    currentStep = "deleting Term Test marks";
+    // 3. Delete every matching marks document.
+    for (const markDoc of matchingMarks) {
+      await deleteDoc(markDoc.ref);
+    }
 
-    const marksRef = doc(
-      db,
-      "termMarks",
-      encodeURIComponent(admission)
-    );
-
-    await deleteDoc(marksRef);
-
-    // Delete linked verification lookup records.
-    currentStep = "deleting verification lookup records";
-
+    // 4. Delete matching verification lookup documents.
     for (const lookupDoc of matchingLookups) {
       await deleteDoc(lookupDoc.ref);
     }
 
-    // Delete the student document last.
-    currentStep = "deleting the student record";
-
+    // 5. Delete the student record last.
     await deleteDoc(doc(db, "students", s.id));
 
-    // Update the dashboard after the database steps succeed.
+    // 6. Update the dashboard.
     allStudents = allStudents.filter(item => item.id !== s.id);
     renderStudents();
 
@@ -694,21 +704,20 @@ async function removeStudent(s) {
 
     showStatus(
       "listStatus",
-      `Student ${admission} and related records were removed successfully.`,
+      `Student ${admission} removed. Deleted ${matchingMarks.length} matching marks document(s) and ${matchingLookups.length} verification record(s).`,
       false,
       true
     );
 
   } catch (err) {
-    console.error("Delete student error:", err);
+    console.error("Remove student error:", err);
 
     showStatus(
       "listStatus",
-      `Failed while ${currentStep}: ${err.code || err.message}. Check Firestore Data before trying again.`,
+      `Removal failed: ${err.code || err.message}. Check Firestore Rules and the Data tab.`,
       true
     );
 
-    // Reload the list to show the current database state.
     await loadStudents();
 
   } finally {
@@ -721,7 +730,6 @@ function addSubjectRow(subject="", mark="") {
   row.className = "subject-row";
 
   const left = document.createElement("div");
-
   const l1 = document.createElement("label");
   l1.textContent = "Subject";
 
@@ -734,7 +742,6 @@ function addSubjectRow(subject="", mark="") {
   left.append(l1, name);
 
   const right = document.createElement("div");
-
   const l2 = document.createElement("label");
   l2.textContent = "Mark / 100";
 
@@ -785,7 +792,6 @@ function fillNameAndGrade() {
     $("marksStudentName").value = nameOf(s);
 
     const g = gradeOf(s);
-
     if (["6","7","8","9","10","11","12","13"].includes(g)) {
       $("marksGrade").value = g;
     }
@@ -905,11 +911,9 @@ $("loginForm").addEventListener("submit", async e => {
       $("email").value.trim(),
       $("password").value
     );
-
   } catch (err) {
     console.error("Login error:", err);
     showStatus("loginStatus", `Login failed: ${err.code || err.message}`, true);
-
   } finally {
     $("loginBtn").disabled = false;
     hideLoading();
@@ -919,13 +923,10 @@ $("loginForm").addEventListener("submit", async e => {
 onAuthStateChanged(auth, async user => {
   if (!user) {
     isAdmin = false;
-
     setHidden("loginPanel", false);
     setHidden("dashboard", true);
     setHidden("marksPanel", true);
-
     $("adminIdentity").textContent = "";
-
     hideLoading();
     return;
   }
@@ -950,10 +951,8 @@ onAuthStateChanged(auth, async user => {
   }
 
   isAdmin = true;
-
   setHidden("loginPanel", true);
   setHidden("dashboard", false);
-
   $("adminIdentity").textContent = user.email || "Administrator";
 
   await loadStudents();
@@ -1003,6 +1002,72 @@ $("loadMarksBtn").addEventListener("click", () => {
   loadMarks($("marksAdmission").value.trim());
 });
 
+/* DELETE MARKS ONLY — DOES NOT DELETE THE STUDENT */
+$("deleteMarksBtn").addEventListener("click", async () => {
+  if (
+    !isAdmin ||
+    !auth.currentUser ||
+    auth.currentUser.uid !== ADMIN_UID
+  ) {
+    alert("Administrator login required.");
+    return;
+  }
+
+  const admission = $("marksAdmission").value.trim();
+
+  if (!admission) {
+    showStatus(
+      "marksStatus",
+      "Enter the student's Admission / Index Number first.",
+      true
+    );
+    return;
+  }
+
+  const confirmed = confirm(
+    `DELETE TERM TEST MARKS?\n\n` +
+    `Admission / Index Number: ${admission}\n\n` +
+    `Only the marks document with this admission number will be deleted. ` +
+    `The student record will remain.\n\nContinue?`
+  );
+
+  if (!confirmed) return;
+
+  showLoading("Deleting marks...");
+
+  try {
+    const marksRef = doc(
+      db,
+      "termMarks",
+      encodeURIComponent(admission)
+    );
+
+    await deleteDoc(marksRef);
+
+    showStatus(
+      "marksStatus",
+      `Marks for ${admission} deleted successfully.`,
+      false,
+      true
+    );
+
+    $("subjectFields").replaceChildren();
+    addSubjectRow();
+
+  } catch (err) {
+    console.error("Delete marks error:", err);
+
+    showStatus(
+      "marksStatus",
+      `Could not delete marks: ${err.code || err.message}`,
+      true
+    );
+
+  } finally {
+    hideLoading();
+  }
+});
+
 $("marksForm").addEventListener("submit", async e => {
   e.preventDefault();
 
@@ -1024,7 +1089,6 @@ $("marksForm").addEventListener("submit", async e => {
       throw new Error("Enter a valid student index number and complete all fields.");
     }
 
-    // Ensure the student still exists before saving marks.
     const studentExists = allStudents.some(s =>
       admissionOf(s).toLowerCase() === admission.toLowerCase() ||
       s.id.toLowerCase() === admission.toLowerCase()
