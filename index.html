@@ -92,6 +92,7 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 .library-book{padding:15px;border:1px solid #39ff1455;border-radius:12px;background:#061009;display:flex;flex-direction:column;gap:9px;overflow-wrap:anywhere}
 .library-book h3{color:var(--yellow);font-size:16px;line-height:1.5}
 .library-book p{color:#d7e8d9;font-size:13px;line-height:1.6}
+.paper-download-link{display:block;color:#041004;background:var(--green);padding:13px 15px;border-radius:9px;text-decoration:none;font-weight:900;text-align:center;box-shadow:0 0 18px #39ff1450}
 .library-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}
 .library-tools{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:14px}
 @media(max-width:650px){.library-grid,.library-tools{grid-template-columns:1fr}}
@@ -168,25 +169,33 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 </section>
 
 <section class="view-panel" id="librarySection">
-  <h2 class="section-title" data-i18n="libraryTitle">📚 DIGITAL LIBRARY / ඩිජිටල් පුස්තකාලය</h2>
-  <p class="notice" data-i18n="libraryIntro">Search books or add a study resource using its title and PDF/web link.</p>
-  <div class="library-tools">
-    <div class="field"><label for="librarySearch" data-i18n="searchBooks">Search books</label><input id="librarySearch" type="search" placeholder="Enter a book title..." data-i18n-placeholder="searchPlaceholder"></div>
-    <div class="field"><label for="libraryCategory" data-i18n="category">Category</label><select id="libraryCategory"><option value="all" data-i18n="allCategories">All categories</option><option value="Textbooks" data-i18n="textbooks">Textbooks</option><option value="Past Papers" data-i18n="pastPapers">Past Papers</option><option value="Notes" data-i18n="notes">Notes</option><option value="Other" data-i18n="other">Other</option></select></div>
+  <div id="olLibraryLoading" class="loading-screen" style="display:none">
+    <h2 class="section-title">FOR O/L STUDENTS</h2>
+    <p class="notice">Please wait / කරුණාකර රැඳී සිටින්න</p>
+    <div class="loading-dots"><span></span><span></span><span></span></div>
   </div>
-  <div class="card" style="margin-top:18px;margin-bottom:0">
-    <h3 class="section-title" style="font-size:17px" data-i18n="addResource">➕ Add a book / resource</h3>
-    <div class="grid">
-      <div class="field"><label for="libraryBookTitle" data-i18n="bookTitle">Book / resource title</label><input id="libraryBookTitle" maxlength="150" placeholder="Enter title" data-i18n-placeholder="titlePlaceholder"></div>
-      <div class="field"><label for="libraryBookCategory" data-i18n="category">Category</label><select id="libraryBookCategory"><option value="Textbooks" data-i18n="textbooks">Textbooks</option><option value="Past Papers" data-i18n="pastPapers">Past Papers</option><option value="Notes" data-i18n="notes">Notes</option><option value="Other" data-i18n="other">Other</option></select></div>
-      <div class="field full"><label for="libraryBookUrl" data-i18n="resourceLink">PDF / website link</label><input id="libraryBookUrl" type="url" placeholder="https://..." data-i18n-placeholder="urlPlaceholder"></div>
+  <div id="olGradeChooser" style="display:none">
+    <h2 class="section-title">FOR O/L STUDENTS</h2>
+    <p class="notice">Select your grade / ඔබගේ ශ්‍රේණිය තෝරන්න</p>
+    <div class="home-buttons" style="grid-template-columns:1fr">
+      <button class="home-button" id="olGrade11Btn" type="button"><span class="symbol">🎓</span><span>GRADE 11</span><small>අ.පො.ස. සාමාන්‍ය පෙළ</small></button>
     </div>
-    <div class="actions"><button class="primary" id="addLibraryBookBtn" type="button" data-i18n="addResourceBtn">ADD RESOURCE</button></div>
-    <p class="notice" data-i18n="libraryLocalNote">Resources added here are kept in this page only and may disappear when the page is refreshed.</p>
+    <div class="actions"><button class="secondary" id="olLibraryBackGradeBtn" type="button">BACK / ආපසු</button></div>
   </div>
-  <div class="library-grid" id="libraryBooksGrid"></div>
-  <p class="status" id="libraryStatus" role="status" aria-live="polite"></p>
-  <div class="actions"><button class="secondary" id="libraryBackBtn" type="button" data-i18n="backHome">BACK / ආපසු</button></div>
+  <div id="olPapersPanel" style="display:none">
+    <h2 class="section-title">GRADE 11 — O/L PAST PAPERS</h2>
+    <p class="notice">සිංහල මාධ්‍යය • Sinhala Medium<br>Choose a subject and year from the official past-paper library. Open a paper to view or download the PDF.</p>
+    <article class="library-book" style="margin-top:18px">
+      <h3>📚 O/L Past Papers — Sinhala Medium</h3>
+      <p>අවශ්‍ය විෂයය සහ විභාග වර්ෂය තෝරා PDF ප්‍රශ්න පත්‍ර බාගත කරන්න.</p>
+      <a href="https://e-thaksalawa.moe.gov.lk/lcms/course/view.php?id=872&amp;lang=si" target="_blank" rel="noopener noreferrer" class="paper-download-link">📥 OPEN / DOWNLOAD PAST PAPERS</a>
+    </article>
+    <p class="notice" style="margin-top:14px">Official source: e-තක්සලාව — Ministry of Education</p>
+    <div class="actions">
+      <button class="secondary" id="olPapersBackBtn" type="button">BACK / ආපසු</button>
+      <button class="secondary" id="olLibraryHomeBtn" type="button">HOME / මුල් පිටුව</button>
+    </div>
+  </div>
 </section>
 
 <section class="view-panel" id="viewPanel">
@@ -1061,35 +1070,36 @@ $("langEnglishBtn").addEventListener("click",()=>setLanguage("en"));
 $("langSinhalaBtn").addEventListener("click",()=>setLanguage("si"));
 
 const librarySection=$("librarySection");
-const libraryBooksGrid=$("libraryBooksGrid");
-let libraryBooks=[];
-function renderLibrary(){
-  const query=$("librarySearch").value.trim().toLowerCase();
-  const category=$("libraryCategory").value;
-  libraryBooksGrid.replaceChildren();
-  const filtered=libraryBooks.filter(book=>(category==="all"||book.category===category)&&book.title.toLowerCase().includes(query));
-  if(!filtered.length){$("libraryStatus").textContent=currentLanguage==="si"?"සම්පත් හමු නොවීය. නම සහ සබැඳිය යොදා සම්පතක් එක් කරන්න.":"No resources found. Add a resource using its title and link.";return;}
-  $("libraryStatus").textContent="";
-  filtered.forEach(book=>{
-    const card=document.createElement("article");card.className="library-book";
-    const title=document.createElement("h3");title.textContent=book.title;
-    const cat=document.createElement("p");cat.textContent=(currentLanguage==="si"?"වර්ගය: ":"Category: ")+book.category;
-    const open=document.createElement("a");open.href=book.url;open.target="_blank";open.rel="noopener noreferrer";open.textContent=currentLanguage==="si"?"📖 විවෘත කරන්න / බාගන්න":"📖 OPEN / DOWNLOAD";open.style.cssText="display:inline-block;color:#041004;background:var(--green);padding:11px 13px;border-radius:9px;text-decoration:none;font-weight:bold;text-align:center";
-    card.append(title,cat,open);libraryBooksGrid.appendChild(card);
-  });
+const olLibraryLoading=$("olLibraryLoading");
+const olGradeChooser=$("olGradeChooser");
+const olPapersPanel=$("olPapersPanel");
+let olLibraryTimer=null;
+function resetOLLibrary(){
+  if(olLibraryTimer){clearTimeout(olLibraryTimer);olLibraryTimer=null;}
+  olLibraryLoading.style.display="none";
+  olGradeChooser.style.display="none";
+  olPapersPanel.style.display="none";
+}
+function showOLGradeChooser(){
+  resetOLLibrary();
+  olGradeChooser.style.display="block";
+}
+function showOLPastPapers(){
+  resetOLLibrary();
+  olPapersPanel.style.display="block";
 }
 $("digitalLibraryBtn").addEventListener("click",()=>{
-  homeSection.style.display="none";gradeSection.style.display="none";formSection.style.display="none";viewPanel.style.display="none";studentResult.style.display="none";marksSection.style.display="none";marksResult.style.display="none";successScreen.style.display="none";librarySection.style.display="block";renderLibrary();window.scrollTo({top:0,behavior:"smooth"});
+  homeSection.style.display="none";gradeSection.style.display="none";formSection.style.display="none";viewPanel.style.display="none";studentResult.style.display="none";marksSection.style.display="none";marksResult.style.display="none";successScreen.style.display="none";
+  librarySection.style.display="block";
+  resetOLLibrary();
+  olLibraryLoading.style.display="block";
+  window.scrollTo({top:0,behavior:"smooth"});
+  olLibraryTimer=setTimeout(()=>{olLibraryTimer=null;showOLGradeChooser();},3000);
 });
-$("libraryBackBtn").addEventListener("click",()=>{librarySection.style.display="none";showHome();});
-$("librarySearch").addEventListener("input",renderLibrary);
-$("libraryCategory").addEventListener("change",renderLibrary);
-$("addLibraryBookBtn").addEventListener("click",()=>{
-  const title=$("libraryBookTitle").value.trim();const url=$("libraryBookUrl").value.trim();const category=$("libraryBookCategory").value;
-  if(!title||!url){$("libraryStatus").textContent=currentLanguage==="si"?"කරුණාකර පොතේ නම සහ සබැඳිය ඇතුළත් කරන්න.":"Please enter a title and a PDF / website link.";return;}
-  try{const parsed=new URL(url);if(!["http:","https:"].includes(parsed.protocol))throw new Error("Invalid URL");}catch{$("libraryStatus").textContent=currentLanguage==="si"?"කරුණාකර නිවැරදි https:// හෝ http:// සබැඳියක් ඇතුළත් කරන්න.":"Please enter a valid http:// or https:// link.";return;}
-  libraryBooks.push({title,url,category});$("libraryBookTitle").value="";$("libraryBookUrl").value="";$("librarySearch").value="";$("libraryCategory").value="all";renderLibrary();
-});
+$("olGrade11Btn").addEventListener("click",showOLPastPapers);
+$("olPapersBackBtn").addEventListener("click",showOLGradeChooser);
+$("olLibraryBackGradeBtn").addEventListener("click",()=>{resetOLLibrary();librarySection.style.display="none";showHome();});
+$("olLibraryHomeBtn").addEventListener("click",()=>{resetOLLibrary();librarySection.style.display="none";showHome();});
 
 /* BACKGROUND MUSIC PLAYER */
 const backgroundMusic=$("backgroundMusic");
