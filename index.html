@@ -164,21 +164,22 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 <button class="home-button" id="fillInfoBtn" type="button"><span class="symbol">✎</span><span>FILL INFORMATION</span><small>ශිෂ්‍ය තොරතුරු ඇතුළත් කරන්න</small></button>
 <button class="home-button view" id="viewInfoBtn" type="button"><span class="symbol">⌕</span><span>VIEW INFORMATION</span><small>ඇතුළත් කළ තොරතුරු බලන්න</small></button>
 <button class="home-button marks" id="viewMarksBtn" type="button"><span class="symbol">▤</span><span>VIEW MARKS</span><small>Term Test ප්‍රතිඵල බලන්න</small></button>
-<button class="home-button" id="digitalLibraryBtn" type="button"><span class="symbol">📚</span><span data-i18n="libraryHomeTitle">DIGITAL LIBRARY</span><small data-i18n="libraryHomeSub">Search and open study materials</small></button>
+<button class="home-button" id="digitalLibraryBtn" type="button"><span class="symbol">📚</span><span data-i18n="libraryHomeTitle">FOR O/L AND A/L STUDENTS</span><small data-i18n="libraryHomeSub">Past papers for O/L and A/L students</small></button>
 </div>
 </section>
 
 <section class="view-panel" id="librarySection">
   <div id="olLibraryLoading" class="loading-screen" style="display:none">
-    <h2 class="section-title">FOR O/L STUDENTS</h2>
-    <p class="notice">Please wait / කරුණාකර රැඳී සිටින්න</p>
+    <h2 class="section-title">PLEASE WAIT...</h2>
+    <p class="notice">Loading Digital Library... / ඩිජිටල් පුස්තකාලය පූරණය වෙමින් පවතී</p>
     <div class="loading-dots"><span></span><span></span><span></span></div>
   </div>
   <div id="olGradeChooser" style="display:none">
-    <h2 class="section-title">FOR O/L STUDENTS</h2>
+    <h2 class="section-title">FOR O/L AND A/L STUDENTS</h2>
     <p class="notice">Select your grade / ඔබගේ ශ්‍රේණිය තෝරන්න</p>
     <div class="home-buttons" style="grid-template-columns:1fr">
-      <button class="home-button" id="olGrade11Btn" type="button"><span class="symbol">🎓</span><span>GRADE 11</span><small>අ.පො.ස. සාමාන්‍ය පෙළ</small></button>
+      <button class="home-button" id="olGrade11Btn" type="button"><span class="symbol">🎓</span><span>GRADE 11</span><small>අ.පො.ස. සාමාන්‍ය පෙළ (O/L)</small></button>
+      <button class="home-button" id="alGrade13Btn" type="button"><span class="symbol">🎓</span><span>GRADE 13</span><small>අ.පො.ස. උසස් පෙළ (A/L)</small></button>
     </div>
     <div class="actions"><button class="secondary" id="olLibraryBackGradeBtn" type="button">BACK / ආපසු</button></div>
   </div>
@@ -194,6 +195,20 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
     <div class="actions">
       <button class="secondary" id="olPapersBackBtn" type="button">BACK / ආපසු</button>
       <button class="secondary" id="olLibraryHomeBtn" type="button">HOME / මුල් පිටුව</button>
+    </div>
+  </div>
+  <div id="alPapersPanel" style="display:none">
+    <h2 class="section-title">GRADE 13 — A/L PAST PAPERS</h2>
+    <p class="notice">සිංහල මාධ්‍යය • Sinhala Medium<br>Open the official e-තක්සලාව A/L past papers page to choose a subject and download available papers.</p>
+    <article class="library-book" style="margin-top:18px">
+      <h3>📚 A/L Past Papers — Sinhala Medium</h3>
+      <p>අවශ්‍ය විෂයය සහ විභාග වර්ෂය තෝරා ලබාගත හැකි ප්‍රශ්න පත්‍ර බාගත කරන්න.</p>
+      <a href="https://e-thaksalawa.moe.gov.lk/lcms/course/index.php?categoryid=22&amp;lang=si" target="_blank" rel="noopener noreferrer" class="paper-download-link">📥 OPEN / DOWNLOAD A/L PAST PAPERS</a>
+    </article>
+    <p class="notice" style="margin-top:14px">Official source: e-තක්සලාව — Ministry of Education</p>
+    <div class="actions">
+      <button class="secondary" id="alPapersBackBtn" type="button">BACK / ආපසු</button>
+      <button class="secondary" id="alLibraryHomeBtn" type="button">HOME / මුල් පිටුව</button>
     </div>
   </div>
 </section>
@@ -974,8 +989,8 @@ gradeSection.style.display="none";
 
 /* ADDED: Sinhala / English switch and Digital Library */
 const translations={
-  libraryHomeTitle:{en:"DIGITAL LIBRARY",si:"ඩිජිටල් පුස්තකාලය"},
-  libraryHomeSub:{en:"Search and open study materials",si:"අධ්‍යයන පොත් සොයන්න සහ විවෘත කරන්න"},
+  libraryHomeTitle:{en:"FOR O/L AND A/L STUDENTS",si:"සාමාන්‍ය පෙළ සහ උසස් පෙළ සිසුන් සඳහා"},
+  libraryHomeSub:{en:"Past papers for O/L and A/L students",si:"සාමාන්‍ය පෙළ සහ උසස් පෙළ පසුගිය ප්‍රශ්න පත්‍ර"},
   libraryTitle:{en:"📚 DIGITAL LIBRARY / ඩිජිටල් පුස්තකාලය",si:"📚 ඩිජිටල් පුස්තකාලය"},
   libraryIntro:{en:"Search books or add a study resource using its title and PDF/web link.",si:"පොත් සොයන්න, නැතහොත් නම සහ PDF/වෙබ් සබැඳිය භාවිතයෙන් අධ්‍යයන සම්පතක් එක් කරන්න."},
   searchBooks:{en:"Search books",si:"පොත් සොයන්න"}, searchPlaceholder:{en:"Enter a book title...",si:"පොතේ නම ඇතුළත් කරන්න..."},
@@ -1073,12 +1088,14 @@ const librarySection=$("librarySection");
 const olLibraryLoading=$("olLibraryLoading");
 const olGradeChooser=$("olGradeChooser");
 const olPapersPanel=$("olPapersPanel");
+const alPapersPanel=$("alPapersPanel");
 let olLibraryTimer=null;
 function resetOLLibrary(){
   if(olLibraryTimer){clearTimeout(olLibraryTimer);olLibraryTimer=null;}
   olLibraryLoading.style.display="none";
   olGradeChooser.style.display="none";
   olPapersPanel.style.display="none";
+  alPapersPanel.style.display="none";
 }
 function showOLGradeChooser(){
   resetOLLibrary();
@@ -1087,6 +1104,10 @@ function showOLGradeChooser(){
 function showOLPastPapers(){
   resetOLLibrary();
   olPapersPanel.style.display="block";
+}
+function showALPastPapers(){
+  resetOLLibrary();
+  alPapersPanel.style.display="block";
 }
 $("digitalLibraryBtn").addEventListener("click",()=>{
   homeSection.style.display="none";gradeSection.style.display="none";formSection.style.display="none";viewPanel.style.display="none";studentResult.style.display="none";marksSection.style.display="none";marksResult.style.display="none";successScreen.style.display="none";
@@ -1097,9 +1118,12 @@ $("digitalLibraryBtn").addEventListener("click",()=>{
   olLibraryTimer=setTimeout(()=>{olLibraryTimer=null;showOLGradeChooser();},3000);
 });
 $("olGrade11Btn").addEventListener("click",showOLPastPapers);
+$("alGrade13Btn").addEventListener("click",showALPastPapers);
 $("olPapersBackBtn").addEventListener("click",showOLGradeChooser);
+$("alPapersBackBtn").addEventListener("click",showOLGradeChooser);
 $("olLibraryBackGradeBtn").addEventListener("click",()=>{resetOLLibrary();librarySection.style.display="none";showHome();});
 $("olLibraryHomeBtn").addEventListener("click",()=>{resetOLLibrary();librarySection.style.display="none";showHome();});
+$("alLibraryHomeBtn").addEventListener("click",()=>{resetOLLibrary();librarySection.style.display="none";showHome();});
 
 /* BACKGROUND MUSIC PLAYER */
 const backgroundMusic=$("backgroundMusic");
