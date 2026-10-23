@@ -107,6 +107,23 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 #liveDate{font-size:14px; line-height:1.7; margin-bottom:5px; color:#d7e8d9}
 #liveTime{font-size:clamp(23px,5vw,30px); letter-spacing:2px; text-shadow:0 0 12px #39ff1470}
 
+
+/* SCHOOL NOTICE BOARD + ADMIN PANEL */
+.notice-nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 auto 18px}
+.notice-nav button{min-width:170px}
+.notice-card{border:1px solid #39ff1470;border-radius:16px;background:rgba(3,15,7,.92);padding:18px;margin:14px 0;box-shadow:0 0 18px #39ff1415;overflow:hidden}
+.notice-card h3{color:var(--yellow);margin:0 0 8px;overflow-wrap:anywhere}
+.notice-card .notice-meta{font-size:12px;color:#9fbba3;margin-bottom:12px}
+.notice-card .notice-body{white-space:pre-wrap;line-height:1.8;overflow-wrap:anywhere;color:#e5f4e7}
+.notice-media{display:block;max-width:100%;max-height:520px;margin:12px auto;border-radius:12px}
+.notice-file-link{display:inline-block;color:#041004;background:var(--green);padding:10px 14px;border-radius:9px;font-weight:800;text-decoration:none;margin-top:10px}
+.notice-form{display:grid;gap:12px;margin-top:16px}
+.notice-form input,.notice-form textarea{width:100%;box-sizing:border-box;background:#061009;color:#f1fff2;border:1px solid #39ff1470;border-radius:10px;padding:12px;font:inherit}
+.notice-form textarea{min-height:120px;resize:vertical}
+.notice-status{min-height:22px;color:var(--green);overflow-wrap:anywhere}
+.notice-admin-box{border:1px dashed #39ff1480;border-radius:14px;padding:16px;margin:16px 0}
+.notice-empty{text-align:center;color:#b9d2bd;padding:22px}
+
 </style>
 </head>
 <body>
@@ -146,6 +163,10 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 </div>
 </header>
 
+<div class="notice-nav" aria-label="School notice navigation">
+  <button class="primary" id="schoolNoticeBtn" type="button">📢 SCHOOL NOTICE</button>
+</div>
+
 <div class="language-switch" aria-label="Language selection">
   <button class="secondary active" id="langEnglishBtn" type="button">🇬🇧 English</button>
   <button class="secondary" id="langSinhalaBtn" type="button">🇱🇰 සිංහල</button>
@@ -180,6 +201,43 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 <button class="home-button marks" id="viewMarksBtn" type="button"><span class="symbol">▤</span><span>VIEW MARKS</span><small>Term Test ප්‍රතිඵල බලන්න</small></button>
 <button class="home-button" id="digitalLibraryBtn" type="button"><span class="symbol">📚</span><span data-i18n="libraryHomeTitle">FOR O/L AND A/L STUDENTS</span><small data-i18n="libraryHomeSub">Past papers for O/L and A/L students</small></button>
 </div>
+</section>
+
+
+<section class="view-panel" id="schoolNoticeSection">
+  <h2 class="section-title">📢 SCHOOL NOTICE BOARD</h2>
+  <p class="notice">School announcements, photos, videos and documents / පාසලේ නිවේදන</p>
+  <div class="notice-nav">
+    <button class="secondary" id="noticeHomeBtn" type="button">← BACK TO HOME</button>
+    <button class="secondary" id="showAdminLoginBtn" type="button">🔐 ADMIN LOGIN</button>
+  </div>
+  <div class="notice-admin-box" id="adminLoginBox" style="display:none">
+    <h3 style="color:var(--yellow);margin-bottom:10px">ADMIN LOGIN</h3>
+    <p class="notice">Only authorized school administrators should sign in.</p>
+    <form class="notice-form" id="adminLoginForm">
+      <input id="adminEmail" type="email" autocomplete="username" placeholder="Admin email address" required>
+      <input id="adminPassword" type="password" autocomplete="current-password" placeholder="Password" required>
+      <button class="primary" type="submit" id="adminLoginSubmit">LOGIN</button>
+    </form>
+    <p class="notice-status" id="adminLoginStatus" role="status"></p>
+  </div>
+  <div class="notice-admin-box" id="adminEditorBox" style="display:none">
+    <h3 style="color:var(--yellow);margin-bottom:8px">✍️ ADD NEW SCHOOL NOTICE</h3>
+    <p class="notice">Signed in as <strong id="adminSignedInEmail"></strong></p>
+    <form class="notice-form" id="noticeUploadForm">
+      <input id="noticeTitle" type="text" maxlength="140" placeholder="Notice title / මාතෘකාව" required>
+      <textarea id="noticeText" maxlength="10000" placeholder="Write your notice here... / නිවේදනය මෙහි ලියන්න"></textarea>
+      <label for="noticeFile">Add photo, video or document (optional)</label>
+      <input id="noticeFile" type="file" accept="image/*,video/*,.pdf,.doc,.docx,.ppt,.pptx">
+      <p class="notice">Photo / video / PDF / document upload. Large videos may take longer to upload.</p>
+      <button class="primary" type="submit" id="publishNoticeBtn">📤 PUBLISH NOTICE</button>
+    </form>
+    <p class="notice-status" id="noticeUploadStatus" role="status"></p>
+    <button class="secondary" id="adminLogoutBtn" type="button">LOG OUT</button>
+  </div>
+  <h3 class="section-title" style="margin-top:24px">LATEST NOTICES</h3>
+  <p class="notice-status" id="noticeBoardStatus" role="status">Loading notices...</p>
+  <div id="noticeList"><div class="notice-empty">Loading school notices...</div></div>
 </section>
 
 <section class="view-panel" id="librarySection">
@@ -340,7 +398,9 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-import {getFirestore,collection,getDoc,doc,writeBatch} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import {getFirestore,collection,getDoc,doc,writeBatch,addDoc,getDocs,deleteDoc,query,orderBy,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import {getStorage,ref,uploadBytes,getDownloadURL,deleteObject} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
@@ -373,6 +433,8 @@ const statusEl=$("status");
 const lookupStatus=$("lookupStatus");
 
 let db=null;
+let auth=null;
+let storage=null;
 let latestVerificationCode="";
 let selectedGrade="";
 let nextAction="";
@@ -395,11 +457,146 @@ startContinueBtn.addEventListener("click",()=>{
 try{
   const app=initializeApp(firebaseConfig);
   db=getFirestore(app);
+  auth=getAuth(app);
+  storage=getStorage(app);
   statusEl.textContent="Ready / සූදානම්";
 }catch(error){
   console.error(error);
   statusEl.textContent="Firebase initialization failed. Reload the website.";
 }
+
+
+/* SCHOOL NOTICE BOARD: public viewing, authenticated admin publishing */
+const noticeSection=$("schoolNoticeSection");
+const noticeList=$("noticeList");
+const noticeBoardStatus=$("noticeBoardStatus");
+const adminLoginBox=$("adminLoginBox");
+const adminEditorBox=$("adminEditorBox");
+const adminLoginStatus=$("adminLoginStatus");
+const noticeUploadStatus=$("noticeUploadStatus");
+let noticeCache=[];
+let adminAuthorized=false;
+
+function hideMainSectionsForNotice(){
+  [homeSection,gradeSection,formSection,viewPanel,studentResult,marksSection,marksResult,successScreen,librarySection].forEach(el=>{if(el)el.style.display="none";});
+  noticeSection.style.display="block";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function openNoticeBoard(){hideMainSectionsForNotice();loadSchoolNotices();}
+$("schoolNoticeBtn").addEventListener("click",openNoticeBoard);
+$("noticeHomeBtn").addEventListener("click",()=>{noticeSection.style.display="none";showHome();});
+$("showAdminLoginBtn").addEventListener("click",()=>{
+  adminLoginBox.style.display=adminLoginBox.style.display==="none"?"block":"none";
+  if(adminLoginBox.style.display==="block")$("adminEmail").focus();
+});
+
+function safeText(value){return String(value??"");}
+function renderNoticeCard(item){
+  const article=document.createElement("article");article.className="notice-card";
+  const title=document.createElement("h3");title.textContent=item.title||"School Notice";article.appendChild(title);
+  const meta=document.createElement("div");meta.className="notice-meta";
+  let dateText="School Announcement";
+  if(item.createdAt&&typeof item.createdAt.toDate==="function")dateText=item.createdAt.toDate().toLocaleString("en-GB",{timeZone:"Asia/Colombo"});
+  meta.textContent=dateText;article.appendChild(meta);
+  if(item.body){const body=document.createElement("p");body.className="notice-body";body.textContent=item.body;article.appendChild(body);}
+  if(item.fileURL&&item.fileType){
+    if(item.fileType.startsWith("image/")){const img=document.createElement("img");img.className="notice-media";img.src=item.fileURL;img.alt=item.title||"School notice image";img.loading="lazy";article.appendChild(img);}
+    else if(item.fileType.startsWith("video/")){const video=document.createElement("video");video.className="notice-media";video.src=item.fileURL;video.controls=true;video.preload="metadata";article.appendChild(video);}
+    else {const link=document.createElement("a");link.className="notice-file-link";link.href=item.fileURL;link.target="_blank";link.rel="noopener noreferrer";link.textContent="📎 OPEN / DOWNLOAD ATTACHMENT";article.appendChild(link);}
+  }
+  if(adminAuthorized&&auth&&auth.currentUser){
+    const del=document.createElement("button");del.type="button";del.className="secondary";del.textContent="DELETE NOTICE";del.style.marginTop="12px";
+    del.addEventListener("click",async()=>{
+      if(!confirm("Delete this school notice?"))return;
+      del.disabled=true;
+      try{
+        await deleteDoc(doc(db,"schoolNotices",item.id));
+        if(item.filePath){try{await deleteObject(ref(storage,item.filePath));}catch(e){console.warn("Attachment cleanup failed",e);}}
+        await loadSchoolNotices();
+      }catch(e){alert("Could not delete notice. Check Firebase security rules.");del.disabled=false;console.error(e);}
+    });article.appendChild(del);
+  }
+  return article;
+}
+async function loadSchoolNotices(){
+  if(!db){noticeBoardStatus.textContent="Firebase is not connected. Please try again later.";return;}
+  noticeBoardStatus.textContent="Loading notices...";noticeList.replaceChildren();
+  try{
+    const snap=await getDocs(query(collection(db,"schoolNotices"),orderBy("createdAt","desc")));
+    noticeCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+    noticeList.replaceChildren();
+    if(!noticeCache.length){noticeList.innerHTML='<div class="notice-empty">No school notices have been published yet.</div>';noticeBoardStatus.textContent="";return;}
+    noticeCache.forEach(item=>noticeList.appendChild(renderNoticeCard(item)));
+    noticeBoardStatus.textContent=noticeCache.length+" notice(s)";
+  }catch(e){
+    console.error(e);noticeBoardStatus.textContent="Could not load notices. Please check Firebase Firestore rules and configuration.";
+    noticeList.innerHTML='<div class="notice-empty">Notice board is temporarily unavailable.</div>';
+  }
+}
+
+$("adminLoginForm").addEventListener("submit",async event=>{
+  event.preventDefault();adminLoginStatus.textContent="Signing in...";$("adminLoginSubmit").disabled=true;
+  try{
+    await signInWithEmailAndPassword(auth,$("adminEmail").value.trim(),$("adminPassword").value);
+    adminLoginStatus.textContent="Login successful.";adminLoginBox.style.display="none";
+  }catch(e){console.error(e);adminLoginStatus.textContent="Login failed. Check your email/password and enable Email/Password sign-in in Firebase Authentication.";}
+  finally{$("adminLoginSubmit").disabled=false;}
+});
+
+onAuthStateChanged(auth,async user=>{
+  adminAuthorized=false;
+  if(user&&db){
+    try{
+      const adminDoc=await getDoc(doc(db,"admins",user.uid));
+      if(adminDoc.exists()){
+        adminAuthorized=true;
+        adminEditorBox.style.display="block";$("adminSignedInEmail").textContent=user.email||"Admin";
+        $("showAdminLoginBtn").style.display="none";
+      }else{
+        adminEditorBox.style.display="none";$("showAdminLoginBtn").style.display="inline-block";
+        adminLoginStatus.textContent="This account is not authorized as a school admin. Add its UID to the admins collection in Firebase.";
+        await signOut(auth);
+      }
+    }catch(e){
+      console.error("Could not verify admin account",e);
+      adminEditorBox.style.display="none";$("showAdminLoginBtn").style.display="inline-block";
+      adminLoginStatus.textContent="Admin verification failed. Check Firestore rules.";
+    }
+  }else{
+    adminEditorBox.style.display="none";$("showAdminLoginBtn").style.display="inline-block";
+  }
+  if(noticeSection.style.display==="block")loadSchoolNotices();
+});
+
+$("noticeUploadForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  if(!auth?.currentUser||!adminAuthorized){noticeUploadStatus.textContent="Please log in with an authorized school admin account first.";return;}
+  const title=$("noticeTitle").value.trim();const body=$("noticeText").value.trim();const file=$("noticeFile").files?.[0]||null;
+  if(!title){noticeUploadStatus.textContent="Please enter a notice title.";return;}
+  if(!body&&!file){noticeUploadStatus.textContent="Add notice text or attach a photo/video/document.";return;}
+  if(file&&file.size>100*1024*1024){noticeUploadStatus.textContent="File is too large. Maximum size is 100 MB.";return;}
+  const btn=$("publishNoticeBtn");btn.disabled=true;noticeUploadStatus.textContent="Publishing notice... Please wait.";
+  let filePath="";
+  try{
+    let fileURL="";let fileType="";let fileName="";
+    if(file){
+      filePath="schoolNotices/"+Date.now()+"_"+file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+      const fileRef=ref(storage,filePath);
+      await uploadBytes(fileRef,file,{contentType:file.type||"application/octet-stream"});
+      fileURL=await getDownloadURL(fileRef);fileType=file.type||"application/octet-stream";fileName=file.name;
+    }
+    await addDoc(collection(db,"schoolNotices"),{title,body,fileURL,fileType,fileName,filePath,createdAt:serverTimestamp(),createdBy:auth.currentUser.uid,createdByEmail:auth.currentUser.email||""});
+    $("noticeUploadForm").reset();noticeUploadStatus.textContent="Notice published successfully!";
+    await loadSchoolNotices();
+  }catch(e){
+    console.error(e);noticeUploadStatus.textContent="Upload failed. Enable Firebase Storage and check Firestore/Storage rules.";
+    if(filePath){try{await deleteObject(ref(storage,filePath));}catch(_){}}
+  }finally{btn.disabled=false;}
+});
+
+$("adminLogoutBtn").addEventListener("click",async()=>{
+  try{await signOut(auth);adminLoginStatus.textContent="You have logged out.";noticeUploadStatus.textContent="";}catch(e){console.error(e);}
+});
 
 function updateGradeFields(){
   const showResults=selectedGrade==="Grade 12"||selectedGrade==="Grade 13";
