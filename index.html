@@ -97,6 +97,16 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 .library-tools{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:14px}
 @media(max-width:650px){.library-grid,.library-tools{grid-template-columns:1fr}}
 
+
+/* REAL DATE & TIME DISPLAY */
+.live-datetime{
+  text-align:center; margin:16px auto 0; padding:13px 16px; max-width:360px;
+  color:var(--green); background:rgba(0,0,0,.45); border:1px solid var(--green);
+  border-radius:14px; box-shadow:0 0 15px #39ff1435; font-weight:bold;
+}
+#liveDate{font-size:14px; line-height:1.7; margin-bottom:5px; color:#d7e8d9}
+#liveTime{font-size:clamp(23px,5vw,30px); letter-spacing:2px; text-shadow:0 0 12px #39ff1470}
+
 </style>
 </head>
 <body>
@@ -130,6 +140,10 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 <h1>R/VIDYARAJA VIDYALAYA</h1>
 <p class="subtitle">STUDENT INFORMATION PORTAL</p>
 <p class="notice">ඔබගේ ශිෂ්‍ය තොරතුරු ඇතුළත් කරන්න<br>Enter Student Information</p>
+<div class="live-datetime" aria-label="Current Sri Lanka date and time">
+  <div id="liveDate">Loading date...</div>
+  <div id="liveTime">Loading time...</div>
+</div>
 </header>
 
 <div class="language-switch" aria-label="Language selection">
@@ -1145,6 +1159,25 @@ musicToggle.addEventListener("click",async()=>{
     musicToggle.setAttribute("aria-label","Play background music");
   }
 });
+</script>
+
+<script>
+/* Live date and clock in Sri Lanka time (Asia/Colombo) */
+(function(){
+  const dateEl = document.getElementById('liveDate');
+  const timeEl = document.getElementById('liveTime');
+  function updateSriLankaDateTime(){
+    const now = new Date();
+    dateEl.textContent = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Colombo', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    }).format(now);
+    timeEl.textContent = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Colombo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+    }).format(now);
+  }
+  updateSriLankaDateTime();
+  setInterval(updateSriLankaDateTime, 1000);
+})();
 </script>
 </body>
 </html>
