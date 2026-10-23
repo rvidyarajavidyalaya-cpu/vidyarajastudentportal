@@ -239,26 +239,6 @@ tr:hover td{background:#0e1b10}
   </form>
 </section>
 
-<section class="panel hidden" id="adminManagementPanel">
-  <h2>ADD / AUTHORIZE ADMIN</h2>
-  <p class="small">Super Admin only. First create the person's account in Firebase Authentication, then enter that account's exact UID and email here.</p>
-  <form id="addAdminForm">
-    <div class="formgrid">
-      <div>
-        <label for="newAdminEmail">New Admin Email</label>
-        <input id="newAdminEmail" type="email" autocomplete="off" required maxlength="200" placeholder="admin@example.com">
-      </div>
-      <div>
-        <label for="newAdminUid">Firebase Authentication UID</label>
-        <input id="newAdminUid" autocomplete="off" required maxlength="128" placeholder="Paste the user's UID">
-      </div>
-    </div>
-    <button class="primary" id="addAdminBtn" type="submit">AUTHORIZE ADMIN</button>
-    <p class="status" id="addAdminStatus" role="status" aria-live="polite"></p>
-    <p class="small">This does not create a Firebase login account. It grants the specified existing Firebase account permission to use this dashboard. Never share passwords.</p>
-  </form>
-</section>
-
 <section class="panel hidden" id="dashboard">
   <div class="topline">
     <div>
@@ -941,100 +921,41 @@ $("loginForm").addEventListener("submit", async e => {
 });
 
 onAuthStateChanged(auth, async user => {
-  isAdmin = false;
-  isSuperAdmin = false;
-  setHidden("dashboard", true);
-  setHidden("adminManagementPanel", true);
-  setHidden("detailPanel", true);
-  setHidden("marksPanel", true);
-
   if (!user) {
+    isAdmin = false;
     setHidden("loginPanel", false);
+    setHidden("dashboard", true);
+    setHidden("marksPanel", true);
     $("adminIdentity").textContent = "";
     hideLoading();
     return;
   }
 
-  showLoading("Checking administrator permissions...");
-
-  try {
-    if (user.uid === ADMIN_UID) {
-      isSuperAdmin = true;
-      isAdmin = true;
-    } else {
-      const adminSnap = await getDoc(doc(db, "admins", user.uid));
-      const adminData = adminSnap.exists() ? adminSnap.data() : null;
-      isAdmin = !!adminData &&
-        adminData.role === "admin" &&
-        (!adminData.email || String(adminData.email).toLowerCase() === String(user.email || "").toLowerCase());
-    }
-
-    if (!isAdmin) {
-      showStatus("loginStatus", "Access denied: this account has not been authorized as an administrator.", true);
-      await signOut(auth);
-      setHidden("loginPanel", false);
-      hideLoading();
-      return;
-    }
-
-    setHidden("loginPanel", true);
-    setHidden("dashboard", false);
-    setHidden("adminManagementPanel", isSuperAdmin);
-    $("adminIdentity").textContent =
-      (isSuperAdmin ? "Super Admin • " : "Admin • ") + (user.email || user.uid);
-
-    await loadStudents();
-  } catch (err) {
-    console.error("Admin permission check failed:", err);
+  if (user.uid !== ADMIN_UID) {
     isAdmin = false;
-    isSuperAdmin = false;
-    setHidden("loginPanel", false);
-    showStatus("loginStatus", `Could not verify admin permissions: ${err.code || err.message}. Check Firestore rules.`, true);
+
+    showStatus(
+      "loginStatus",
+      "Access denied: this account is not the authorized administrator.",
+      true
+    );
+
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.error(err);
+    }
+
     hideLoading();
-  }
-});
-
-$("addAdminForm").addEventListener("submit", async e => {
-  e.preventDefault();
-
-  if (!isSuperAdmin || !auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
-    showStatus("addAdminStatus", "Only the Super Admin can authorize another admin.", true);
     return;
   }
 
-  const email = $("newAdminEmail").value.trim().toLowerCase();
-  const uid = $("newAdminUid").value.trim();
+  isAdmin = true;
+  setHidden("loginPanel", true);
+  setHidden("dashboard", false);
+  $("adminIdentity").textContent = user.email || "Administrator";
 
-  if (!email || !uid) {
-    showStatus("addAdminStatus", "Enter both the Firebase account email and UID.", true);
-    return;
-  }
-  if (uid === ADMIN_UID) {
-    showStatus("addAdminStatus", "The Super Admin account is already authorized.", true);
-    return;
-  }
-
-  if (!confirm(`Authorize this Firebase account as an administrator?\\n\\nEmail: ${email}\\nUID: ${uid}\\n\\nMake sure the UID was copied from the correct Firebase Authentication user.`)) return;
-
-  $("addAdminBtn").disabled = true;
-  showLoading("Authorizing administrator...");
-
-  try {
-    await setDoc(doc(db, "admins", uid), {
-      email,
-      role: "admin",
-      addedBy: auth.currentUser.uid,
-      createdAt: serverTimestamp()
-    });
-    showStatus("addAdminStatus", "Admin authorized successfully. They can now log in with their own Firebase Authentication account.", false, true);
-    $("addAdminForm").reset();
-  } catch (err) {
-    console.error("Authorize admin error:", err);
-    showStatus("addAdminStatus", `Could not authorize admin: ${err.code || err.message}. Check the admins Firestore security rules.`, true);
-  } finally {
-    $("addAdminBtn").disabled = false;
-    hideLoading();
-  }
+  await loadStudents();
 });
 
 $("logoutBtn").addEventListener("click", async () => {
@@ -1150,7 +1071,7 @@ $("deleteMarksBtn").addEventListener("click", async () => {
 $("marksForm").addEventListener("submit", async e => {
   e.preventDefault();
 
-  if (!isAdmin || !auth.currentUser) {
+  if (!isAdmin || !auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
     showStatus("marksStatus", "Administrator login required.", true);
     return;
   }
