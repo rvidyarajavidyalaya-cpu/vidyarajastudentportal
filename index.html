@@ -124,6 +124,167 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 .notice-admin-box{border:1px dashed #39ff1480;border-radius:14px;padding:16px;margin:16px 0}
 .notice-empty{text-align:center;color:#b9d2bd;padding:22px}
 
+/* PREMIUM MODERN WEBSITE EFFECTS */
+
+/* Mouse-following green spotlight */
+:root {
+  --mouse-x: 50vw;
+  --mouse-y: 30vh;
+  --glass-bg: rgba(7, 19, 10, 0.76);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    360px circle at var(--mouse-x) var(--mouse-y),
+    rgba(57, 255, 20, 0.12),
+    transparent 72%
+  );
+}
+
+/* Premium glass panels */
+header,
+.card,
+.home-panel,
+.view-panel,
+.student-result,
+.success-screen,
+.start-box,
+.blur-box {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-color: rgba(57, 255, 20, 0.65);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+}
+
+/* Animated gradient glow on important panels */
+header,
+.card,
+.home-panel,
+.view-panel,
+.student-result {
+  position: relative;
+  isolation: isolate;
+}
+
+header:hover,
+.card:hover,
+.home-panel:hover,
+.view-panel:hover,
+.student-result:hover {
+  border-color: var(--yellow);
+  box-shadow:
+    0 0 18px rgba(57, 255, 20, 0.2),
+    0 0 38px rgba(57, 255, 20, 0.08);
+}
+
+/* Smooth 3D-style card hover */
+.home-button,
+.library-book,
+.notice-card,
+.result-item {
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+}
+
+.home-button:hover,
+.library-book:hover,
+.notice-card:hover,
+.result-item:hover {
+  transform: translateY(-5px);
+  border-color: var(--yellow);
+  box-shadow:
+    0 8px 25px rgba(57, 255, 20, 0.12),
+    0 0 14px rgba(57, 255, 20, 0.12);
+}
+
+/* Premium buttons */
+button {
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+.primary:not(:disabled):hover {
+  background: var(--yellow);
+  box-shadow: 0 0 24px rgba(234, 255, 0, 0.28);
+}
+
+/* Animated neon border glow */
+@keyframes borderGlow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(57, 255, 20, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 19px rgba(57, 255, 20, 0.3);
+  }
+}
+
+.live-datetime {
+  animation: borderGlow 4s ease-in-out infinite;
+}
+
+/* Scroll reveal */
+.reveal-effect {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.65s ease,
+    transform 0.65s ease;
+}
+
+.reveal-effect.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Better keyboard focus */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 4px;
+}
+
+/* Mobile and accessibility support */
+@media (hover: none) {
+  body::before {
+    display: none;
+  }
+
+  .home-button:hover,
+  .library-book:hover,
+  .notice-card:hover,
+  .result-item:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-effect {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1382,5 +1543,65 @@ musicToggle.addEventListener("click",async()=>{
   }
 })();
 </script>
+  
+<script>
+/* PREMIUM EFFECTS: Mouse spotlight + scroll reveal */
+(function () {
+  const root = document.documentElement;
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  // Mouse-following glow on computers
+  if (!reduceMotion && window.matchMedia("(hover: hover)").matches) {
+    let framePending = false;
+
+    document.addEventListener("pointermove", function (event) {
+      if (framePending) return;
+
+      framePending = true;
+
+      requestAnimationFrame(function () {
+        root.style.setProperty("--mouse-x", event.clientX + "px");
+        root.style.setProperty("--mouse-y", event.clientY + "px");
+        framePending = false;
+      });
+    }, { passive: true });
+  }
+
+  // Smooth reveal when sections enter the screen
+  const targets = document.querySelectorAll(
+    ".card, .home-panel, .view-panel, " +
+    ".student-result, .notice-card, .library-book"
+  );
+
+  if (reduceMotion || !("IntersectionObserver" in window)) {
+    targets.forEach(function (element) {
+      element.classList.add("reveal-visible");
+    });
+    return;
+  }
+
+  const observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("reveal-visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.08,
+    rootMargin: "0px 0px 30px 0px"
+  });
+
+  targets.forEach(function (element) {
+    element.classList.add("reveal-effect");
+    observer.observe(element);
+  });
+})();
+</script>
+</body>
+</html>
+
 </body>
 </html>
