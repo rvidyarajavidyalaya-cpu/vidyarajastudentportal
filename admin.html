@@ -1,282 +1,312 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>R/VIDYARAJA VIDYALAYA | Admin Dashboard</title>
+<title>VIDYARAJA Student Admin Dashboard</title>
 
 <style>
 :root {
- --green:#39ff14;
- --yellow:#eaff00;
- --bg:#050a06;
- --panel:#0b160d;
- --muted:#b7c9ba;
- --red:#ff5757;
+  --green: #39ff14;
+  --yellow: #eaff00;
+  --bg: #050a06;
+  --panel: #0b160d;
+  --text: #f4fff4;
+  --muted: #a9b9aa;
+  --red: #ff5252;
 }
-* {box-sizing:border-box;margin:0;padding:0}
+* { box-sizing: border-box; }
 body {
- min-height:100vh;
- background:radial-gradient(ellipse at top,#17351c,#07100a 50%,#030604);
- color:#f5fff5;
- font-family:Arial,"Noto Sans Sinhala",sans-serif;
- padding:22px 14px;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at top, #12351a, var(--bg) 60%);
+  min-height: 100vh;
 }
-main {max-width:1150px;margin:auto}
-header,.panel {
- background:rgba(7,19,10,.97);
- border:1px solid var(--green);
- border-radius:18px;
- box-shadow:0 0 22px #39ff1428;
- padding:22px;
- margin-bottom:20px;
+header {
+  padding: 24px 15px;
+  text-align: center;
+  border-bottom: 1px solid #39ff1444;
 }
-header{text-align:center}
-h1 {color:var(--yellow);font-size:clamp(22px,4vw,32px)}
-h2 {color:var(--yellow);font-size:20px;margin-bottom:16px}
-.sub {color:var(--muted);font-size:13px;margin-top:8px}
-.formgrid {
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
- gap:12px;
+header h1 {
+  color: var(--green);
+  margin: 0 0 8px;
+  font-size: clamp(22px, 4vw, 34px);
 }
+header p { color: var(--muted); margin: 0; }
+.container { width: min(1100px, 94%); margin: 25px auto; }
+.panel {
+  background: var(--panel);
+  border: 1px solid #39ff1444;
+  border-radius: 15px;
+  padding: 22px;
+  margin-bottom: 22px;
+  box-shadow: 0 0 20px #0008;
+}
+h2 { color: var(--yellow); margin-top: 0; }
 label {
- display:block;color:var(--green);
- font-size:13px;margin:0 0 6px;
+  display: block;
+  margin: 13px 0 7px;
+  color: #d7e9d7;
+  font-size: 14px;
 }
-input {
- width:100%;padding:12px;border-radius:9px;
- border:1px solid #426647;background:#07100a;
- color:#fff;outline:none;
+input, select {
+  width: 100%;
+  padding: 12px;
+  color: white;
+  background: #071009;
+  border: 1px solid #47754a;
+  border-radius: 8px;
+  outline: none;
 }
-input:focus {border-color:var(--green);box-shadow:0 0 10px #39ff1433}
+input:focus, select:focus { border-color: var(--green); }
 button {
- border:0;border-radius:9px;padding:11px 16px;
- font-weight:700;cursor:pointer;margin:6px 6px 0 0;
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 12px;
 }
-.primary {background:var(--green);color:#031003}
-.secondary {background:#18251a;color:#fff;border:1px solid #58745b}
-.danger {background:#471414;color:#fff;border:1px solid var(--red)}
-button:disabled {opacity:.5;cursor:wait}
-.status {
- margin-top:12px;line-height:1.6;
- color:var(--muted);overflow-wrap:anywhere;
+.primary { background: var(--green); color: #061006; }
+.secondary { background: #243628; color: white; border: 1px solid #56765a; }
+.danger { background: #451919; color: #fff; border: 1px solid #a74444; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
-.hidden {display:none!important}
-.toolbar {
- display:flex;gap:10px;flex-wrap:wrap;
- align-items:center;margin-bottom:14px;
+.full { grid-column: 1 / -1; }
+.status { margin-top: 12px; font-size: 14px; overflow-wrap: anywhere; }
+.error { color: var(--red); }
+.success { color: var(--green); }
+.muted { color: var(--muted); font-size: 13px; line-height: 1.6; }
+.hidden { display: none !important; }
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
-.toolbar input {flex:1;min-width:220px}
-.tablewrap {overflow:auto;border:1px solid #29472d;border-radius:10px}
-table {border-collapse:collapse;width:100%;min-width:750px}
-th,td {
- padding:11px;text-align:left;border-bottom:1px solid #243b27;
- font-size:13px;vertical-align:top;
+table { width: 100%; border-collapse: collapse; min-width: 650px; }
+th, td {
+  border-bottom: 1px solid #ffffff1c;
+  padding: 12px;
+  text-align: left;
+  font-size: 13px;
 }
-th {background:#102315;color:var(--yellow)}
-tr:hover td {background:#0e1b10}
-.small {font-size:12px;color:var(--muted)}
-.detailgrid {
- display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
- gap:10px;
+th { color: var(--green); }
+.table-wrap { overflow-x: auto; }
+.subject-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(80px, 1fr) auto;
+  gap: 9px;
+  align-items: end;
+  margin-bottom: 10px;
 }
-.detail {
- border:1px solid #29472d;border-radius:9px;
- padding:12px;background:#08120a;overflow-wrap:anywhere;
+.subject-row button { margin: 0; }
+.badge {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: #17351b;
+  color: var(--green);
+  font-size: 12px;
 }
-.detail strong {
- display:block;color:var(--green);font-size:12px;margin-bottom:6px;
-}
-.detail span {white-space:pre-wrap}
-.topline {
- display:flex;justify-content:space-between;
- gap:10px;align-items:center;flex-wrap:wrap;
-}
-.pill {
- display:inline-block;border:1px solid #406444;
- border-radius:20px;padding:5px 9px;
- color:var(--green);font-size:12px;
-}
-.markgrid {
- display:grid;grid-template-columns:2fr 1fr;
- gap:8px;margin:8px 0;
-}
-.markgrid input {min-width:0}
-.markhead {color:var(--green);font-size:13px;margin:16px 0 6px}
-.wide {width:100%}
-@media(max-width:500px) {
- header,.panel {padding:15px}
- .markgrid {grid-template-columns:1.4fr 1fr}
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
+  .full { grid-column: auto; }
+  .panel { padding: 15px; }
+  .subject-row { grid-template-columns: 1fr 90px auto; }
 }
 </style>
 </head>
 
 <body>
-<main>
-
 <header>
- <h1>R/VIDYARAJA VIDYALAYA</h1>
- <p class="sub">STUDENT INFORMATION • ADMIN DASHBOARD</p>
+  <h1>R/VIDYARAJA VIDYALAYA</h1>
+  <p>STUDENT ADMIN DASHBOARD</p>
 </header>
 
-<!-- ADMIN LOGIN -->
-<section class="panel" id="loginPanel">
- <h2>ADMIN LOGIN</h2>
- <form id="loginForm">
-  <div class="formgrid">
-   <div>
-    <label for="email">Admin Email</label>
-    <input id="email" type="email" autocomplete="username" required>
-   </div>
-   <div>
-    <label for="password">Password</label>
-    <input id="password" type="password" autocomplete="current-password" required>
-   </div>
-  </div>
-  <button class="primary" id="loginBtn" type="submit">LOGIN</button>
-  <p class="status" id="loginStatus" role="status"></p>
- </form>
-</section>
+<main class="container">
 
-<!-- STUDENT RECORDS -->
-<section class="panel hidden" id="dashboard">
- <div class="topline">
-  <div>
-   <h2>STUDENT RECORDS</h2>
-   <p class="small" id="adminIdentity"></p>
-  </div>
-  <div>
-   <span class="pill" id="recordCount">0 records</span>
-   <button class="secondary" id="refreshBtn" type="button">REFRESH</button>
-   <button class="danger" id="logoutBtn" type="button">LOG OUT</button>
-  </div>
- </div>
+  <!-- LOGIN -->
+  <section class="panel" id="loginPanel">
+    <h2>Administrator Login</h2>
+    <p class="muted">Sign in using the authorized administrator's Firebase email and password.</p>
 
- <div class="toolbar">
-  <input id="searchInput" placeholder="Search admission number, name, grade, phone...">
-  <button class="primary" id="searchBtn" type="button">SEARCH</button>
- </div>
+    <form id="loginForm">
+      <label for="email">Admin Email</label>
+      <input id="email" type="email" autocomplete="username" required>
 
- <p class="status" id="listStatus" role="status"></p>
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" required>
 
- <div class="tablewrap">
-  <table>
-   <thead>
-    <tr>
-     <th>Admission No.</th>
-     <th>Full Name</th>
-     <th>Grade</th>
-     <th>Telephone</th>
-     <th>Submitted</th>
-     <th>Actions</th>
-    </tr>
-   </thead>
-   <tbody id="studentRows">
-    <tr><td colspan="6">Login to view records.</td></tr>
-   </tbody>
-  </table>
- </div>
-</section>
+      <button class="primary" id="loginBtn" type="submit">LOGIN</button>
+      <div class="status" id="loginStatus" role="status"></div>
+    </form>
+  </section>
 
-<!-- MARKS ENTRY / UPDATE -->
-<section class="panel hidden" id="marksPanel">
- <div class="topline">
-  <h2>FILL MARKS / UPDATE MARKS</h2>
-  <button class="secondary" id="closeMarksBtn" type="button">CLOSE</button>
- </div>
+  <!-- DASHBOARD -->
+  <section id="dashboard" class="hidden">
+    <div class="panel topbar">
+      <div>
+        <h2 style="margin-bottom:5px">Admin Dashboard</h2>
+        <span class="muted" id="adminEmail"></span>
+      </div>
+      <button class="danger" id="logoutBtn" type="button">LOG OUT</button>
+    </div>
 
- <p class="small">
-  Enter the student's Admission / Index Number. Add each subject and its
-  marks out of 100. Saving again updates the existing marks.
- </p>
+    <!-- STUDENT RECORDS -->
+    <section class="panel">
+      <h2>Student Records</h2>
+      <p class="muted">Search student records by admission/index number or name.</p>
 
- <form id="marksForm">
-  <div class="formgrid" style="margin-top:14px">
-   <div>
-    <label for="marksAdmission">Admission / Index Number</label>
-    <input id="marksAdmission" required maxlength="80"
-     placeholder="Student admission number">
-   </div>
+      <label for="studentSearch">Search Student</label>
+      <input id="studentSearch" placeholder="Enter admission number or student name">
 
-   <div>
-    <label for="marksStudentName">Student Name</label>
-    <input id="marksStudentName" readonly
-     placeholder="Student name appears here">
-   </div>
+      <button class="secondary" id="refreshStudentsBtn" type="button">REFRESH STUDENTS</button>
+      <div class="status" id="studentsStatus" role="status"></div>
 
-   <div>
-    <label for="examTitle">Term Test Name</label>
-    <input id="examTitle" required maxlength="120"
-     value="Term Test 1" placeholder="Term Test 1">
-   </div>
-  </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Admission / Index No.</th>
+              <th>Full Name</th>
+              <th>Grade</th>
+              <th>Telephone</th>
+            </tr>
+          </thead>
+          <tbody id="studentsTable">
+            <tr><td colspan="4">Please log in to load records.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-  <p class="markhead">SUBJECTS AND MARKS (0–100)</p>
+    <!-- MARKS ENTRY -->
+    <section class="panel">
+      <h2>Term Test Marks</h2>
+      <p class="muted">
+        Enter the student's admission/index number, then add each subject and mark.
+        You can save marks again later to update the existing record.
+      </p>
 
-  <div id="subjectFields"></div>
+      <form id="marksForm">
+        <div class="grid">
+          <div>
+            <label for="admission">Admission / Student Index Number</label>
+            <input id="admission" required autocomplete="off">
+          </div>
 
-  <button class="secondary" id="addSubjectBtn" type="button">
-   + ADD SUBJECT
-  </button>
+          <div>
+            <label for="examTitle">Examination</label>
+            <input id="examTitle" value="Term Test 1" required>
+          </div>
 
-  <p class="status" id="marksStatus" role="status" aria-live="polite"></p>
+          <div>
+            <label for="fullName">Student Full Name</label>
+            <input id="fullName" required>
+          </div>
 
-  <div>
-   <button class="primary" id="saveMarksBtn" type="submit">
-    SAVE / UPDATE MARKS
-   </button>
-   <button class="secondary" id="clearMarksBtn" type="button">
-    CLEAR FORM
-   </button>
-  </div>
- </form>
-</section>
+          <div>
+            <label for="grade">Grade</label>
+            <select id="grade" required>
+              <option value="">Select Grade</option>
+              <option>6</option><option>7</option><option>8</option>
+              <option>9</option><option>10</option><option>11</option>
+              <option>12</option><option>13</option>
+            </select>
+          </div>
+        </div>
 
-<!-- STUDENT DETAILS -->
-<section class="panel hidden" id="detailPanel">
- <div class="topline">
-  <h2>STUDENT DETAILS</h2>
-  <button class="secondary" id="closeDetailBtn" type="button">CLOSE</button>
- </div>
- <div class="detailgrid" id="detailGrid"></div>
-</section>
+        <div class="topbar" style="margin-top:24px">
+          <h3 style="margin:0;color:var(--green)">Subject Marks</h3>
+          <button class="secondary" id="addSubjectBtn" type="button">+ ADD SUBJECT</button>
+        </div>
 
+        <p class="muted">Enter marks from 0 to 100 for each subject.</p>
+        <div id="subjectsContainer"></div>
+
+        <button class="primary" id="saveMarksBtn" type="submit">SAVE / UPDATE MARKS</button>
+        <button class="secondary" id="loadMarksBtn" type="button">LOAD SAVED MARKS</button>
+        <div class="status" id="marksStatus" role="status"></div>
+      </form>
+    </section>
+
+    <!-- SAVED MARKS -->
+    <section class="panel">
+      <h2>Saved Marks</h2>
+      <p class="muted">Search using the student's admission/index number.</p>
+
+      <div class="grid">
+        <div>
+          <label for="marksSearch">Admission / Index Number</label>
+          <input id="marksSearch" placeholder="Enter student index number">
+        </div>
+        <div style="align-self:end">
+          <button class="primary" id="searchMarksBtn" type="button">SEARCH MARKS</button>
+        </div>
+      </div>
+
+      <div class="status" id="savedMarksStatus" role="status"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Marks</th>
+            </tr>
+          </thead>
+          <tbody id="savedMarksTable">
+            <tr><td colspan="2">No marks loaded.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </section>
 </main>
 
 <script type="module">
-import { initializeApp }
- from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { initializeApp } from
+  "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
 import {
- getAuth,
- signInWithEmailAndPassword,
- onAuthStateChanged,
- signOut
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 import {
- getFirestore,
- collection,
- getDocs,
- doc,
- deleteDoc,
- setDoc,
- getDoc
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-/* FIREBASE CONFIGURATION */
+/*
+  Firebase project configuration.
+  Keep these values consistent with your existing student portal.
+*/
 const firebaseConfig = {
- apiKey: "AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
- authDomain: "vidyarajastudentsystem.firebaseapp.com",
- projectId: "vidyarajastudentsystem",
- storageBucket: "vidyarajastudentsystem.firebasestorage.app",
- messagingSenderId: "580500123852",
- appId: "1:580500123852:web:f3c6f3f80f03fd1e21d269",
- measurementId: "G-YWQNDRM4E1"
+  apiKey: "AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
+  authDomain: "vidyarajastudentsystem.firebaseapp.com",
+  projectId: "vidyarajastudentsystem",
+  storageBucket: "vidyarajastudentsystem.firebasestorage.app",
+  messagingSenderId: "580500123852",
+  appId: "1:580500123852:web:f3c6f3f80f03fd1e21d269",
+  measurementId: "G-YWQNDRM4E1"
 };
 
-/* AUTHORIZED ADMIN UID */
+// Only this Firebase Auth UID is allowed to use this dashboard.
 const ADMIN_UID = "IpFcr0JLloUN2ENuJ70k8wgBzp22";
 
 const app = initializeApp(firebaseConfig);
@@ -285,14 +315,426 @@ const db = getFirestore(app);
 
 const $ = id => document.getElementById(id);
 
-let allStudents = [];
+let students = [];
+let isAdmin = false;
 
-function showStatus(id,message,isError=false) {
- $(id).textContent = message;
- $(id).style.color = isError ? '#ff8585' : '#b7c9ba';
+function status(id, message, type = "") {
+  const el = $(id);
+  el.textContent = message;
+  el.className = "status" + (type ? " " + type : "");
 }
 
-function escapeHtml(value) {
- return String(value ?? '').replace(/[&<>"']/g,c=>({
-  '&':'&amp;',
-  '<':'&lt
+function setHidden(id, hidden) {
+  $(id).classList.toggle("hidden", hidden);
+}
+
+function makeCell(value) {
+  const td = document.createElement("td");
+  td.textContent = value == null || value === "" ? "—" : String(value);
+  return td;
+}
+
+function getAdmission(student) {
+  return String(
+    student.admission ??
+    student.admissionNumber ??
+    student.indexNumber ??
+    student.studentIndexNumber ??
+    ""
+  ).trim();
+}
+
+function getStudentName(student) {
+  return String(
+    student.fullName ??
+    student.name ??
+    student.studentName ??
+    ""
+  ).trim();
+}
+
+function getStudentGrade(student) {
+  return String(student.grade ?? "").replace(/^Grade\s*/i, "").trim();
+}
+
+function findStudent(admission) {
+  const target = admission.trim().toLowerCase();
+  return students.find(s => getAdmission(s).toLowerCase() === target);
+}
+
+function addSubjectRow(subject = "", mark = "") {
+  const row = document.createElement("div");
+  row.className = "subject-row";
+
+  const subjectInput = document.createElement("input");
+  subjectInput.type = "text";
+  subjectInput.className = "subjectName";
+  subjectInput.placeholder = "Subject name";
+  subjectInput.value = subject;
+  subjectInput.required = true;
+  subjectInput.setAttribute("aria-label", "Subject name");
+
+  const markInput = document.createElement("input");
+  markInput.type = "number";
+  markInput.className = "subjectMark";
+  markInput.placeholder = "0–100";
+  markInput.min = "0";
+  markInput.max = "100";
+  markInput.step = "1";
+  markInput.value = mark;
+  markInput.required = true;
+  markInput.setAttribute("aria-label", "Subject mark");
+
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.className = "danger";
+  removeBtn.textContent = "REMOVE";
+  removeBtn.addEventListener("click", () => {
+    row.remove();
+  });
+
+  row.append(subjectInput, markInput, removeBtn);
+  $("subjectsContainer").appendChild(row);
+}
+
+function readSubjects() {
+  const rows = [...$("subjectsContainer").querySelectorAll(".subject-row")];
+
+  if (!rows.length) {
+    throw new Error("Please add at least one subject.");
+  }
+
+  const subjects = rows.map(row => {
+    const subject = row.querySelector(".subjectName").value.trim();
+    const rawMark = row.querySelector(".subjectMark").value;
+    const mark = Number(rawMark);
+
+    if (!subject) throw new Error("Please enter every subject name.");
+    if (rawMark === "" || !Number.isInteger(mark) || mark < 0 || mark > 100) {
+      throw new Error("Every mark must be a whole number from 0 to 100.");
+    }
+
+    return { subject, mark };
+  });
+
+  const names = subjects.map(s => s.subject.toLowerCase());
+  if (new Set(names).size !== names.length) {
+    throw new Error("Please remove duplicate subject names.");
+  }
+
+  return subjects;
+}
+
+function renderStudents() {
+  const tbody = $("studentsTable");
+  tbody.replaceChildren();
+
+  const q = $("studentSearch").value.trim().toLowerCase();
+  const filtered = students.filter(s => {
+    const admission = getAdmission(s).toLowerCase();
+    const name = getStudentName(s).toLowerCase();
+    return admission.includes(q) || name.includes(q);
+  });
+
+  if (!filtered.length) {
+    const tr = document.createElement("tr");
+    const td = makeCell("No matching student records.");
+    td.colSpan = 4;
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    return;
+  }
+
+  filtered.forEach(s => {
+    const tr = document.createElement("tr");
+    tr.append(
+      makeCell(getAdmission(s)),
+      makeCell(getStudentName(s)),
+      makeCell(getStudentGrade(s)),
+      makeCell(s.telephone ?? s.phone ?? s.telephoneNumber ?? "")
+    );
+    tbody.appendChild(tr);
+  });
+}
+
+async function loadStudents() {
+  if (!isAdmin) return;
+
+  status("studentsStatus", "Loading student records...");
+  try {
+    const snapshot = await getDocs(collection(db, "students"));
+    students = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderStudents();
+    status("studentsStatus", `Loaded ${students.length} student record(s).`, "success");
+  } catch (err) {
+    console.error("Student loading failed:", err);
+    status(
+      "studentsStatus",
+      `Could not load students: ${err.code || err.message}. Check Firestore rules.`,
+      "error"
+    );
+  }
+}
+
+function fillStudentFromSearch() {
+  const admission = $("admission").value.trim();
+  if (!admission) return;
+
+  const student = findStudent(admission);
+  if (student) {
+    $("fullName").value = getStudentName(student);
+    const grade = getStudentGrade(student);
+    if ([ "6", "7", "8", "9", "10", "11", "12", "13" ].includes(grade)) {
+      $("grade").value = grade;
+    }
+  }
+}
+
+async function loadMarks(admission, targetStatus = "marksStatus") {
+  if (!isAdmin) return;
+
+  if (!admission) {
+    status(targetStatus, "Please enter the student's admission/index number.", "error");
+    return;
+  }
+
+  status(targetStatus, "Loading saved marks...");
+  try {
+    const ref = doc(db, "termMarks", encodeURIComponent(admission));
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      status(targetStatus, "No saved marks found for this index number.", "error");
+      return;
+    }
+
+    const data = snap.data();
+    $("admission").value = data.admission || admission;
+    $("fullName").value = data.fullName || "";
+    $("examTitle").value = data.examTitle || "Term Test 1";
+
+    const grade = String(data.grade ?? "").replace(/^Grade\s*/i, "");
+    $("grade").value = grade;
+
+    $("subjectsContainer").replaceChildren();
+    if (Array.isArray(data.subjects) && data.subjects.length) {
+      data.subjects.forEach(s => addSubjectRow(s.subject ?? "", s.mark ?? ""));
+    } else {
+      addSubjectRow();
+    }
+
+    status(targetStatus, "Saved marks loaded. You can edit and save them again.", "success");
+  } catch (err) {
+    console.error("Marks loading failed:", err);
+    status(
+      targetStatus,
+      `Could not load marks: ${err.code || err.message}. Check Firestore rules.`,
+      "error"
+    );
+  }
+}
+
+async function searchSavedMarks() {
+  const admission = $("marksSearch").value.trim();
+
+  if (!admission) {
+    status("savedMarksStatus", "Please enter an admission/index number.", "error");
+    return;
+  }
+
+  status("savedMarksStatus", "Searching...");
+  $("savedMarksTable").replaceChildren();
+
+  try {
+    const ref = doc(db, "termMarks", encodeURIComponent(admission));
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      status("savedMarksStatus", "No marks found for this student.", "error");
+      const tr = document.createElement("tr");
+      const td = makeCell("No saved marks.");
+      td.colSpan = 2;
+      tr.appendChild(td);
+      $("savedMarksTable").appendChild(tr);
+      return;
+    }
+
+    const data = snap.data();
+    status(
+      "savedMarksStatus",
+      `${data.fullName || "Student"} — ${data.examTitle || "Term Test"} — Grade ${data.grade || "—"}`,
+      "success"
+    );
+
+    const tbody = $("savedMarksTable");
+    const subjects = Array.isArray(data.subjects) ? data.subjects : [];
+
+    if (!subjects.length) {
+      const tr = document.createElement("tr");
+      const td = makeCell("No subject marks recorded.");
+      td.colSpan = 2;
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      return;
+    }
+
+    subjects.forEach(s => {
+      const tr = document.createElement("tr");
+      tr.append(makeCell(s.subject), makeCell(s.mark));
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error("Saved marks search failed:", err);
+    status(
+      "savedMarksStatus",
+      `Search failed: ${err.code || err.message}. Check Firestore rules.`,
+      "error"
+    );
+  }
+}
+
+// Login
+$("loginForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const button = $("loginBtn");
+  button.disabled = true;
+  status("loginStatus", "Signing in...");
+
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      $("email").value.trim(),
+      $("password").value
+    );
+    // onAuthStateChanged verifies the administrator UID.
+  } catch (err) {
+    console.error("Login failed:", err);
+    status(
+      "loginStatus",
+      `Login failed: ${err.code || err.message}`,
+      "error"
+    );
+  } finally {
+    button.disabled = false;
+  }
+});
+
+// Authentication and administrator access check
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    isAdmin = false;
+    setHidden("loginPanel", false);
+    setHidden("dashboard", true);
+    $("adminEmail").textContent = "";
+    return;
+  }
+
+  if (user.uid !== ADMIN_UID) {
+    isAdmin = false;
+    status("loginStatus", "Access denied: this account is not the authorized administrator.", "error");
+
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.error("Sign-out failed:", err);
+    }
+    return;
+  }
+
+  isAdmin = true;
+  setHidden("loginPanel", true);
+  setHidden("dashboard", false);
+  $("adminEmail").textContent = user.email || "Administrator";
+  status("loginStatus", "");
+
+  await loadStudents();
+});
+
+// Log out
+$("logoutBtn").addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+  } catch (err) {
+    console.error("Logout failed:", err);
+    alert("Logout failed: " + (err.code || err.message));
+  }
+});
+
+// Student list controls
+$("studentSearch").addEventListener("input", renderStudents);
+$("refreshStudentsBtn").addEventListener("click", loadStudents);
+
+// Mark entry controls
+$("admission").addEventListener("change", fillStudentFromSearch);
+$("admission").addEventListener("blur", fillStudentFromSearch);
+
+$("addSubjectBtn").addEventListener("click", () => addSubjectRow());
+
+$("loadMarksBtn").addEventListener("click", () => {
+  loadMarks($("admission").value.trim());
+});
+
+$("marksForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (!isAdmin || !auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
+    status("marksStatus", "Administrator login required.", "error");
+    return;
+  }
+
+  const button = $("saveMarksBtn");
+  button.disabled = true;
+  status("marksStatus", "Saving marks...");
+
+  try {
+    const admission = $("admission").value.trim();
+    const fullName = $("fullName").value.trim();
+    const grade = $("grade").value;
+    const examTitle = $("examTitle").value.trim();
+
+    if (!admission || !fullName || !grade || !examTitle) {
+      throw new Error("Please complete all student and examination fields.");
+    }
+
+    const subjects = readSubjects();
+
+    const record = {
+      admission,
+      fullName,
+      grade,
+      examTitle,
+      subjects,
+      updatedAt: serverTimestamp(),
+      updatedBy: auth.currentUser.uid
+    };
+
+    await setDoc(
+      doc(db, "termMarks", encodeURIComponent(admission)),
+      record,
+      { merge: true }
+    );
+
+    status("marksStatus", "Marks saved successfully. You can update them any time.", "success");
+    $("marksSearch").value = admission;
+    await searchSavedMarks();
+  } catch (err) {
+    console.error("Saving marks failed:", err);
+    status(
+      "marksStatus",
+      `Could not save marks: ${err.code || err.message}`,
+      "error"
+    );
+  } finally {
+    button.disabled = false;
+  }
+});
+
+$("searchMarksBtn").addEventListener("click", searchSavedMarks);
+
+// Start with one empty subject row.
+addSubjectRow();
+
+</script>
+</body>
+</html>
