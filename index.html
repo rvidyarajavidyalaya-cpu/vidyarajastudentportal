@@ -1382,5 +1382,686 @@ musicToggle.addEventListener("click",async()=>{
   }
 })();
 </script>
-</body>
+</body
+  
+<!-- AUTO STUDY TIMETABLE GENERATOR -->
+<section id="autoStudyPlanner">
+  <style>
+    #autoStudyPlanner {
+      --st-blue: #2563eb;
+      --st-dark: #172554;
+      --st-bg: #f4f7ff;
+      font-family: Arial, sans-serif;
+      color: #172033;
+      padding: 24px 12px;
+      box-sizing: border-box;
+    }
+
+    #autoStudyPlanner * { box-sizing: border-box; }
+
+    #autoStudyPlanner .st-container {
+      max-width: 1000px;
+      margin: auto;
+      background: #fff;
+      border: 1px solid #e1e8f5;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 12px 35px rgba(37, 99, 235, .09);
+    }
+
+    #autoStudyPlanner .st-hero {
+      background: linear-gradient(135deg, #172554, #2563eb);
+      color: white;
+      padding: 30px 22px;
+      text-align: center;
+    }
+
+    #autoStudyPlanner .st-hero h2 {
+      font-size: clamp(23px, 4vw, 34px);
+      margin: 0 0 10px;
+    }
+
+    #autoStudyPlanner .st-hero p {
+      margin: 0;
+      line-height: 1.6;
+      color: #dbeafe;
+    }
+
+    #autoStudyPlanner .st-form {
+      padding: 22px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 17px;
+    }
+
+    #autoStudyPlanner .st-field { min-width: 0; }
+
+    #autoStudyPlanner .st-full { grid-column: 1 / -1; }
+
+    #autoStudyPlanner label {
+      display: block;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    #autoStudyPlanner input,
+    #autoStudyPlanner textarea,
+    #autoStudyPlanner select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: white;
+      color: #172033;
+      font: inherit;
+      outline: none;
+    }
+
+    #autoStudyPlanner input:focus,
+    #autoStudyPlanner textarea:focus,
+    #autoStudyPlanner select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px #dbeafe;
+    }
+
+    #autoStudyPlanner .st-hint {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    #autoStudyPlanner .st-button {
+      border: 0;
+      border-radius: 11px;
+      padding: 13px 17px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    #autoStudyPlanner .st-button:hover { transform: translateY(-1px); }
+
+    #autoStudyPlanner .st-primary {
+      background: #2563eb;
+      color: white;
+      width: 100%;
+    }
+
+    #autoStudyPlanner .st-secondary {
+      background: #e8efff;
+      color: #1d4ed8;
+    }
+
+    #autoStudyPlanner .st-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 17px;
+    }
+
+    #autoStudyPlanner .st-results {
+      padding: 0 22px 25px;
+    }
+
+    #autoStudyPlanner .st-results[hidden] { display: none; }
+
+    #autoStudyPlanner .st-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    #autoStudyPlanner .st-stat {
+      padding: 16px 12px;
+      background: #eff6ff;
+      border-radius: 13px;
+      text-align: center;
+    }
+
+    #autoStudyPlanner .st-stat strong {
+      display: block;
+      color: #1d4ed8;
+      font-size: 25px;
+      margin-bottom: 5px;
+    }
+
+    #autoStudyPlanner .st-stat span {
+      font-size: 12px;
+      color: #475569;
+    }
+
+    #autoStudyPlanner .st-day {
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      margin: 14px 0;
+      overflow: hidden;
+    }
+
+    #autoStudyPlanner .st-day-header {
+      background: #f8fafc;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    #autoStudyPlanner .st-day-header h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    #autoStudyPlanner .st-day-header span {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    #autoStudyPlanner .st-task {
+      padding: 15px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      border-bottom: 1px solid #edf2f7;
+    }
+
+    #autoStudyPlanner .st-task:last-child { border-bottom: 0; }
+
+    #autoStudyPlanner .st-task input[type="checkbox"] {
+      width: 19px;
+      height: 19px;
+      flex: 0 0 19px;
+      margin-top: 2px;
+      accent-color: #2563eb;
+      cursor: pointer;
+    }
+
+    #autoStudyPlanner .st-task-content { flex: 1; }
+
+    #autoStudyPlanner .st-task-title {
+      font-weight: 700;
+      margin-bottom: 5px;
+      line-height: 1.4;
+    }
+
+    #autoStudyPlanner .st-task-meta {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    #autoStudyPlanner .st-task.st-completed {
+      background: #f0fdf4;
+    }
+
+    #autoStudyPlanner .st-task.st-completed .st-task-title {
+      text-decoration: line-through;
+      color: #15803d;
+    }
+
+    #autoStudyPlanner .st-progress-wrap {
+      margin: 15px 0 20px;
+      background: #e2e8f0;
+      height: 9px;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    #autoStudyPlanner .st-progress {
+      height: 100%;
+      width: 0;
+      background: #22c55e;
+      transition: width .2s;
+    }
+
+    #autoStudyPlanner .st-progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+      color: #475569;
+    }
+
+    #autoStudyPlanner .st-message {
+      margin: 0 22px 20px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #fff7ed;
+      color: #9a3412;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    #autoStudyPlanner .st-message[hidden] { display: none; }
+
+    @media (max-width: 600px) {
+      #autoStudyPlanner { padding: 12px 6px; }
+      #autoStudyPlanner .st-form { grid-template-columns: 1fr; padding: 16px; }
+      #autoStudyPlanner .st-full { grid-column: auto; }
+      #autoStudyPlanner .st-results { padding: 0 14px 18px; }
+      #autoStudyPlanner .st-summary { gap: 7px; }
+      #autoStudyPlanner .st-stat { padding: 12px 5px; }
+      #autoStudyPlanner .st-stat strong { font-size: 21px; }
+      #autoStudyPlanner .st-stat span { font-size: 11px; }
+      #autoStudyPlanner .st-message { margin: 0 14px 16px; }
+    }
+
+    @media print {
+      body * { visibility: hidden !important; }
+      #autoStudyPlanner,
+      #autoStudyPlanner * { visibility: visible !important; }
+      #autoStudyPlanner {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 0;
+        background: white;
+      }
+      #autoStudyPlanner .st-container {
+        box-shadow: none;
+        border: 0;
+      }
+      #autoStudyPlanner .st-form,
+      #autoStudyPlanner .st-actions,
+      #autoStudyPlanner .st-message { display: none !important; }
+      #autoStudyPlanner .st-results[hidden] { display: block !important; }
+      #autoStudyPlanner .st-day { break-inside: avoid; }
+      #autoStudyPlanner .st-hero {
+        background: #172554 !important;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+
+  <div class="st-container">
+    <div class="st-hero">
+      <h2>📚 Auto Study Timetable Generator</h2>
+      <p>Plan smarter, study better and get ready for your exams.</p>
+    </div>
+
+    <form class="st-form" id="stForm">
+      <div class="st-field">
+        <label for="stExamDate">📅 Exam Date</label>
+        <input type="date" id="stExamDate" required>
+      </div>
+
+      <div class="st-field">
+        <label for="stHours">⏰ Daily Study Hours</label>
+        <select id="stHours">
+          <option value="1">1 hour per day</option>
+          <option value="2">2 hours per day</option>
+          <option value="3" selected>3 hours per day</option>
+          <option value="4">4 hours per day</option>
+          <option value="5">5 hours per day</option>
+          <option value="6">6 hours per day</option>
+          <option value="8">8 hours per day</option>
+        </select>
+      </div>
+
+      <div class="st-field st-full">
+        <label for="stSubjects">📖 Subjects</label>
+        <textarea id="stSubjects" rows="4" required
+          placeholder="Example: Mathematics, Science, English, Sinhala"></textarea>
+        <span class="st-hint">Enter each subject separated by a comma or a new line.</span>
+      </div>
+
+      <div class="st-field">
+        <label for="stSession">Study Session Length</label>
+        <select id="stSession">
+          <option value="25">25 minutes</option>
+          <option value="40">40 minutes</option>
+          <option value="45" selected>45 minutes</option>
+          <option value="60">60 minutes</option>
+          <option value="90">90 minutes</option>
+        </select>
+      </div>
+
+      <div class="st-field">
+        <label for="stBreak">Break Between Sessions</label>
+        <select id="stBreak">
+          <option value="5">5 minutes</option>
+          <option value="10" selected>10 minutes</option>
+          <option value="15">15 minutes</option>
+          <option value="20">20 minutes</option>
+        </select>
+      </div>
+
+      <div class="st-field st-full">
+        <button type="submit" class="st-button st-primary">
+          ✨ Generate My Study Timetable
+        </button>
+      </div>
+    </form>
+
+    <div class="st-message" id="stMessage" role="alert" hidden></div>
+
+    <div class="st-results" id="stResults" hidden>
+      <div class="st-summary">
+        <div class="st-stat">
+          <strong id="stDays">0</strong>
+          <span>Study Days</span>
+        </div>
+        <div class="st-stat">
+          <strong id="stTotal">0</strong>
+          <span>Study Sessions</span>
+        </div>
+        <div class="st-stat">
+          <strong id="stDone">0%</strong>
+          <span>Completed</span>
+        </div>
+      </div>
+
+      <div class="st-progress-label">
+        <span>Your study progress</span>
+        <span id="stProgressText">0 of 0 completed</span>
+      </div>
+      <div class="st-progress-wrap">
+        <div class="st-progress" id="stProgress"></div>
+      </div>
+
+      <div id="stTimetable"></div>
+
+      <div class="st-actions">
+        <button type="button" class="st-button st-secondary" id="stPrint">
+          🖨️ Print / Save as PDF
+        </button>
+        <button type="button" class="st-button st-secondary" id="stRegenerate">
+          🔄 Generate Again
+        </button>
+      </div>
+      <p class="st-hint">Your timetable and checked sessions are saved in this browser on this device.</p>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const root = document.getElementById("autoStudyPlanner");
+      if (!root || root.dataset.initialized === "yes") return;
+      root.dataset.initialized = "yes";
+
+      const $ = id => root.querySelector("#" + id);
+      const form = $("stForm");
+      const dateInput = $("stExamDate");
+      const subjectsInput = $("stSubjects");
+      const results = $("stResults");
+      const timetable = $("stTimetable");
+      const message = $("stMessage");
+
+      const STORAGE_KEY = "schoolAutoStudyPlanner_v1";
+      let currentPlan = [];
+
+      const localDateString = date => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+      };
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      dateInput.min = localDateString(today);
+
+      function showMessage(text) {
+        message.textContent = text;
+        message.hidden = false;
+      }
+
+      function hideMessage() {
+        message.textContent = "";
+        message.hidden = true;
+      }
+
+      function escapeHTML(value) {
+        return String(value).replace(/[&<>"']/g, char => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        })[char]);
+      }
+
+      function formatDate(dateString) {
+        const date = new Date(dateString + "T12:00:00");
+        return date.toLocaleDateString(undefined, {
+          weekday: "long",
+          day: "numeric",
+          month: "short",
+          year: "numeric"
+        });
+      }
+
+      function formatTime(totalMinutes) {
+        const h = Math.floor(totalMinutes / 60) % 24;
+        const m = totalMinutes % 60;
+        const suffix = h >= 12 ? "PM" : "AM";
+        const displayHour = h % 12 || 12;
+        return `${displayHour}:${String(m).padStart(2, "0")} ${suffix}`;
+      }
+
+      function getSubjects() {
+        return [...new Set(
+          subjectsInput.value
+            .split(/[,\n;]+/)
+            .map(subject => subject.trim())
+            .filter(Boolean)
+        )];
+      }
+
+      function savePlan() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            examDate: dateInput.value,
+            hours: $("stHours").value,
+            session: $("stSession").value,
+            breakMinutes: $("stBreak").value,
+            subjects: subjectsInput.value,
+            plan: currentPlan
+          }));
+        } catch (error) {
+          showMessage("This browser could not save your timetable. You can still use and print it.");
+        }
+      }
+
+      function updateProgress() {
+        const total = currentPlan.reduce((sum, day) => sum + day.tasks.length, 0);
+        const completed = currentPlan.reduce(
+          (sum, day) => sum + day.tasks.filter(task => task.done).length, 0
+        );
+        const percent = total ? Math.round(completed / total * 100) : 0;
+
+        $("stDays").textContent = currentPlan.length;
+        $("stTotal").textContent = total;
+        $("stDone").textContent = percent + "%";
+        $("stProgressText").textContent = `${completed} of ${total} completed`;
+        $("stProgress").style.width = percent + "%";
+      }
+
+      function renderPlan() {
+        timetable.innerHTML = currentPlan.map((day, dayIndex) => {
+          const tasksHTML = day.tasks.map((task, taskIndex) => `
+            <label class="st-task ${task.done ? "st-completed" : ""}">
+              <input type="checkbox"
+                data-day="${dayIndex}"
+                data-task="${taskIndex}"
+                ${task.done ? "checked" : ""}
+                aria-label="Mark ${escapeHTML(task.subject)} as completed">
+              <span class="st-task-content">
+                <span class="st-task-title">${escapeHTML(task.subject)}</span>
+                <span class="st-task-meta">
+                  ${task.start} – ${task.end} · ${task.duration} minutes
+                  <br>${escapeHTML(task.activity)}
+                </span>
+              </span>
+            </label>
+          `).join("");
+
+          return `
+            <article class="st-day">
+              <div class="st-day-header">
+                <h3>📅 ${formatDate(day.date)}</h3>
+                <span>${day.tasks.length} sessions · ${day.studyMinutes} study minutes</span>
+              </div>
+              ${tasksHTML}
+            </article>
+          `;
+        }).join("");
+
+        timetable.querySelectorAll('input[type="checkbox"]').forEach(box => {
+          box.addEventListener("change", () => {
+            const dayIndex = Number(box.dataset.day);
+            const taskIndex = Number(box.dataset.task);
+            currentPlan[dayIndex].tasks[taskIndex].done = box.checked;
+            box.closest(".st-task").classList.toggle("st-completed", box.checked);
+            updateProgress();
+            savePlan();
+          });
+        });
+
+        results.hidden = false;
+        updateProgress();
+      }
+
+      function generatePlan() {
+        hideMessage();
+
+        const examDateString = dateInput.value;
+        const subjects = getSubjects();
+        const hours = Number($("stHours").value);
+        const sessionMinutes = Number($("stSession").value);
+        const breakMinutes = Number($("stBreak").value);
+
+        if (!examDateString) {
+          showMessage("Please select your exam date.");
+          return;
+        }
+
+        const examDate = new Date(examDateString + "T12:00:00");
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        if (examDate < now) {
+          showMessage("Exam date එක අද හෝ ඉදිරි දිනයක් විය යුතුයි.");
+          return;
+        }
+
+        if (!subjects.length) {
+          showMessage("Please enter at least one subject.");
+          return;
+        }
+
+        const daysAvailable = Math.round((examDate - now) / 86400000) + 1;
+        const dailyStudyMinutes = hours * 60;
+        const sessionsPerDay = Math.max(1, Math.floor(dailyStudyMinutes / sessionMinutes));
+
+        if (daysAvailable > 366) {
+          showMessage("Please select an exam date within the next year.");
+          return;
+        }
+
+        currentPlan = [];
+        let subjectPointer = 0;
+        let activityPointer = 0;
+
+        const activities = [
+          "Read and understand the lesson",
+          "Make short notes",
+          "Practise questions",
+          "Revise important points",
+          "Attempt past-paper questions",
+          "Review mistakes and weak areas"
+        ];
+
+        for (let dayIndex = 0; dayIndex < daysAvailable; dayIndex++) {
+          const dayDate = new Date(now);
+          dayDate.setDate(now.getDate() + dayIndex);
+
+          // Keep the final day lighter for quick revision.
+          const isFinalDay = dayIndex === daysAvailable - 1;
+          const dayMinutes = isFinalDay
+            ? Math.min(dailyStudyMinutes, Math.max(25, Math.floor(dailyStudyMinutes / 2)))
+            : dailyStudyMinutes;
+
+          const count = Math.max(
+            1,
+            Math.ceil(dayMinutes / sessionMinutes)
+          );
+
+          let remaining = dayMinutes;
+          let clock = 8 * 60;
+          const tasks = [];
+
+          for (let i = 0; i < count && remaining > 0; i++) {
+            const duration = Math.min(sessionMinutes, remaining);
+            const subject = subjects[subjectPointer % subjects.length];
+            const activity = isFinalDay
+              ? "Final revision: key facts, formulas and important notes"
+              : activities[activityPointer % activities.length];
+
+            tasks.push({
+              subject,
+              activity,
+              duration,
+              start: formatTime(clock),
+              end: formatTime(clock + duration),
+              done: false
+            });
+
+            remaining -= duration;
+            clock += duration + breakMinutes;
+            subjectPointer++;
+
+            if (i % 2 === 1) activityPointer++;
+          }
+
+          currentPlan.push({
+            date: localDateString(dayDate),
+            tasks,
+            studyMinutes: tasks.reduce((sum, task) => sum + task.duration, 0)
+          });
+        }
+
+        renderPlan();
+        savePlan();
+        results.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      form.addEventListener("submit", event => {
+        event.preventDefault();
+        generatePlan();
+      });
+
+      $("stPrint").addEventListener("click", () => window.print());
+
+      $("stRegenerate").addEventListener("click", () => {
+        generatePlan();
+      });
+
+      // Restore the saved plan if this browser has one.
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+        if (saved && Array.isArray(saved.plan) && saved.plan.length) {
+          dateInput.value = saved.examDate || "";
+          $("stHours").value = saved.hours || "3";
+          $("stSession").value = saved.session || "45";
+          $("stBreak").value = saved.breakMinutes || "10";
+          subjectsInput.value = saved.subjects || "";
+          currentPlan = saved.plan;
+          renderPlan();
+        }
+      } catch (error) {
+        console.warn("Could not restore the saved study plan.");
+      }
+    })();
+  </script>
+</section>
+<!-- END AUTO STUDY TIMETABLE GENERATOR -->
+
 </html>
