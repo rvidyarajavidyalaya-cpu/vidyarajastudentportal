@@ -254,6 +254,7 @@ tr:hover td{background:#0e1b10}
       <span class="pill" id="recordCount">0 records</span>
       <button class="secondary" id="refreshBtn" type="button">REFRESH</button>
       <button class="primary" id="bulkMarksOpenBtn" type="button">BULK MARKS</button>
+      <button class="secondary" id="accountsOpenBtn" type="button">STUDENT LOGIN ACCOUNTS</button>
       <button class="danger" id="logoutBtn" type="button">LOG OUT</button>
     </div>
   </div>
@@ -302,6 +303,37 @@ tr:hover td{background:#0e1b10}
       </thead>
       <tbody id="studentRows">
         <tr><td colspan="6">Login to view records.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel hidden" id="accountsPanel">
+  <div class="topline">
+    <div>
+      <h2>STUDENT LOGIN ACCOUNTS</h2>
+      <p class="small">Firebase Authentication user accounts. Passwords are never displayed.</p>
+    </div>
+    <div>
+      <button class="primary" id="refreshAccountsBtn" type="button">REFRESH ACCOUNTS</button>
+      <button class="secondary" id="closeAccountsBtn" type="button">CLOSE</button>
+    </div>
+  </div>
+  <p class="status" id="accountsStatus" role="status" aria-live="polite"></p>
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Firebase UID</th>
+          <th>Email Verified</th>
+          <th>Account Created</th>
+          <th>Last Sign-in</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="accountRows">
+        <tr><td colspan="6">Open Student Login Accounts to load accounts.</td></tr>
       </tbody>
     </table>
   </div>
@@ -432,6 +464,11 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
+import {
+  getFunctions,
+  httpsCallable
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-functions.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
   authDomain: "vidyarajastudentsystem.firebaseapp.com",
@@ -447,6 +484,8 @@ const ADMIN_UID = "IpFcr0JLloUN2ENuJ70k8wgBzp22";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const functions = getFunctions(app);
+const getStudentLoginAccounts = httpsCallable(functions, "getStudentLoginAccounts");
 
 const $ = id => document.getElementById(id);
 
@@ -1084,6 +1123,87 @@ function readSubjects() {
   return subjects;
 }
 
+
+/* STUDENT LOGIN ACCOUNTS — fetched only through a server-side callable function. */
+function addAccountCell(row, value) {
+  const cell = document.createElement("td");
+  cell.textContent = value || "—";
+  row.appendChild(cell);
+  return cell;
+}
+
+function renderAccounts(accounts) {
+  const tbody = $("accountRows");
+  tbody.replaceChildren();
+
+  if (!Array.isArray(accounts) || accounts.length === 0) {
+    const row = document.createElement("tr");
+    const cell = addAccountCell(row, "No Firebase Authentication accounts found.");
+    cell.colSpan = 6;
+    tbody.appendChild(row);
+    return;
+  }
+
+  for (const account of accounts) {
+    const row = document.createElement("tr");
+    addAccountCell(row, account.email || "(no email)");
+    addAccountCell(row, account.uid);
+    addAccountCell(row, account.emailVerified ? "Yes" : "No");
+    addAccountCell(row, account.creationTime || "—");
+    addAccountCell(row, account.lastSignInTime || "Never");
+    addAccountCell(row, account.disabled ? "Disabled" : "Active");
+    tbody.appendChild(row);
+  }
+}
+
+async function loadStudentLoginAccounts() {
+  if (!isAdmin || !auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
+    showStatus("accountsStatus", "Administrator login required.", true);
+    return;
+  }
+
+  const button = $("refreshAccountsBtn");
+  button.disabled = true;
+  showStatus("accountsStatus", "Loading Firebase Authentication accounts...");
+  showLoading("Loading student login accounts...");
+
+  try {
+    const result = await getStudentLoginAccounts({});
+    const accounts = result.data?.accounts;
+    renderAccounts(accounts);
+    showStatus(
+      "accountsStatus",
+      `Loaded ${Array.isArray(accounts) ? accounts.length : 0} account(s).`,
+      false,
+      true
+    );
+  } catch (err) {
+    console.error("Load authentication accounts error:", err);
+    renderAccounts([]);
+    showStatus(
+      "accountsStatus",
+      `Could not load accounts: ${err.code || err.message}. Deploy the secure Cloud Function and check its permissions.`,
+      true
+    );
+  } finally {
+    button.disabled = false;
+    hideLoading();
+  }
+}
+
+$("accountsOpenBtn").addEventListener("click", () => {
+  if (!isAdmin) {
+    showStatus("loginStatus", "Administrator login required.", true);
+    return;
+  }
+  setHidden("accountsPanel", false);
+  $("accountsPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+  loadStudentLoginAccounts();
+});
+
+$("refreshAccountsBtn").addEventListener("click", loadStudentLoginAccounts);
+$("closeAccountsBtn").addEventListener("click", () => setHidden("accountsPanel", true));
+
 $("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
 
@@ -1114,6 +1234,7 @@ onAuthStateChanged(auth, async user => {
     setHidden("marksPanel", true);
     setHidden("editPanel", true);
     setHidden("bulkMarksPanel", true);
+    setHidden("accountsPanel", true);
     $("adminIdentity").textContent = "";
     hideLoading();
     return;
@@ -1121,6 +1242,7 @@ onAuthStateChanged(auth, async user => {
 
   if (user.uid !== ADMIN_UID) {
     isAdmin = false;
+    setHidden("accountsPanel", true);
 
     showStatus(
       "loginStatus",
