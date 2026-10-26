@@ -125,9 +125,29 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 .notice-empty{text-align:center;color:#b9d2bd;padding:22px}
 
 
+
+/* STUDENT REGISTER / LOGIN GATE */
+body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events:none}
+.student-auth-screen{display:none;position:fixed;inset:0;z-index:2500;align-items:center;justify-content:center;padding:20px;background:rgba(1,7,3,.84);backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px);overflow-y:auto}
+.student-auth-card{width:min(100%,480px);margin:auto;padding:28px 22px;border:2px solid var(--green);border-radius:23px;background:rgba(3,12,6,.98);box-shadow:0 0 35px #39ff1450;animation:appear .45s ease;text-align:center}
+.student-auth-card h2{color:var(--yellow);font-size:clamp(22px,4vw,28px);margin:10px 0}
+.student-auth-logo{width:78px;height:78px;object-fit:contain;border-radius:50%;background:#fff;border:2px solid var(--yellow);padding:4px}
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0 16px}
+.auth-tabs button.active{background:var(--green);color:#041004}
+.auth-form{display:grid;gap:12px;text-align:left}
+.auth-form .primary{width:100%;margin-top:5px}
+.auth-status{min-height:22px;color:var(--green);font-size:13px;line-height:1.6;margin-top:12px;overflow-wrap:anywhere}
+.auth-hint{font-size:12px;color:#a9c5ad;line-height:1.7;margin-top:14px}
+.student-logout-bar{display:flex;justify-content:flex-end;margin:-8px auto 18px;max-width:1000px}
+#registrationSuccessOverlay{display:none;position:fixed;inset:0;z-index:4000;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.72);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
+.registration-success-box{width:min(100%,420px);padding:30px 22px;border:2px solid var(--green);border-radius:24px;background:#030c06;text-align:center;box-shadow:0 0 40px #39ff1470;animation:appear .35s ease}
+.registration-success-box h2{color:var(--yellow);margin:14px 0}
+.registration-success-box p{color:#d7e8d9;line-height:1.8}
+@media(max-width:500px){.student-auth-card{padding:24px 16px}.student-logout-bar{justify-content:center}.student-logout-bar button{width:100%}}
+
 </style>
 </head>
-<body>
+<body class="auth-locked">
 
 <div class="start-overlay" id="startOverlay">
   <div class="start-box">
@@ -141,6 +161,40 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
       <span>කරුණාකර මොහොතක් රැඳී සිටින්න</span>
       <div class="loading-dots"><span></span><span></span><span></span></div>
     </div>
+  </div>
+</div>
+
+<div class="student-auth-screen" id="studentAuthScreen" aria-modal="true" role="dialog" aria-labelledby="studentAuthTitle">
+  <div class="student-auth-card">
+    <img class="student-auth-logo" src="school-logo.png" alt="School Logo" onerror="this.style.display='none'">
+    <h2 id="studentAuthTitle">STUDENT ACCOUNT</h2>
+    <p class="notice">R/VIDYARAJA VIDYALAYA<br>Register a new account or log in to continue.</p>
+    <div class="auth-tabs">
+      <button type="button" class="secondary active" id="authLoginTab">LOGIN</button>
+      <button type="button" class="secondary" id="authRegisterTab">REGISTER</button>
+    </div>
+    <form class="auth-form" id="studentLoginForm" autocomplete="on">
+      <div class="field"><label for="studentLoginEmail">Email address</label><input id="studentLoginEmail" type="email" autocomplete="username" placeholder="Enter your email" required></div>
+      <div class="field"><label for="studentLoginPassword">Password</label><input id="studentLoginPassword" type="password" autocomplete="current-password" placeholder="Enter your password" required></div>
+      <button type="submit" class="primary" id="studentLoginSubmit">LOGIN</button>
+    </form>
+    <form class="auth-form" id="studentRegisterForm" autocomplete="on" style="display:none">
+      <div class="field"><label for="studentRegisterEmail">Email address</label><input id="studentRegisterEmail" type="email" autocomplete="email" placeholder="Create with your email" required></div>
+      <div class="field"><label for="studentRegisterPassword">Create password</label><input id="studentRegisterPassword" type="password" autocomplete="new-password" minlength="6" placeholder="At least 6 characters" required></div>
+      <div class="field"><label for="studentRegisterConfirm">Confirm password</label><input id="studentRegisterConfirm" type="password" autocomplete="new-password" minlength="6" placeholder="Re-enter password" required></div>
+      <button type="submit" class="primary" id="studentRegisterSubmit">CREATE PERMANENT ACCOUNT</button>
+    </form>
+    <p class="auth-status" id="studentAuthStatus" role="status" aria-live="polite"></p>
+    <p class="auth-hint">Your account is saved securely with Firebase Authentication. Use the same email and password whenever you return.</p>
+  </div>
+</div>
+
+<div id="registrationSuccessOverlay" aria-live="polite">
+  <div class="registration-success-box">
+    <div class="success-icon">✓</div>
+    <h2>REGISTERED SUCCESSFULLY!</h2>
+    <p>Your account has been created.<br>ඔබගේ ගිණුම සාර්ථකව නිර්මාණය විය.</p>
+    <div class="loading-dots"><span></span><span></span><span></span></div>
   </div>
 </div>
 
@@ -163,6 +217,9 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
   <div id="liveTime">Loading time...</div>
 </div>
 </header>
+<div class="student-logout-bar" id="studentLogoutBar" style="display:none">
+  <button class="secondary" id="studentLogoutBtn" type="button">↪ STUDENT LOG OUT</button>
+</div>
 
 <div class="notice-nav" aria-label="School notice navigation">
   <button class="primary" id="schoolNoticeBtn" type="button">📢 SCHOOL NOTICE</button>
@@ -402,7 +459,7 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import {getFirestore,collection,getDoc,doc,writeBatch,addDoc,getDocs,deleteDoc,query,orderBy,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 import {getStorage,ref,uploadBytes,getDownloadURL,deleteObject} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
 const firebaseConfig={
@@ -468,6 +525,96 @@ try{
   statusEl.textContent="Firebase initialization failed. Reload the website.";
 }
 
+/* STUDENT ACCOUNT REGISTRATION AND LOGIN */
+const studentAuthScreen=$("studentAuthScreen");
+const studentAuthStatus=$("studentAuthStatus");
+const studentLoginForm=$("studentLoginForm");
+const studentRegisterForm=$("studentRegisterForm");
+const registrationSuccessOverlay=$("registrationSuccessOverlay");
+let registrationInProgress=false;
+let studentAuthenticated=false;
+let authStartupResolved=false;
+function showStudentAuth(mode="login"){
+  studentAuthScreen.style.display="flex";
+  document.body.classList.add("auth-locked");
+  $("studentLogoutBar").style.display="none";
+  const isRegister=mode==="register";
+  studentLoginForm.style.display=isRegister?"none":"grid";
+  studentRegisterForm.style.display=isRegister?"grid":"none";
+  $("authLoginTab").classList.toggle("active",!isRegister);
+  $("authRegisterTab").classList.toggle("active",isRegister);
+  studentAuthStatus.textContent="";
+  $("studentAuthTitle").textContent=isRegister?"CREATE STUDENT ACCOUNT":"STUDENT LOGIN";
+}
+function enterStudentPortal(){
+  studentAuthenticated=true;
+  studentAuthScreen.style.display="none";
+  registrationSuccessOverlay.style.display="none";
+  document.body.classList.remove("auth-locked");
+  $("studentLogoutBar").style.display="flex";
+}
+$("authLoginTab").addEventListener("click",()=>showStudentAuth("login"));
+$("authRegisterTab").addEventListener("click",()=>showStudentAuth("register"));
+studentLoginForm.addEventListener("submit",async event=>{
+  event.preventDefault();
+  if(!auth){studentAuthStatus.textContent="Firebase is unavailable. Please reload the website.";return;}
+  const btn=$("studentLoginSubmit");btn.disabled=true;btn.textContent="LOGGING IN...";studentAuthStatus.textContent="Checking your account...";
+  try{
+    await signInWithEmailAndPassword(auth,$("studentLoginEmail").value.trim(),$("studentLoginPassword").value);
+    enterStudentPortal();
+  }catch(error){
+    console.error("Student login failed",error);
+    const messages={"auth/invalid-credential":"Incorrect email or password. Please try again.","auth/user-not-found":"No account found for this email. Please register first.","auth/wrong-password":"Incorrect password. Please try again.","auth/invalid-email":"Please enter a valid email address.","auth/too-many-requests":"Too many attempts. Please wait and try again."};
+    studentAuthStatus.textContent=messages[error.code]||"Login failed. Check your email and password, then try again.";
+  }finally{btn.disabled=false;btn.textContent="LOGIN";}
+});
+studentRegisterForm.addEventListener("submit",async event=>{
+  event.preventDefault();
+  if(!auth){studentAuthStatus.textContent="Firebase is unavailable. Please reload the website.";return;}
+  const email=$("studentRegisterEmail").value.trim();
+  const password=$("studentRegisterPassword").value;
+  const confirm=$("studentRegisterConfirm").value;
+  if(password.length<6){studentAuthStatus.textContent="Password must contain at least 6 characters.";return;}
+  if(password!==confirm){studentAuthStatus.textContent="Passwords do not match. Please check again.";return;}
+  const btn=$("studentRegisterSubmit");btn.disabled=true;btn.textContent="CREATING ACCOUNT...";studentAuthStatus.textContent="Creating your permanent account securely...";
+  registrationInProgress=true;
+  try{
+    await createUserWithEmailAndPassword(auth,email,password);
+    // Firebase automatically signs a newly created user in; sign out so the user must log in as requested.
+    await signOut(auth);
+    registrationInProgress=false;
+    studentRegisterForm.reset();
+    registrationSuccessOverlay.style.display="flex";
+    setTimeout(()=>{
+      registrationSuccessOverlay.style.display="none";
+      showStudentAuth("login");
+      $("studentLoginEmail").value=email;
+      $("studentLoginPassword").focus();
+      studentAuthStatus.textContent="Registration successful. Log in using your registered email and password.";
+    },2000);
+  }catch(error){
+    registrationInProgress=false;
+    console.error("Student registration failed",error);
+    const messages={"auth/email-already-in-use":"This email already has an account. Please log in instead.","auth/invalid-email":"Please enter a valid email address.","auth/weak-password":"Choose a stronger password with at least 6 characters.","auth/operation-not-allowed":"Email/Password sign-in is not enabled in Firebase Authentication. Enable it in Firebase Console."};
+    studentAuthStatus.textContent=messages[error.code]||"Could not create account. Check your connection and Firebase Authentication settings.";
+  }finally{btn.disabled=false;btn.textContent="CREATE PERMANENT ACCOUNT";}
+});
+$("studentLogoutBtn").addEventListener("click",async()=>{
+  try{await signOut(auth);studentAuthenticated=false;showStudentAuth("login");studentAuthStatus.textContent="You have logged out successfully.";}
+  catch(error){console.error(error);studentAuthStatus.textContent="Could not log out. Please try again.";}
+});
+onAuthStateChanged(auth,user=>{
+  if(registrationInProgress)return;
+  // Show the login/register screen on every fresh visit, even if Firebase restored a prior session.
+  if(!authStartupResolved){
+    authStartupResolved=true;
+    if(user){signOut(auth).catch(error=>console.error("Could not reset previous student session",error));}
+    showStudentAuth("login");
+    return;
+  }
+  if(user){enterStudentPortal();}
+  else if(!studentAuthenticated){showStudentAuth("login");}
+});
 
 /* SCHOOL NOTICE BOARD: public viewing, authenticated admin publishing */
 const noticeSection=$("schoolNoticeSection");
@@ -557,8 +704,7 @@ onAuthStateChanged(auth,async user=>{
         $("showAdminLoginBtn").style.display="none";
       }else{
         adminEditorBox.style.display="none";$("showAdminLoginBtn").style.display="inline-block";
-        adminLoginStatus.textContent="This account is not authorized as a school admin. Add its UID to the admins collection in Firebase.";
-        await signOut(auth);
+        adminLoginStatus.textContent="This account is not authorized as a school admin. Only approved administrator accounts can publish notices.";
       }
     }catch(e){
       console.error("Could not verify admin account",e);
