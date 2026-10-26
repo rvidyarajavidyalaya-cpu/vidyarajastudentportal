@@ -1248,7 +1248,6 @@ $("overlayHomeBtn").addEventListener("click",showHome);
    Configure this endpoint on your server or Firebase Cloud Function.
 */
 // After deploying worker.js, replace this with your exact HTTPS Worker URL.
-
 const AI_STUDY_ENDPOINT = "https://vidyaraja-ai.rvidyarajavidyalaya.workers.dev/api/study-assistant";
 const aiSection = $("aiStudyAssistantSection");
 const aiChatMessages = $("aiChatMessages");
@@ -1296,10 +1295,13 @@ $("aiChatForm").addEventListener("submit", async event => {
   aiQuestion.value = "";
   sendBtn.disabled = true;
   aiStatus.textContent = "Thinking... / පිළිතුර සකස් කරමින් පවතී";
+  const aiController = new AbortController();
+  const aiTimeout = setTimeout(() => aiController.abort(), 45000);
   try {
     const response = await fetch(AI_STUDY_ENDPOINT, {
       method: "POST",
       headers: {"Content-Type":"application/json"},
+      signal: aiController.signal,
       body: JSON.stringify({
         grade,
         subject,
@@ -1320,10 +1322,16 @@ $("aiChatForm").addEventListener("submit", async event => {
     aiStatus.textContent = "";
   } catch (error) {
     console.error("AI Study Assistant error:", error);
-    addAIMessage("assistant", "AI service could not be reached. Please make sure the AI backend Worker URL is configured in index.html and the service is deployed. Do not add an API key to this file. Details: " + (error.message || "Connection failed"));
-    aiStatus.textContent = "AI service setup required.";
+    const errorMessage = error && error.name === "AbortError"
+      ? "The AI request took too long (45 seconds). Please try again. / AI පිළිතුර ප්‍රමාදයි. නැවත උත්සාහ කරන්න."
+      : "AI service could not be reached. Please check the Worker deployment and try again. Do not add an API key to this file. Details: " + (error.message || "Connection failed");
+    addAIMessage("assistant", errorMessage);
+    aiStatus.textContent = error && error.name === "AbortError"
+      ? "Request timed out. Please try again."
+      : "AI request failed. Please try again.";
     if (aiChatHistory.length && aiChatHistory[aiChatHistory.length - 1].role === "user") aiChatHistory.pop();
   } finally {
+    clearTimeout(aiTimeout);
     sendBtn.disabled = false;
     aiQuestion.focus();
   }
