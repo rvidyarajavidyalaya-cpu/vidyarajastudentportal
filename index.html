@@ -175,7 +175,7 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
     <h2>R/VIDYARAJA VIDYALAYA</h2>
     <p class="start-subtitle">STUDENT INFORMATION PORTAL</p>
     <p class="start-message">Welcome to the Student Portal<br>ශිෂ්‍ය තොරතුරු පද්ධතියට සාදරයෙන් පිළිගනිමු</p>
-    <button class="start-button" id="startContinueBtn" type="button">▶ CLICK TO CONTINUE</button>
+    <button class="start-button" id="startContinueBtn" type="button" onclick="window.continueIntoPortal()">▶ CLICK TO CONTINUE</button>
     <div class="start-loading" id="startLoading" aria-live="polite">
       <strong>LOADING PORTAL...</strong><br>
       <span>කරුණාකර මොහොතක් රැඳී සිටින්න</span>
@@ -183,6 +183,28 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
     </div>
   </div>
 </div>
+
+<!-- Keep the welcome Continue button responsive even if Firebase/module scripts load slowly. -->
+<script>
+window.continueIntoPortal = function () {
+  var overlay = document.getElementById("startOverlay");
+  var button = document.getElementById("startContinueBtn");
+  var loading = document.getElementById("startLoading");
+  if (!overlay || !button || button.dataset.continued === "true") return;
+  button.dataset.continued = "true";
+  button.disabled = true;
+  button.textContent = "PLEASE WAIT...";
+  if (loading) loading.style.display = "block";
+  window.setTimeout(function () {
+    overlay.style.transition = "opacity .45s ease";
+    overlay.style.opacity = "0";
+    window.setTimeout(function () {
+      overlay.style.display = "none";
+      overlay.style.pointerEvents = "none";
+    }, 470);
+  }, 500);
+};
+</script>
 
 <div class="student-auth-screen" id="studentAuthScreen" aria-modal="true" role="dialog" aria-labelledby="studentAuthTitle">
   <div class="student-auth-card">
@@ -531,17 +553,6 @@ let nextAction="";
 const startOverlay=$("startOverlay");
 const startContinueBtn=$("startContinueBtn");
 const startLoading=$("startLoading");
-
-startContinueBtn.addEventListener("click",()=>{
-  startContinueBtn.disabled=true;
-  startContinueBtn.textContent="PLEASE WAIT...";
-  startLoading.style.display="block";
-  setTimeout(()=>{
-    startOverlay.style.opacity="0";
-    startOverlay.style.transition="opacity .45s ease";
-    setTimeout(()=>startOverlay.style.display="none",460);
-  },1400);
-});
 
 try{
   const app=initializeApp(firebaseConfig);
