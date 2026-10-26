@@ -48,7 +48,7 @@ label{
   font-size:13px;
   margin:13px 0 6px
 }
-input,select{
+input,select,textarea{
   width:100%;
   padding:12px;
   border-radius:9px;
@@ -57,7 +57,12 @@ input,select{
   color:#fff;
   outline:none
 }
-input:focus,select:focus{
+textarea{
+  width:100%;min-height:150px;padding:12px;border-radius:9px;
+  border:1px solid #426647;background:#07100a;color:#fff;
+  outline:none;resize:vertical;font-family:Consolas,monospace
+}
+input:focus,select:focus,textarea:focus{
   border-color:var(--green);
   box-shadow:0 0 10px #39ff1433
 }
@@ -248,6 +253,7 @@ tr:hover td{background:#0e1b10}
     <div>
       <span class="pill" id="recordCount">0 records</span>
       <button class="secondary" id="refreshBtn" type="button">REFRESH</button>
+      <button class="primary" id="bulkMarksOpenBtn" type="button">BULK MARKS</button>
       <button class="danger" id="logoutBtn" type="button">LOG OUT</button>
     </div>
   </div>
@@ -308,6 +314,48 @@ tr:hover td{background:#0e1b10}
   </div>
   <p class="small">Information submitted through the student portal.</p>
   <div class="detailgrid" id="detailGrid"></div>
+</section>
+
+<section class="panel hidden" id="editPanel">
+  <div class="topline">
+    <h2>EDIT STUDENT DETAILS</h2>
+    <button class="secondary" id="closeEditBtn" type="button">CLOSE</button>
+  </div>
+  <p class="small">Update the selected student's information. Admission / Index Number is read-only to avoid breaking linked marks and verification records.</p>
+  <form id="editForm">
+    <input id="editDocId" type="hidden">
+    <div class="formgrid">
+      <div><label for="editAdmission">Admission / Index Number</label><input id="editAdmission" readonly></div>
+      <div><label for="editFullName">Full Name</label><input id="editFullName" required maxlength="160"></div>
+      <div><label for="editDob">Date of Birth</label><input id="editDob" maxlength="40"></div>
+      <div><label for="editParent">Parent / Guardian</label><input id="editParent" maxlength="160"></div>
+      <div><label for="editTelephone">Telephone</label><input id="editTelephone" maxlength="40"></div>
+      <div><label for="editWhatsapp">WhatsApp</label><input id="editWhatsapp" maxlength="40"></div>
+      <div><label for="editEmail">Email</label><input id="editEmail" type="email" maxlength="160"></div>
+      <div><label for="editGrade">Grade</label><select id="editGrade" required><option value="">Select Grade</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option></select></div>
+      <div><label for="editAddress">Address</label><input id="editAddress" maxlength="500"></div>
+      <div><label for="editAlSubjects">A/L Subjects</label><input id="editAlSubjects" maxlength="1000"></div>
+      <div><label for="editOlResults">O/L Results</label><input id="editOlResults" maxlength="2000"></div>
+      <div><label for="editSports">Sports Achievements</label><input id="editSports" maxlength="1500"></div>
+      <div><label for="editExtra">Extracurricular Activities</label><input id="editExtra" maxlength="1500"></div>
+    </div>
+    <p class="status" id="editStatus" role="status" aria-live="polite"></p>
+    <button class="primary" id="saveEditBtn" type="submit">SAVE STUDENT CHANGES</button>
+  </form>
+</section>
+
+<section class="panel hidden" id="bulkMarksPanel">
+  <div class="topline">
+    <h2>BULK MARKS ENTRY</h2>
+    <button class="secondary" id="closeBulkMarksBtn" type="button">CLOSE</button>
+  </div>
+  <p class="small">Paste one subject per line in this format: <strong>AdmissionNumber,Term Test 1,Mathematics,85</strong><br>
+  Required columns: Admission / Index Number, Exam Name, Subject, Mark (0–100). First row may be a header. Duplicate subjects for the same student and exam are rejected. Only existing students can be updated.</p>
+  <label for="bulkMarksInput">CSV data</label>
+  <textarea id="bulkMarksInput" placeholder="Admission,Exam,Subject,Mark&#10;VR001,Term Test 1,Mathematics,85&#10;VR001,Term Test 1,Science,91"></textarea>
+  <p class="status" id="bulkMarksStatus" role="status" aria-live="polite"></p>
+  <button class="primary" id="processBulkMarksBtn" type="button">VALIDATE & SAVE ALL</button>
+  <button class="secondary" id="clearBulkMarksBtn" type="button">CLEAR</button>
 </section>
 
 <section class="panel hidden" id="marksPanel">
@@ -380,6 +428,7 @@ import {
   deleteDoc,
   setDoc,
   getDoc,
+  updateDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
@@ -534,13 +583,19 @@ function renderStudents() {
     remove.textContent = "REMOVE";
     remove.addEventListener("click", () => removeStudent(s));
 
+    const edit = document.createElement("button");
+    edit.type = "button";
+    edit.className = "secondary";
+    edit.textContent = "EDIT";
+    edit.addEventListener("click", () => openEditStudent(s));
+
     const marks = document.createElement("button");
     marks.type = "button";
     marks.className = "secondary";
     marks.textContent = "MARKS";
     marks.addEventListener("click", () => openMarksForStudent(s));
 
-    actions.append(view, remove, marks);
+    actions.append(view, edit, remove, marks);
     tr.appendChild(actions);
     tbody.appendChild(tr);
   });
@@ -724,6 +779,137 @@ async function removeStudent(s) {
     hideLoading();
   }
 }
+
+function openEditStudent(s) {
+  if (!isAdmin || !auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
+    alert("Administrator login required."); return;
+  }
+  $("editDocId").value = s.id;
+  $("editAdmission").value = admissionOf(s) || s.id;
+  $("editFullName").value = nameOf(s);
+  $("editDob").value = norm(s.dob ?? s.dateOfBirth ?? s.birthDate);
+  $("editParent").value = norm(s.parent ?? s.parentName ?? s.motherFatherGuardian ?? s.guardian);
+  $("editTelephone").value = phoneOf(s);
+  $("editWhatsapp").value = norm(s.whatsapp ?? s.whatsappNumber);
+  $("editEmail").value = norm(s.email);
+  $("editGrade").value = gradeOf(s);
+  $("editAddress").value = norm(s.address);
+  $("editAlSubjects").value = norm(s.alSubjects ?? s.alSubjectsText ?? s.al);
+  $("editOlResults").value = norm(s.olResults ?? s.olResultsText ?? s.ol);
+  $("editSports").value = norm(s.sports ?? s.sportsAchievements);
+  $("editExtra").value = norm(s.extra ?? s.extracurricularActivities);
+  showStatus("editStatus", "");
+  setHidden("editPanel", false);
+  $("editPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+$("editForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!isAdmin || !auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
+    showStatus("editStatus","Administrator login required.",true); return;
+  }
+  const docId = $("editDocId").value;
+  const fullName = $("editFullName").value.trim();
+  const grade = $("editGrade").value;
+  if (!docId || !fullName || !["6","7","8","9","10","11","12","13"].includes(grade)) {
+    showStatus("editStatus","Please enter a full name and select a valid grade.",true); return;
+  }
+  const btn = $("saveEditBtn"); btn.disabled = true; showLoading("Saving student changes...");
+  try {
+    const changes = {
+      fullName,
+      dob: $("editDob").value.trim(),
+      parent: $("editParent").value.trim(),
+      telephone: $("editTelephone").value.trim(),
+      whatsapp: $("editWhatsapp").value.trim(),
+      email: $("editEmail").value.trim(),
+      grade,
+      address: $("editAddress").value.trim(),
+      alSubjects: $("editAlSubjects").value.trim(),
+      olResults: $("editOlResults").value.trim(),
+      sports: $("editSports").value.trim(),
+      extra: $("editExtra").value.trim(),
+      editedAt: serverTimestamp(),
+      editedBy: auth.currentUser.uid
+    };
+    await updateDoc(doc(db,"students",docId), changes);
+    const idx = allStudents.findIndex(s => s.id === docId);
+    if (idx >= 0) allStudents[idx] = {...allStudents[idx], ...changes};
+    renderStudents();
+    showStatus("editStatus","Student details updated successfully.",false,true);
+    showStatus("listStatus","Student details updated. If Firestore denies the update, adjust rules to allow only the authorized admin.",false,true);
+  } catch(err) {
+    console.error("Edit student error:",err);
+    showStatus("editStatus",`Update failed: ${err.code || err.message}. Check Firestore rules allow admin updates.`,true);
+  } finally { btn.disabled = false; hideLoading(); }
+});
+
+$("closeEditBtn").addEventListener("click",()=>setHidden("editPanel",true));
+$("bulkMarksOpenBtn").addEventListener("click",()=>{
+  setHidden("bulkMarksPanel",false);
+  $("bulkMarksPanel").scrollIntoView({behavior:"smooth",block:"start"});
+});
+$("closeBulkMarksBtn").addEventListener("click",()=>setHidden("bulkMarksPanel",true));
+$("clearBulkMarksBtn").addEventListener("click",()=>{
+  $("bulkMarksInput").value=""; showStatus("bulkMarksStatus","");
+});
+
+function parseBulkCsvLine(line) {
+  // Simple CSV parser supports quoted fields containing commas.
+  const out=[]; let cur="", quoted=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch === '"' && line[i+1] === '"' && quoted){cur+='"';i++;}
+    else if(ch === '"'){quoted=!quoted;}
+    else if(ch === ',' && !quoted){out.push(cur.trim());cur="";}
+    else cur+=ch;
+  }
+  out.push(cur.trim());
+  if(quoted) throw new Error("CSV has an unmatched quote.");
+  return out;
+}
+$("processBulkMarksBtn").addEventListener("click",async()=>{
+  if(!isAdmin || !auth.currentUser || auth.currentUser.uid !== ADMIN_UID){
+    showStatus("bulkMarksStatus","Administrator login required.",true);return;
+  }
+  const lines=$("bulkMarksInput").value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  if(!lines.length){showStatus("bulkMarksStatus","Paste CSV rows first.",true);return;}
+  const grouped=new Map();
+  try {
+    lines.forEach((line,i)=>{
+      const cols=parseBulkCsvLine(line);
+      if(i===0 && /admission|index/i.test(cols[0]||"")) return;
+      if(cols.length!==4) throw new Error(`Line ${i+1}: expected 4 comma-separated columns.`);
+      const [admission,examTitle,subject,rawMark]=cols;
+      if(!admission || !examTitle || !subject || rawMark==="") throw new Error(`Line ${i+1}: all four fields are required.`);
+      const mark=Number(rawMark);
+      if(!Number.isInteger(mark)||mark<0||mark>100) throw new Error(`Line ${i+1}: mark must be a whole number from 0 to 100.`);
+      const student=allStudents.find(s=>admissionOf(s).toLowerCase()===admission.toLowerCase()||s.id.toLowerCase()===admission.toLowerCase());
+      if(!student) throw new Error(`Line ${i+1}: student "${admission}" was not found.`);
+      const key=admission.toLowerCase()+"::"+examTitle.toLowerCase();
+      if(!grouped.has(key)) grouped.set(key,{admission:admissionOf(student)||student.id,fullName:nameOf(student),grade:gradeOf(student),examTitle,subjects:[],seen:new Set()});
+      const group=grouped.get(key);
+      if(group.seen.has(subject.toLowerCase())) throw new Error(`Line ${i+1}: duplicate subject "${subject}" for ${admission} / ${examTitle}.`);
+      group.seen.add(subject.toLowerCase()); group.subjects.push({subject,mark});
+    });
+    if(!grouped.size) throw new Error("No valid marks rows found.");
+    const total=[...grouped.values()].reduce((n,g)=>n+g.subjects.length,0);
+    if(!confirm(`Save ${total} subject mark(s) across ${grouped.size} student/exam record(s)? Existing records will be replaced for those student/exam pairs.`)) return;
+    const btn=$("processBulkMarksBtn");btn.disabled=true;showLoading("Saving bulk marks...");
+    try {
+      for(const group of grouped.values()){
+        const {seen,...payload}=group;
+        await setDoc(doc(db,"termMarks",encodeURIComponent(payload.admission)),{
+          ...payload,updatedAt:serverTimestamp(),updatedBy:auth.currentUser.uid
+        },{merge:true});
+      }
+      showStatus("bulkMarksStatus",`Successfully saved ${total} subject mark(s) for ${grouped.size} student/exam record(s).`,false,true);
+    } finally {btn.disabled=false;hideLoading();}
+  } catch(err) {
+    console.error("Bulk marks error:",err);
+    showStatus("bulkMarksStatus",`Bulk save failed: ${err.code || err.message}`,true);
+  }
+});
 
 function addSubjectRow(subject="", mark="") {
   const row = document.createElement("div");
@@ -926,6 +1112,8 @@ onAuthStateChanged(auth, async user => {
     setHidden("loginPanel", false);
     setHidden("dashboard", true);
     setHidden("marksPanel", true);
+    setHidden("editPanel", true);
+    setHidden("bulkMarksPanel", true);
     $("adminIdentity").textContent = "";
     hideLoading();
     return;
