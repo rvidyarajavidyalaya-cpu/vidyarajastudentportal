@@ -284,6 +284,13 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
 <button class="home-button marks" id="viewMarksBtn" type="button"><span class="symbol">▤</span><span>VIEW MARKS</span><small>Term Test ප්‍රතිඵල බලන්න</small></button>
 <button class="home-button" id="digitalLibraryBtn" type="button"><span class="symbol">📚</span><span data-i18n="libraryHomeTitle">FOR O/L AND A/L STUDENTS</span><small data-i18n="libraryHomeSub">Past papers for O/L and A/L students</small></button>
 </div>
+
+<div class="portal-deck-controls" aria-label="Student portal menu navigation">
+  <button class="secondary portal-deck-arrow" id="portalDeckPrev" type="button" aria-label="Previous menu item">◀ PREVIOUS</button>
+  <span class="portal-deck-position" id="portalDeckPosition" aria-live="polite">1 / 4</span>
+  <button class="primary portal-deck-arrow" id="portalDeckNext" type="button" aria-label="Next menu item">NEXT ▶</button>
+</div>
+<p class="portal-deck-hint">Rotate the cards to choose an option / විකල්පය තෝරාගැනීමට cards මාරු කරන්න</p>
 </section>
 
 
@@ -1619,6 +1626,63 @@ musicToggle.addEventListener("click",async()=>{
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
   else start();
+})();
+</script>
+
+
+<style id="portal-rotating-menu-styles">
+/* Visual-only rotating menu deck; original button IDs and click handlers are preserved. */
+#homeSection .home-buttons.portal-deck{display:block;position:relative;height:205px;margin:28px auto 10px;max-width:650px;perspective:1100px;overflow:visible}
+#homeSection .home-button.portal-deck-card{position:absolute;inset:0;width:100%;height:160px;min-height:160px;margin:auto;transform-origin:center center;transition:transform .72s cubic-bezier(.2,.8,.2,1),opacity .55s ease,filter .55s ease,box-shadow .55s ease;will-change:transform,opacity;backface-visibility:hidden}
+#homeSection .home-button.portal-deck-card.deck-active{z-index:5;opacity:1;filter:none;transform:translate3d(0,0,50px) rotateY(0deg) scale(1);pointer-events:auto;box-shadow:0 18px 45px #0009,0 0 24px #39ff1460}
+#homeSection .home-button.portal-deck-card.deck-next{z-index:4;opacity:.78;filter:brightness(.78);transform:translate3d(16px,13px,-30px) rotateY(-10deg) scale(.965);pointer-events:none}
+#homeSection .home-button.portal-deck-card.deck-third{z-index:3;opacity:.52;filter:brightness(.62);transform:translate3d(30px,25px,-70px) rotateY(-17deg) scale(.93);pointer-events:none}
+#homeSection .home-button.portal-deck-card.deck-last{z-index:2;opacity:.28;filter:brightness(.45);transform:translate3d(42px,35px,-110px) rotateY(-24deg) scale(.90);pointer-events:none}
+.portal-deck-controls{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin:8px auto 0}
+.portal-deck-arrow{min-width:130px}
+.portal-deck-position{color:var(--yellow);font-weight:800;min-width:48px;text-align:center;letter-spacing:1px}
+.portal-deck-hint{text-align:center;color:#a9c6ad;font-size:12px;margin:10px 0 0}
+@keyframes portalDeckFlipIn{0%{transform:translate3d(45px,0,-80px) rotateY(-35deg) scale(.88);opacity:.25}60%{transform:translate3d(-5px,0,20px) rotateY(5deg) scale(1.02);opacity:1}100%{transform:translate3d(0,0,50px) rotateY(0) scale(1);opacity:1}}
+#homeSection .home-button.portal-deck-card.deck-flipping{animation:portalDeckFlipIn .72s cubic-bezier(.2,.8,.2,1) both}
+@media(max-width:650px){#homeSection .home-buttons.portal-deck{height:180px;margin-top:20px}#homeSection .home-button.portal-deck-card{height:145px;min-height:145px;padding:16px 12px;gap:8px;font-size:15px}.portal-deck-arrow{min-width:112px;padding:11px 12px}}
+@media(prefers-reduced-motion:reduce){#homeSection .home-button.portal-deck-card{transition:none!important}#homeSection .home-button.portal-deck-card.deck-flipping{animation:none!important}}
+</style>
+<script id="portal-rotating-menu-script">
+(function(){
+  function initPortalDeck(){
+    const home=document.getElementById('homeSection');
+    const deck=home&&home.querySelector('.home-buttons');
+    if(!deck||deck.dataset.deckReady==='1') return;
+    const cards=Array.from(deck.querySelectorAll(':scope > .home-button'));
+    if(cards.length!==4) return;
+    deck.classList.add('portal-deck');
+    deck.dataset.deckReady='1';
+    cards.forEach(card=>card.classList.add('portal-deck-card'));
+    let active=0;
+    const position=document.getElementById('portalDeckPosition');
+    const prev=document.getElementById('portalDeckPrev');
+    const next=document.getElementById('portalDeckNext');
+    function render(animate){
+      cards.forEach((card,i)=>{
+        card.classList.remove('deck-active','deck-next','deck-third','deck-last','deck-flipping');
+        const rank=(i-active+cards.length)%cards.length;
+        card.classList.add(['deck-active','deck-next','deck-third','deck-last'][rank]);
+        card.setAttribute('aria-hidden',rank===0?'false':'true');
+        if(rank!==0) card.setAttribute('tabindex','-1'); else card.removeAttribute('tabindex');
+        if(animate&&rank===0){void card.offsetWidth;card.classList.add('deck-flipping');}
+      });
+      if(position) position.textContent=(active+1)+' / '+cards.length;
+      if(prev) prev.disabled=false;
+      if(next) next.disabled=false;
+    }
+    function move(step){active=(active+step+cards.length)%cards.length;render(true);}
+    prev&&prev.addEventListener('click',()=>move(-1));
+    next&&next.addEventListener('click',()=>move(1));
+    // Keyboard navigation for accessibility.
+    deck.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){e.preventDefault();move(1);}else if(e.key==='ArrowLeft'){e.preventDefault();move(-1);}});
+    render(false);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initPortalDeck,{once:true}); else initPortalDeck();
 })();
 </script>
 
