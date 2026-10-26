@@ -330,10 +330,11 @@ tr:hover td{background:#0e1b10}
           <th>Account Created</th>
           <th>Last Sign-in</th>
           <th>Status</th>
+          <th>Password Reset</th>
         </tr>
       </thead>
       <tbody id="accountRows">
-        <tr><td colspan="6">Open Student Login Accounts to load accounts.</td></tr>
+        <tr><td colspan="7">Open Student Login Accounts to load accounts.</td></tr>
       </tbody>
     </table>
   </div>
@@ -449,7 +450,8 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  signOut
+  signOut,
+  sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 import {
@@ -1139,7 +1141,7 @@ function renderAccounts(accounts) {
   if (!Array.isArray(accounts) || accounts.length === 0) {
     const row = document.createElement("tr");
     const cell = addAccountCell(row, "No Firebase Authentication accounts found.");
-    cell.colSpan = 6;
+    cell.colSpan = 7;
     tbody.appendChild(row);
     return;
   }
@@ -1152,6 +1154,37 @@ function renderAccounts(accounts) {
     addAccountCell(row, account.creationTime || "—");
     addAccountCell(row, account.lastSignInTime || "Never");
     addAccountCell(row, account.disabled ? "Disabled" : "Active");
+
+    const actionCell = document.createElement("td");
+    const resetButton = document.createElement("button");
+    resetButton.type = "button";
+    resetButton.className = "secondary";
+    resetButton.textContent = "SEND RESET EMAIL";
+    resetButton.disabled = !account.email || account.disabled;
+    resetButton.title = account.disabled ? "This account is disabled" : "Send a password reset link to this email";
+    resetButton.addEventListener("click", async () => {
+      if (!isAdmin || !auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
+        showStatus("accountsStatus", "Administrator login required.", true);
+        return;
+      }
+      if (!account.email || account.disabled) return;
+      const confirmed = window.confirm(`Send a password reset email to ${account.email}?`);
+      if (!confirmed) return;
+      resetButton.disabled = true;
+      resetButton.textContent = "SENDING...";
+      try {
+        await sendPasswordResetEmail(auth, account.email);
+        showStatus("accountsStatus", `Password reset email request submitted for ${account.email}. Check the inbox and spam folder.`, false, true);
+      } catch (err) {
+        console.error("Password reset email error:", err);
+        showStatus("accountsStatus", `Could not send reset email (${err.code || "unknown error"}). Check Firebase Authentication email settings and authorized domains.`, true);
+      } finally {
+        resetButton.disabled = !account.email || account.disabled;
+        resetButton.textContent = "SEND RESET EMAIL";
+      }
+    });
+    actionCell.appendChild(resetButton);
+    row.appendChild(actionCell);
     tbody.appendChild(row);
   }
 }
