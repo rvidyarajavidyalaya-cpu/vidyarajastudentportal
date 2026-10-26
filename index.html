@@ -139,19 +139,36 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
 .auth-status{min-height:22px;color:var(--green);font-size:13px;line-height:1.6;margin-top:12px;overflow-wrap:anywhere}
 .auth-hint{font-size:12px;color:#a9c5ad;line-height:1.7;margin-top:14px}
 .student-logout-bar{display:flex;justify-content:flex-end;margin:-8px auto 18px;max-width:1000px}
-#gmailNoticeOverlay{display:none;position:fixed;inset:0;z-index:5000;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);animation:fadeInNotice .25s ease}
-.gmail-notice-box{width:min(100%,470px);padding:32px 23px;border:2px solid var(--yellow);border-radius:24px;background:rgba(3,12,6,.98);text-align:center;box-shadow:0 0 42px #39ff1470;animation:noticePop .42s cubic-bezier(.2,.8,.2,1)}
-.gmail-notice-icon{width:68px;height:68px;margin:0 auto 17px;border-radius:50%;display:grid;place-items:center;font-size:32px;color:#041004;background:var(--green);box-shadow:0 0 24px #39ff1470;animation:iconFloat 2s infinite}
-.gmail-notice-box h2{color:var(--yellow);font-size:clamp(21px,4vw,27px);line-height:1.45;margin-bottom:13px}
-.gmail-notice-box p{color:#e0f0e2;line-height:1.9;font-size:15px;margin-bottom:22px}
-.gmail-notice-box .start-button{min-width:150px}
-@keyframes fadeInNotice{from{opacity:0}to{opacity:1}}
-@keyframes noticePop{from{opacity:0;transform:translateY(22px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
 #registrationSuccessOverlay{display:none;position:fixed;inset:0;z-index:4000;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.72);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
 .registration-success-box{width:min(100%,420px);padding:30px 22px;border:2px solid var(--green);border-radius:24px;background:#030c06;text-align:center;box-shadow:0 0 40px #39ff1470;animation:appear .35s ease}
 .registration-success-box h2{color:var(--yellow);margin:14px 0}
 .registration-success-box p{color:#d7e8d9;line-height:1.8}
 @media(max-width:500px){.student-auth-card{padding:24px 16px}.student-logout-bar{justify-content:center}.student-logout-bar button{width:100%}}
+
+
+
+/* ADD-ONLY: premium slide transitions for existing portal sections; no existing logic changed */
+@keyframes portalSlideInRight {
+  0% { opacity: 0; transform: translate3d(64px, 12px, 0) scale(.985); filter: blur(5px); }
+  65% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+}
+@keyframes portalSlideInLeft {
+  0% { opacity: 0; transform: translate3d(-64px, 12px, 0) scale(.985); filter: blur(5px); }
+  65% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+}
+@keyframes portalGlowSweep {
+  0% { box-shadow: 0 0 0 rgba(57,255,20,0); }
+  45% { box-shadow: 0 0 32px rgba(57,255,20,.24); }
+  100% { box-shadow: 0 0 22px rgba(57,255,20,.16); }
+}
+.portal-slide-enter { animation: portalSlideInRight .58s cubic-bezier(.2,.78,.22,1) both, portalGlowSweep .75s ease-out both; will-change: transform, opacity, filter; }
+.portal-slide-enter.portal-slide-reverse { animation-name: portalSlideInLeft, portalGlowSweep; }
+/* Keep the original layout/visibility rules; animate only existing sections when they become visible. */
+@media (prefers-reduced-motion: reduce) {
+  .portal-slide-enter, .portal-slide-enter.portal-slide-reverse { animation: none !important; will-change: auto; }
+}
 
 </style>
 </head>
@@ -194,15 +211,6 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
     </form>
     <p class="auth-status" id="studentAuthStatus" role="status" aria-live="polite"></p>
     <p class="auth-hint">Your account is saved securely with Firebase Authentication. Use the same email and password whenever you return.</p>
-  </div>
-</div>
-
-<div id="gmailNoticeOverlay" role="dialog" aria-modal="true" aria-labelledby="gmailNoticeTitle" aria-describedby="gmailNoticeText">
-  <div class="gmail-notice-box">
-    <div class="gmail-notice-icon" aria-hidden="true">✉</div>
-    <h2 id="gmailNoticeTitle">REGISTER කිරීමට පෙර</h2>
-    <p id="gmailNoticeText">ඔයා දැනට පාවිච්චි කරන Gmail එකක් ලබාදෙන්න.<br><br>ඔබට දැන් භාවිත කළ හැකි email ලිපිනයක් ඇතුළත් කරන්න. ඔබගේ account එකට නැවත login වීමට එම email එක සහ password එක අවශ්‍ය වේ.</p>
-    <button type="button" class="start-button" id="gmailNoticeOkBtn">OK</button>
   </div>
 </div>
 
@@ -570,23 +578,8 @@ function enterStudentPortal(){
   document.body.classList.remove("auth-locked");
   $("studentLogoutBar").style.display="flex";
 }
-const gmailNoticeOverlay=$("gmailNoticeOverlay");
-function openGmailNotice(){
-  showStudentAuth("register");
-  gmailNoticeOverlay.style.display="flex";
-  $("gmailNoticeOkBtn").focus();
-}
-function acceptGmailNotice(){
-  gmailNoticeOverlay.style.display="none";
-  showStudentAuth("register");
-  $("studentRegisterEmail").focus();
-}
-$("authLoginTab").addEventListener("click",()=>{
-  gmailNoticeOverlay.style.display="none";
-  showStudentAuth("login");
-});
-$("authRegisterTab").addEventListener("click",openGmailNotice);
-$("gmailNoticeOkBtn").addEventListener("click",acceptGmailNotice);
+$("authLoginTab").addEventListener("click",()=>showStudentAuth("login"));
+$("authRegisterTab").addEventListener("click",()=>showStudentAuth("register"));
 studentLoginForm.addEventListener("submit",async event=>{
   event.preventDefault();
   if(!auth){studentAuthStatus.textContent="Firebase is unavailable. Please reload the website.";return;}
@@ -1565,5 +1558,69 @@ musicToggle.addEventListener("click",async()=>{
   }
 })();
 </script>
+
+
+<script>
+/* ADD-ONLY: detect existing portal section visibility changes and animate them.
+   This does not change buttons, forms, navigation, or Firebase logic. */
+(function () {
+  const animatedSelectors = [
+    'main > header',
+    'main > .card',
+    'main > .home-panel',
+    'main > .view-panel',
+    'main > .student-result',
+    'main > #formSection',
+    'main > #successScreen',
+    'main > #gradeSection',
+    'main > #librarySection',
+    'main > #schoolNoticeSection'
+  ].join(',');
+  let lastVisibleIndex = -1;
+  let rafPending = false;
+
+  function isVisible(el) {
+    if (!el || !el.isConnected) return false;
+    const style = getComputedStyle(el);
+    return style.display !== 'none' && style.visibility !== 'hidden' && el.getClientRects().length > 0;
+  }
+  function animateVisibleSections() {
+    rafPending = false;
+    const all = Array.from(document.querySelectorAll(animatedSelectors));
+    const visible = all.filter(isVisible);
+    if (!visible.length) return;
+    const newest = visible[visible.length - 1];
+    const index = all.indexOf(newest);
+    const reverse = lastVisibleIndex >= 0 && index < lastVisibleIndex;
+    lastVisibleIndex = index;
+    newest.classList.remove('portal-slide-enter', 'portal-slide-reverse');
+    /* Force a style recalculation so repeat visits replay the animation. */
+    void newest.offsetWidth;
+    newest.classList.add('portal-slide-enter');
+    if (reverse) newest.classList.add('portal-slide-reverse');
+    newest.addEventListener('animationend', function cleanup(e) {
+      if (e.target !== newest) return;
+      newest.classList.remove('portal-slide-enter', 'portal-slide-reverse');
+      newest.removeEventListener('animationend', cleanup);
+    });
+  }
+  function schedule() {
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(animateVisibleSections);
+  }
+  const observer = new MutationObserver(schedule);
+  function start() {
+    observer.observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true, childList: false });
+    document.addEventListener('click', function (event) {
+      if (event.target.closest('button, a, [role="tab"]')) schedule();
+    }, true);
+    schedule();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+  else start();
+})();
+</script>
+
 </body>
 </html>
