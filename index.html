@@ -175,7 +175,7 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
     <h2>R/VIDYARAJA VIDYALAYA</h2>
     <p class="start-subtitle">STUDENT INFORMATION PORTAL</p>
     <p class="start-message">Welcome to the Student Portal<br>ශිෂ්‍ය තොරතුරු පද්ධතියට සාදරයෙන් පිළිගනිමු</p>
-    <button class="start-button" id="startContinueBtn" type="button" onclick="window.continueIntoPortal()">▶ CLICK TO CONTINUE</button>
+    <button class="start-button" id="startContinueBtn" type="button">▶ CLICK TO CONTINUE</button>
     <div class="start-loading" id="startLoading" aria-live="polite">
       <strong>LOADING PORTAL...</strong><br>
       <span>කරුණාකර මොහොතක් රැඳී සිටින්න</span>
@@ -184,26 +184,39 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
   </div>
 </div>
 
-<!-- Keep the welcome Continue button responsive even if Firebase/module scripts load slowly. -->
+<!-- Reliable welcome button handler: works independently of the Firebase module. -->
 <script>
-window.continueIntoPortal = function () {
-  var overlay = document.getElementById("startOverlay");
-  var button = document.getElementById("startContinueBtn");
-  var loading = document.getElementById("startLoading");
-  if (!overlay || !button || button.dataset.continued === "true") return;
-  button.dataset.continued = "true";
-  button.disabled = true;
-  button.textContent = "PLEASE WAIT...";
-  if (loading) loading.style.display = "block";
-  window.setTimeout(function () {
-    overlay.style.transition = "opacity .45s ease";
+(function () {
+  function continueIntoPortal(event) {
+    if (event) { event.preventDefault(); event.stopPropagation(); }
+    var overlay = document.getElementById("startOverlay");
+    var button = document.getElementById("startContinueBtn");
+    var loading = document.getElementById("startLoading");
+    if (!overlay) return;
+    if (button) {
+      button.disabled = true;
+      button.textContent = "OPENING PORTAL...";
+    }
+    if (loading) loading.style.display = "block";
+    overlay.style.pointerEvents = "none";
+    overlay.style.transition = "opacity .25s ease";
     overlay.style.opacity = "0";
     window.setTimeout(function () {
       overlay.style.display = "none";
-      overlay.style.pointerEvents = "none";
-    }, 470);
-  }, 500);
-};
+      overlay.remove();
+      var authScreen = document.getElementById("studentAuthScreen");
+      if (authScreen) {
+        authScreen.style.display = "flex";
+        document.body.classList.add("auth-locked");
+      }
+    }, 260);
+  }
+  window.continueIntoPortal = continueIntoPortal;
+  document.addEventListener("DOMContentLoaded", function () {
+    var button = document.getElementById("startContinueBtn");
+    if (button) button.addEventListener("click", continueIntoPortal, { once: true });
+  });
+})();
 </script>
 
 <div class="student-auth-screen" id="studentAuthScreen" aria-modal="true" role="dialog" aria-labelledby="studentAuthTitle">
