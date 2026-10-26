@@ -285,12 +285,6 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
 <button class="home-button" id="digitalLibraryBtn" type="button"><span class="symbol">📚</span><span data-i18n="libraryHomeTitle">FOR O/L AND A/L STUDENTS</span><small data-i18n="libraryHomeSub">Past papers for O/L and A/L students</small></button>
 </div>
 
-<div class="portal-deck-controls" aria-label="Student portal menu navigation">
-  <button class="secondary portal-deck-arrow" id="portalDeckPrev" type="button" aria-label="Previous menu item">◀ PREVIOUS</button>
-  <span class="portal-deck-position" id="portalDeckPosition" aria-live="polite">1 / 4</span>
-  <button class="primary portal-deck-arrow" id="portalDeckNext" type="button" aria-label="Next menu item">NEXT ▶</button>
-</div>
-<p class="portal-deck-hint">Rotate the cards to choose an option / විකල්පය තෝරාගැනීමට cards මාරු කරන්න</p>
 </section>
 
 
@@ -1630,62 +1624,95 @@ musicToggle.addEventListener("click",async()=>{
 </script>
 
 
-<style id="portal-rotating-menu-styles">
-/* Visual-only rotating menu deck; original button IDs and click handlers are preserved. */
-/* Prevent the whole home panel from replaying its slideUp animation when cards change; animate only the cards. */
+<style id="portal-centered-four-menu-styles">
+/* Four fixed menu tiles in a centered 2x2 grid; no carousel/slide effect. */
 #homeSection{animation:none!important}
-
-#homeSection .home-buttons.portal-deck{display:block;position:relative;height:205px;margin:28px auto 10px;max-width:650px;perspective:1100px;overflow:visible}
-#homeSection .home-button.portal-deck-card{position:absolute;inset:0;width:100%;height:160px;min-height:160px;margin:auto;transform-origin:center center;transition:transform .72s cubic-bezier(.2,.8,.2,1),opacity .55s ease,filter .55s ease,box-shadow .55s ease;will-change:transform,opacity;backface-visibility:hidden}
-#homeSection .home-button.portal-deck-card.deck-active{z-index:5;opacity:1;filter:none;transform:translate3d(0,0,50px) rotateY(0deg) scale(1);pointer-events:auto;box-shadow:0 18px 45px #0009,0 0 24px #39ff1460}
-#homeSection .home-button.portal-deck-card.deck-next{z-index:4;opacity:.78;filter:brightness(.78);transform:translate3d(16px,13px,-30px) rotateY(-10deg) scale(.965);pointer-events:none}
-#homeSection .home-button.portal-deck-card.deck-third{z-index:3;opacity:.52;filter:brightness(.62);transform:translate3d(30px,25px,-70px) rotateY(-17deg) scale(.93);pointer-events:none}
-#homeSection .home-button.portal-deck-card.deck-last{z-index:2;opacity:.28;filter:brightness(.45);transform:translate3d(42px,35px,-110px) rotateY(-24deg) scale(.90);pointer-events:none}
-.portal-deck-controls{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin:8px auto 0}
-.portal-deck-arrow{min-width:130px}
-.portal-deck-position{color:var(--yellow);font-weight:800;min-width:48px;text-align:center;letter-spacing:1px}
-.portal-deck-hint{text-align:center;color:#a9c6ad;font-size:12px;margin:10px 0 0}
-@keyframes portalDeckFlipIn{0%{transform:translate3d(45px,0,-80px) rotateY(-35deg) scale(.88);opacity:.25}60%{transform:translate3d(-5px,0,20px) rotateY(5deg) scale(1.02);opacity:1}100%{transform:translate3d(0,0,50px) rotateY(0) scale(1);opacity:1}}
-#homeSection .home-button.portal-deck-card.deck-flipping{animation:portalDeckFlipIn .72s cubic-bezier(.2,.8,.2,1) both}
-@media(max-width:650px){#homeSection .home-buttons.portal-deck{height:180px;margin-top:20px}#homeSection .home-button.portal-deck-card{height:145px;min-height:145px;padding:16px 12px;gap:8px;font-size:15px}.portal-deck-arrow{min-width:112px;padding:11px 12px}}
-@media(prefers-reduced-motion:reduce){#homeSection .home-button.portal-deck-card{transition:none!important}#homeSection .home-button.portal-deck-card.deck-flipping{animation:none!important}}
+#homeSection .home-buttons{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:clamp(14px,2.5vw,24px)!important;
+  width:min(100%,760px);
+  margin:30px auto 10px!important;
+  align-items:stretch;
+}
+#homeSection .home-button{
+  position:relative;
+  inset:auto;
+  width:100%;
+  min-width:0;
+  min-height:170px;
+  height:100%;
+  margin:0;
+  transform:scale(1);
+  transform-origin:center;
+  transition:transform .32s cubic-bezier(.2,.75,.25,1), box-shadow .32s ease, background-color .32s ease, border-color .32s ease;
+  will-change:transform;
+  z-index:1;
+  cursor:pointer;
+}
+#homeSection .home-button:hover,
+#homeSection .home-button:focus-visible{
+  transform:scale(1.055);
+  z-index:3;
+  box-shadow:0 12px 30px #0008,0 0 24px #39ff1460;
+  background-color:#0a1b0d;
+}
+#homeSection .home-button:active{transform:scale(1.025);}
+#homeSection .home-button .symbol{transition:transform .32s ease;}
+#homeSection .home-button:hover .symbol,
+#homeSection .home-button:focus-visible .symbol{transform:scale(1.12);}
+@media(max-width:520px){
+  #homeSection .home-buttons{gap:12px!important;margin-top:22px!important}
+  #homeSection .home-button{min-height:145px;padding:15px 10px;font-size:14px;gap:8px}
+  #homeSection .home-button .symbol{font-size:29px}
+  #homeSection .home-button small{font-size:11px}
+  #homeSection .home-button:hover,#homeSection .home-button:focus-visible{transform:scale(1.025)}
+}
+@media(prefers-reduced-motion:reduce){#homeSection .home-button,#homeSection .home-button .symbol{transition:none!important}}
 </style>
-<script id="portal-rotating-menu-script">
+
+
+<style id="portal-touch-zoom-styles">
+/* Tap-to-zoom on touchscreens; mouse hover remains supported on desktop. */
+#homeSection .home-button.is-zoomed{
+  transform:scale(1.045);
+  z-index:4;
+  box-shadow:0 12px 30px #0008,0 0 24px #39ff1460;
+  background-color:#0a1b0d;
+}
+#homeSection .home-button.is-zoomed .symbol{transform:scale(1.12)}
+@media(max-width:520px){
+  #homeSection .home-button.is-zoomed{transform:scale(1.025)}
+}
+@media(hover:none){
+  #homeSection .home-button:hover:not(.is-zoomed){transform:scale(1)!important;box-shadow:none!important}
+  #homeSection .home-button:hover:not(.is-zoomed) .symbol{transform:scale(1)!important}
+}
+</style>
+<script id="portal-touch-zoom-script">
 (function(){
-  function initPortalDeck(){
-    const home=document.getElementById('homeSection');
-    const deck=home&&home.querySelector('.home-buttons');
-    if(!deck||deck.dataset.deckReady==='1') return;
-    const cards=Array.from(deck.querySelectorAll(':scope > .home-button'));
-    if(cards.length!==4) return;
-    deck.classList.add('portal-deck');
-    deck.dataset.deckReady='1';
-    cards.forEach(card=>card.classList.add('portal-deck-card'));
-    let active=0;
-    const position=document.getElementById('portalDeckPosition');
-    const prev=document.getElementById('portalDeckPrev');
-    const next=document.getElementById('portalDeckNext');
-    function render(animate){
-      cards.forEach((card,i)=>{
-        card.classList.remove('deck-active','deck-next','deck-third','deck-last','deck-flipping');
-        const rank=(i-active+cards.length)%cards.length;
-        card.classList.add(['deck-active','deck-next','deck-third','deck-last'][rank]);
-        card.setAttribute('aria-hidden',rank===0?'false':'true');
-        if(rank!==0) card.setAttribute('tabindex','-1'); else card.removeAttribute('tabindex');
-        if(animate&&rank===0){void card.offsetWidth;card.classList.add('deck-flipping');}
+  function initTapZoom(){
+    const menu=document.querySelector('#homeSection .home-buttons');
+    if(!menu || menu.dataset.tapZoomReady==='true') return;
+    const tiles=Array.from(menu.querySelectorAll(':scope > .home-button'));
+    if(!tiles.length) return;
+    menu.dataset.tapZoomReady='true';
+    function selectTile(tile){
+      tiles.forEach(function(item){
+        const selected=item===tile;
+        item.classList.toggle('is-zoomed',selected);
+        if(selected) item.setAttribute('aria-pressed','true');
+        else item.setAttribute('aria-pressed','false');
       });
-      if(position) position.textContent=(active+1)+' / '+cards.length;
-      if(prev) prev.disabled=false;
-      if(next) next.disabled=false;
     }
-    function move(step){active=(active+step+cards.length)%cards.length;render(true);}
-    prev&&prev.addEventListener('click',()=>move(-1));
-    next&&next.addEventListener('click',()=>move(1));
-    // Keyboard navigation for accessibility.
-    deck.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){e.preventDefault();move(1);}else if(e.key==='ArrowLeft'){e.preventDefault();move(-1);}});
-    render(false);
+    tiles.forEach(function(tile){
+      tile.addEventListener('click',function(){selectTile(tile)},true);
+      tile.addEventListener('focus',function(){selectTile(tile)});
+    });
+    // Start with no tile enlarged; the first tap selects and smoothly enlarges it.
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initPortalDeck,{once:true}); else initPortalDeck();
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initTapZoom,{once:true});
+  else initTapZoom();
 })();
 </script>
 
