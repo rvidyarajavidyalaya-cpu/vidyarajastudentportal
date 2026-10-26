@@ -153,6 +153,18 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
 .registration-success-box p{color:#d7e8d9;line-height:1.8}
 @media(max-width:500px){.student-auth-card{padding:24px 16px}.student-logout-bar{justify-content:center}.student-logout-bar button{width:100%}}
 
+
+/* ADDED: smooth sliding transitions between portal tabs/sections */
+@keyframes portalSlideInRight{from{opacity:0;transform:translate3d(46px,0,0) scale(.985);filter:blur(3px)}to{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}}
+@keyframes portalSlideInLeft{from{opacity:0;transform:translate3d(-46px,0,0) scale(.985);filter:blur(3px)}to{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}}
+@keyframes portalSoftPop{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.portal-tab-enter{animation:portalSlideInRight .48s cubic-bezier(.2,.75,.25,1) both!important;will-change:transform,opacity}
+.portal-tab-enter.from-left{animation-name:portalSlideInLeft!important}
+.portal-tab-enter.soft-pop{animation-name:portalSoftPop!important}
+.auth-tabs button,.notice-nav button,.home-button,.language-switch button,.library-book,.notice-card{transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease,background-color .28s ease}
+.auth-tabs button:hover,.notice-nav button:hover,.home-button:hover,.language-switch button:hover{transform:translateY(-3px) scale(1.015)}
+@media(prefers-reduced-motion:reduce){.portal-tab-enter{animation:none!important;will-change:auto}}
+
 </style>
 </head>
 <body class="auth-locked">
@@ -1564,6 +1576,44 @@ musicToggle.addEventListener("click",async()=>{
     console.error('Could not update Sri Lanka date/time:', error);
   }
 })();
+</script>
+<script>
+
+/* ADDED: animate visible portal panels whenever navigation changes them */
+(function enablePortalTabAnimations(){
+  const animatedPanelIds = new Set([
+    "homeSection","gradeSection","formSection","viewPanel","studentResult",
+    "marksSection","marksResult","successScreen","librarySection","noticeSection",
+    "olGradeChooser","olPapersPanel","alPapersPanel","olLibraryLoading",
+    "admissionLookup","loadingScreen","adminLoginBox"
+  ]);
+  let previousPanel = null;
+  function animatePanel(el){
+    if(!el || !animatedPanelIds.has(el.id)) return;
+    const visible = getComputedStyle(el).display !== "none" && el.getClientRects().length > 0;
+    if(!visible) return;
+    el.classList.remove("portal-tab-enter","from-left","soft-pop");
+    void el.offsetWidth;
+    el.classList.add("portal-tab-enter");
+    if(el.id === "studentResult" || el.id === "marksResult" || el.id === "successScreen") el.classList.add("soft-pop");
+    previousPanel = el;
+    el.addEventListener("animationend",()=>el.classList.remove("portal-tab-enter","from-left","soft-pop"),{once:true});
+  }
+  const observer = new MutationObserver(records=>{
+    for(const record of records){
+      if(record.type === "attributes" && record.target instanceof HTMLElement){
+        animatePanel(record.target);
+      }
+    }
+  });
+  observer.observe(document.body,{subtree:true,attributes:true,attributeFilter:["style","class"]});
+  window.addEventListener("pageshow",()=>{
+    document.querySelectorAll("main [id]").forEach(el=>{
+      if(animatedPanelIds.has(el.id)) animatePanel(el);
+    });
+  });
+})();
+
 </script>
 </body>
 </html>
