@@ -125,20 +125,6 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 .notice-empty{text-align:center;color:#b9d2bd;padding:22px}
 
 
-/* AI STUDY ASSISTANT - added feature */
-.ai-panel{display:none}
-.ai-intro{color:#d7e8d9;line-height:1.8;margin-bottom:16px}
-.ai-settings{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
-.ai-chat{border:1px solid #39ff1470;border-radius:14px;background:#030a05;padding:14px;min-height:240px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
-.ai-message{max-width:92%;padding:12px 14px;border-radius:12px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
-.ai-message.assistant{align-self:flex-start;background:#102416;border:1px solid #39ff1455;color:#edfff0}
-.ai-message.user{align-self:flex-end;background:#17351c;border:1px solid #eaff0080;color:#fff}
-.ai-compose{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:12px}
-.ai-compose textarea{min-height:70px;max-height:180px}
-.ai-status{min-height:22px;margin-top:10px;color:var(--green);font-size:13px;line-height:1.6;overflow-wrap:anywhere}
-.ai-hint{font-size:12px;color:#a9c6ae;line-height:1.7;margin-top:10px}
-@media(max-width:650px){.ai-settings,.ai-compose{grid-template-columns:1fr}.ai-compose button{width:100%}.ai-message{max-width:100%}}
-
 </style>
 </head>
 <body>
@@ -215,42 +201,11 @@ footer{text-align:center;color:#8da991;font-size:12px;line-height:1.8;padding:20
 <button class="home-button view" id="viewInfoBtn" type="button"><span class="symbol">⌕</span><span>VIEW INFORMATION</span><small>ඇතුළත් කළ තොරතුරු බලන්න</small></button>
 <button class="home-button marks" id="viewMarksBtn" type="button"><span class="symbol">▤</span><span>VIEW MARKS</span><small>Term Test ප්‍රතිඵල බලන්න</small></button>
 <button class="home-button" id="digitalLibraryBtn" type="button"><span class="symbol">📚</span><span data-i18n="libraryHomeTitle">FOR O/L AND A/L STUDENTS</span><small data-i18n="libraryHomeSub">Past papers for O/L and A/L students</small></button>
-<button class="home-button" id="aiStudyAssistantBtn" type="button" style="border-color:#eaff00;color:#eaff00"><span class="symbol">🤖</span><span>AI STUDY ASSISTANT</span><small>AI Tutor • සිංහල / English</small></button>
 </div>
 </section>
 
 
-<section class="view-panel ai-panel" id="aiStudyAssistantSection">
-  <h2 class="section-title">🤖 AI STUDY ASSISTANT</h2>
-  <p class="ai-intro">Ask questions about your lessons, request simple explanations, make study notes, or practise MCQs. You can ask in Sinhala or English. / පාඩම් ගැන ප්‍රශ්න අසන්න, සටහන් සකස් කරගන්න, සහ ප්‍රශ්න පුහුණු වන්න.</p>
-  <div class="notice-nav">
-    <button class="secondary" id="aiBackHomeBtn" type="button">← BACK TO HOME</button>
-    <button class="secondary" id="aiClearChatBtn" type="button">🗑️ CLEAR CHAT</button>
-  </div>
-  <div class="ai-settings">
-    <div class="field"><label for="aiGrade">GRADE / ශ්‍රේණිය</label>
-      <select id="aiGrade">
-        <option value="Grade 6">Grade 6</option><option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option><option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option><option value="Grade 13">Grade 13</option>
-      </select>
-    </div>
-    <div class="field"><label for="aiSubject">SUBJECT / විෂයය</label>
-      <select id="aiSubject">
-        <option>General Study</option><option>Mathematics</option><option>Science</option><option>English</option><option>Sinhala</option><option>ICT</option><option>History</option><option>Geography</option><option>Commerce</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>Other</option>
-      </select>
-    </div>
-  </div>
-  <div class="ai-chat" id="aiChatMessages" role="log" aria-live="polite">
-    <div class="ai-message assistant">👋 Hello Student! I’m your AI Study Assistant. Select your grade and subject, then ask a study question in Sinhala or English.</div>
-  </div>
-  <form id="aiChatForm">
-    <div class="ai-compose">
-      <textarea id="aiQuestion" maxlength="4000" placeholder="Ask a question about your lesson... / පාඩම ගැන ප්‍රශ්නයක් අසන්න" required></textarea>
-      <button class="primary" id="aiSendBtn" type="submit">➤ ASK AI</button>
-    </div>
-  </form>
-  <p class="ai-status" id="aiStatus" role="status" aria-live="polite"></p>
-  <p class="ai-hint">Study helper only: check important answers with your teacher or textbook. Do not enter passwords, private student details, or other sensitive information.</p>
-</section>
+
 
 <section class="view-panel" id="schoolNoticeSection">
   <h2 class="section-title">📢 SCHOOL NOTICE BOARD</h2>
@@ -526,7 +481,7 @@ let noticeCache=[];
 let adminAuthorized=false;
 
 function hideMainSectionsForNotice(){
-  [homeSection,gradeSection,formSection,viewPanel,studentResult,marksSection,marksResult,successScreen,librarySection,$("aiStudyAssistantSection")].forEach(el=>{if(el)el.style.display="none";});
+  [homeSection,gradeSection,formSection,viewPanel,studentResult,marksSection,marksResult,successScreen,librarySection].forEach(el=>{if(el)el.style.display="none";});
   noticeSection.style.display="block";
   window.scrollTo({top:0,behavior:"smooth"});
 }
@@ -662,7 +617,6 @@ function showHome(){
   marksSection.style.display="none";
   marksResult.style.display="none";
   successScreen.style.display="none";
-  $("aiStudyAssistantSection").style.display="none";
   librarySection.style.display="none";
   noticeSection.style.display="none";
   blurOverlay.style.display="none";
@@ -1242,100 +1196,6 @@ $("doneBtn").addEventListener("click",()=>{
 });
 
 $("overlayHomeBtn").addEventListener("click",showHome);
-
-/* AI STUDY ASSISTANT
-   A secure backend endpoint is required. Never put an AI API key in this HTML file.
-   Configure this endpoint on your server or Firebase Cloud Function.
-*/
-// After deploying worker.js, replace this with your exact HTTPS Worker URL.
-const AI_STUDY_ENDPOINT = "https://vidyaraja-ai.rvidyarajavidyalaya.workers.dev/api/study-assistant";
-const aiSection = $("aiStudyAssistantSection");
-const aiChatMessages = $("aiChatMessages");
-const aiQuestion = $("aiQuestion");
-const aiStatus = $("aiStatus");
-const aiChatHistory = [];
-
-function addAIMessage(role, text) {
-  const message = document.createElement("div");
-  message.className = "ai-message " + (role === "user" ? "user" : "assistant");
-  message.textContent = text;
-  aiChatMessages.appendChild(message);
-  aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-}
-function openAIStudyAssistant() {
-  [homeSection,gradeSection,formSection,viewPanel,studentResult,marksSection,marksResult,successScreen,librarySection,noticeSection].forEach(el => {
-    if (el) el.style.display = "none";
-  });
-  aiSection.style.display = "block";
-  if (selectedGrade) $("aiGrade").value = selectedGrade;
-  aiStatus.textContent = "";
-  window.scrollTo({top:0,behavior:"smooth"});
-  aiQuestion.focus();
-}
-$("aiStudyAssistantBtn").addEventListener("click", openAIStudyAssistant);
-$("aiBackHomeBtn").addEventListener("click", showHome);
-$("aiClearChatBtn").addEventListener("click", () => {
-  aiChatHistory.length = 0;
-  aiChatMessages.replaceChildren();
-  addAIMessage("assistant", "Chat cleared. Ask a new question about your studies.");
-  aiStatus.textContent = "";
-});
-$("aiChatForm").addEventListener("submit", async event => {
-  event.preventDefault();
-  const question = aiQuestion.value.trim();
-  if (!question) {
-    aiStatus.textContent = "Please type a question first.";
-    return;
-  }
-  const sendBtn = $("aiSendBtn");
-  const grade = $("aiGrade").value;
-  const subject = $("aiSubject").value;
-  addAIMessage("user", question);
-  aiChatHistory.push({role:"user",content:question});
-  aiQuestion.value = "";
-  sendBtn.disabled = true;
-  aiStatus.textContent = "Thinking... / පිළිතුර සකස් කරමින් පවතී";
-  const aiController = new AbortController();
-  const aiTimeout = setTimeout(() => aiController.abort(), 90000);
-  try {
-    const response = await fetch(AI_STUDY_ENDPOINT, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      signal: aiController.signal,
-      body: JSON.stringify({
-        grade,
-        subject,
-        language: /[\u0D80-\u0DFF]/.test(question) ? "Sinhala" : "Respond in the language used by the student",
-        messages: aiChatHistory.slice(-12)
-      })
-    });
-    if (!response.ok) {
-      let detail = "";
-      try { const err = await response.json(); detail = err.message || err.error || ""; } catch (_) {}
-      throw new Error(detail || "AI service is not configured yet (HTTP " + response.status + ").");
-    }
-    const data = await response.json();
-    const answer = String(data.answer || data.reply || data.output_text || "").trim();
-    if (!answer) throw new Error("The AI service returned an empty answer.");
-    aiChatHistory.push({role:"assistant",content:answer});
-    addAIMessage("assistant", answer);
-    aiStatus.textContent = "";
-  } catch (error) {
-    console.error("AI Study Assistant error:", error);
-    const errorMessage = error && error.name === "AbortError"
-      ? "The AI request took too long (90 seconds). Please try again. / AI පිළිතුර ප්‍රමාදයි. නැවත උත්සාහ කරන්න."
-      : "AI service could not be reached. Please check the Worker deployment and try again. Do not add an API key to this file. Details: " + (error.message || "Connection failed");
-    addAIMessage("assistant", errorMessage);
-    aiStatus.textContent = error && error.name === "AbortError"
-      ? "Request timed out. Please try again."
-      : "AI request failed. Please try again.";
-    if (aiChatHistory.length && aiChatHistory[aiChatHistory.length - 1].role === "user") aiChatHistory.pop();
-  } finally {
-    clearTimeout(aiTimeout);
-    sendBtn.disabled = false;
-    aiQuestion.focus();
-  }
-});
 
 /* INITIAL STATE */
 $("alField").style.display="none";
