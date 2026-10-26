@@ -1247,7 +1247,8 @@ $("overlayHomeBtn").addEventListener("click",showHome);
    A secure backend endpoint is required. Never put an AI API key in this HTML file.
    Configure this endpoint on your server or Firebase Cloud Function.
 */
-const AI_STUDY_ENDPOINT = "/api/study-assistant";
+// After deploying worker.js, replace this with your exact HTTPS Worker URL.
+const AI_STUDY_ENDPOINT = "https://YOUR-WORKER-NAME.YOUR-SUBDOMAIN.workers.dev/api/study-assistant";
 const aiSection = $("aiStudyAssistantSection");
 const aiChatMessages = $("aiChatMessages");
 const aiQuestion = $("aiQuestion");
@@ -1318,7 +1319,7 @@ $("aiChatForm").addEventListener("submit", async event => {
     aiStatus.textContent = "";
   } catch (error) {
     console.error("AI Study Assistant error:", error);
-    addAIMessage("assistant", "AI connection is not set up yet. The chat interface is ready, but a secure backend endpoint must be configured at " + AI_STUDY_ENDPOINT + " and connected to an AI service. Do not add an API key to index.html.");
+    addAIMessage("assistant", "AI service could not be reached. Please make sure the AI backend Worker URL is configured in index.html and the service is deployed. Do not add an API key to this file. Details: " + (error.message || "Connection failed"));
     aiStatus.textContent = "AI service setup required.";
     if (aiChatHistory.length && aiChatHistory[aiChatHistory.length - 1].role === "user") aiChatHistory.pop();
   } finally {
