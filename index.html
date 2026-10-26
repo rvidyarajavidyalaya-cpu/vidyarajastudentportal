@@ -1296,7 +1296,7 @@ $("aiChatForm").addEventListener("submit", async event => {
   sendBtn.disabled = true;
   aiStatus.textContent = "Thinking... / පිළිතුර සකස් කරමින් පවතී";
   const aiController = new AbortController();
-  const aiTimeout = setTimeout(() => aiController.abort(), 45000);
+  const aiTimeout = setTimeout(() => aiController.abort(), 90000);
   try {
     const response = await fetch(AI_STUDY_ENDPOINT, {
       method: "POST",
@@ -1323,7 +1323,7 @@ $("aiChatForm").addEventListener("submit", async event => {
   } catch (error) {
     console.error("AI Study Assistant error:", error);
     const errorMessage = error && error.name === "AbortError"
-      ? "The AI request took too long (45 seconds). Please try again. / AI පිළිතුර ප්‍රමාදයි. නැවත උත්සාහ කරන්න."
+      ? "The AI request took too long (90 seconds). Please try again. / AI පිළිතුර ප්‍රමාදයි. නැවත උත්සාහ කරන්න."
       : "AI service could not be reached. Please check the Worker deployment and try again. Do not add an API key to this file. Details: " + (error.message || "Connection failed");
     addAIMessage("assistant", errorMessage);
     aiStatus.textContent = error && error.name === "AbortError"
