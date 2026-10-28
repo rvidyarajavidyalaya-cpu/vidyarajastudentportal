@@ -388,11 +388,10 @@ body.light-theme .smart-dash-empty{color:#34563a;border-color:#16852a70}
   </div>
   <section class="personal-student-card" aria-labelledby="personalDashboardTitle">
     <h3 id="personalDashboardTitle">👤 MY PERSONAL STUDENT DASHBOARD</h3>
-    <p class="personal-help">ඔබගේ Student Information form එක save කළ පසු ලැබුණු Verification Code එක මෙහි ඇතුළත් කරන්න. ඔබගේ සුරකින ලද තොරතුරු Firebase වෙතින් නැවත ලබාගත හැකියි.</p>
-    <form id="personalDashboardForm" class="personal-code-row">
-      <input id="personalDashboardCode" type="text" maxlength="50" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="VR-ABCD-2345-EFGH" aria-label="Student verification code" required>
-      <button type="submit" class="smart-dash-btn primary" id="personalDashboardOpenBtn">OPEN MY DASHBOARD</button>
-    </form>
+    <p class="personal-help">ඔබ Login වී ඇති Gmail account එකට සම්බන්ධ කර ඇති Student Information මෙහි ස්වයංක්‍රීයව පෙන්වයි. Verification Code එකක් paste කිරීමට අවශ්‍ය නැහැ.</p>
+    <div class="personal-code-row" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <button type="button" class="smart-dash-btn primary" id="personalDashboardRefreshBtn">↻ REFRESH MY DETAILS</button>
+    </div>
     <p class="personal-profile-status" id="personalDashboardStatus" role="status" aria-live="polite"></p>
     <div class="personal-profile-grid" id="personalDashboardProfile" style="display:none"></div>
   </section>
@@ -640,7 +639,7 @@ body.light-theme .smart-dash-empty{color:#34563a;border-color:#16852a70}
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-import {getFirestore,collection,getDoc,doc,writeBatch,addDoc,getDocs,deleteDoc,query,orderBy,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import {getFirestore,collection,getDoc,doc,writeBatch,addDoc,getDocs,deleteDoc,query,where,orderBy,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 import {getStorage,ref,uploadBytes,getDownloadURL,deleteObject} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
@@ -952,21 +951,18 @@ async function loadWelcomeDashboard(){
 $("welcomeViewNoticesBtn")?.addEventListener("click",openNoticeBoard);
 $("welcomeRefreshBtn")?.addEventListener("click",loadWelcomeDashboard);
 
-/* PERSONAL STUDENT DASHBOARD — retrieves the saved profile by verification code */
-const personalDashboardForm=$("personalDashboardForm");
+/* PERSONAL STUDENT DASHBOARD — automatically retrieves the profile linked to the signed-in Gmail account */
 const personalDashboardStatus=$("personalDashboardStatus");
 const personalDashboardProfile=$("personalDashboardProfile");
 const personalDashboardFields=[
   ["Admission Number","admission"],["Full Name","fullName"],["Date of Birth","dob"],
-  ["Grade / Class","grade"],["Parent / Guardian","guardian"],["Telephone Number","phone"],
+  ["Grade / Class","grade"],["Telephone Number","phone"],
   ["WhatsApp Number","whatsapp"],["Email Address","email"],["Home Address","address"],
-  ["A/L Subjects","al"],["O/L Results","ol"],["Sports Achievements","sports"],
-  ["Extracurricular Activities","extra"]
+  ["Sports Achievements","sports"],["Extracurricular Activities","extra"]
 ];
 function renderPersonalStudentProfile(student){
   personalDashboardProfile.replaceChildren();
   personalDashboardFields.forEach(([label,key])=>{
-    if((key==="al"||key==="ol")&&student.grade!=="Grade 12"&&student.grade!=="Grade 13")return;
     const card=document.createElement("div");card.className="personal-profile-item";
     const name=document.createElement("strong");name.textContent=label;
     const value=document.createElement("span");value.textContent=String(student[key]||"").trim()||"Not provided";
@@ -974,36 +970,49 @@ function renderPersonalStudentProfile(student){
   });
   personalDashboardProfile.style.display="grid";
 }
-personalDashboardForm?.addEventListener("submit",async event=>{
-  event.preventDefault();
+async function loadPersonalStudentDashboard(){
   const user=auth?.currentUser;
-  if(!user){personalDashboardStatus.textContent="Please log in to your Student Portal first.";showStudentAuth("login");return;}
-  if(!db){personalDashboardStatus.textContent="Firebase is not ready. Please refresh and try again.";return;}
-  const code=$("personalDashboardCode").value.trim().toUpperCase();
-  if(!/^VR-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/.test(code)){
-    personalDashboardProfile.style.display="none";personalDashboardStatus.textContent="Please enter the complete verification code, for example VR-ABCD-2345-EFGH.";return;
+  if(!personalDashboardStatus||!personalDashboardProfile)return;
+  personalDashboardProfile.style.display="none";
+  personalDashboardProfile.replaceChildren();
+  if(!user){
+    personalDashboardStatus.textContent="ඔබගේ Gmail account එකෙන් Student Portal එකට Login වන්න.";
+    return;
   }
-  const btn=$("personalDashboardOpenBtn");btn.disabled=true;btn.textContent="LOADING...";
-  personalDashboardProfile.style.display="none";personalDashboardStatus.textContent="Loading your saved student information...";
+  if(!db){
+    personalDashboardStatus.textContent="Firebase connection එක සූදානම් නැහැ. නැවත උත්සාහ කරන්න.";
+    return;
+  }
+  personalDashboardStatus.textContent="ඔබගේ Gmail account එකට සම්බන්ධ Student Details සොයමින්...";
   try{
-    const snap=await getDoc(doc(db,"studentLookups",code));
-    if(!snap.exists()){
-      personalDashboardStatus.textContent="Code not found. Check the code you received after saving your student information.";return;
+    // First match by Firebase Auth UID, which is safer than matching only an email address.
+    let matches=[];
+    const uidSnap=await getDocs(query(collection(db,"studentLookups"),where("ownerUid","==",user.uid)));
+    matches=uidSnap.docs.map(d=>({id:d.id,...d.data()}));
+
+    // Compatibility fallback for records linked by the authenticated Gmail address.
+    if(!matches.length&&user.email){
+      const emailSnap=await getDocs(query(collection(db,"studentLookups"),where("ownerEmail","==",user.email)));
+      matches=emailSnap.docs.map(d=>({id:d.id,...d.data()}));
     }
-    const student=snap.data();
-    // New registrations are linked to the signed-in account. Keep older codes usable for compatibility.
-    if(student.ownerUid && student.ownerUid!==user.uid){
-      personalDashboardStatus.textContent="This verification code is linked to a different student account. Please log in to the account used when the information was saved.";return;
+    if(!matches.length){
+      personalDashboardStatus.textContent="මෙම Gmail account එකට සම්බන්ධ Student Information හමු වුණේ නැහැ. Student Information form එක submit කළේ මේ account එකෙන්දැයි පරීක්ෂා කරන්න.";
+      return;
     }
+    matches.sort((a,b)=>String(b.submittedAt||"").localeCompare(String(a.submittedAt||"")));
+    const student=matches[0];
     renderPersonalStudentProfile(student);
-    personalDashboardStatus.textContent="Your saved information loaded successfully. It is stored in Firebase and can be viewed again using this code and your account.";
+    personalDashboardStatus.textContent=matches.length>1
+      ? "ඔබගේ Gmail account එකට සම්බන්ධ Student Details පෙන්වයි. Records කිහිපයක් හමු වූ නිසා අලුත්ම record එක පෙන්වා ඇත."
+      : "ඔබගේ Gmail account එකට සම්බන්ධ Student Details සාර්ථකව ලබාගත්තා.";
     const heading=$("smartWelcomeTitle");
     if(heading&&student.fullName)heading.textContent="Welcome back, "+student.fullName+"! 👋";
   }catch(error){
     console.error("Personal student dashboard lookup failed",error);
-    personalDashboardStatus.textContent="Could not load your information. Please check the internet connection and Firebase Firestore rules.";
-  }finally{btn.disabled=false;btn.textContent="OPEN MY DASHBOARD";}
-});
+    personalDashboardStatus.textContent="Student Details ලබාගත නොහැකියි. Firebase Firestore Rules මඟින් logged-in user හට තමන්ගේ studentLookups records කියවීමට අවසර තිබේදැයි පරීක්ෂා කරන්න.";
+  }
+}
+$("personalDashboardRefreshBtn")?.addEventListener("click",loadPersonalStudentDashboard);
 
 $("adminLoginForm").addEventListener("submit",async event=>{
   event.preventDefault();adminLoginStatus.textContent="Signing in...";$("adminLoginSubmit").disabled=true;
@@ -1016,6 +1025,7 @@ $("adminLoginForm").addEventListener("submit",async event=>{
 
 onAuthStateChanged(auth,async user=>{
   adminAuthorized=false;
+  if(user&&studentAuthenticated) loadPersonalStudentDashboard();
   if(user&&db){
     try{
       const adminDoc=await getDoc(doc(db,"admins",user.uid));
