@@ -734,8 +734,9 @@ const themeModeBtn=$("themeModeBtn");
 function applySavedTheme(){const light=localStorage.getItem("vidyarajaPortalTheme")==="light";document.body.classList.toggle("light-theme",light);if(themeModeBtn){themeModeBtn.textContent=light?"☀️ LIGHT THEME (ON)":"🌙 DARK THEME (ON)";themeModeBtn.setAttribute("aria-pressed",String(light));}}
 applySavedTheme();
 themeModeBtn?.addEventListener("click",()=>{const next=document.body.classList.contains("light-theme")?"dark":"light";localStorage.setItem("vidyarajaPortalTheme",next);applySavedTheme();});
-function birthdayDateLabel(value){if(!value)return "Birthday date not provided";const d=new Date(String(value)+"T00:00:00");return Number.isNaN(d.getTime())?String(value):d.toLocaleDateString("en-GB",{day:"numeric",month:"long",timeZone:"Asia/Colombo"});}
-async function loadBirthdayWishes(){const status=$("birthdayStatus"),list=$("birthdayList");status.textContent="Loading birthday wishes...";list.replaceChildren();try{const snap=await getDocs(collection(db,"birthdayWishes"));if(snap.empty){status.textContent="No birthday wishes have been published yet. / තවම සුබපැතුම් පළ කර නැත.";return;}const today=new Date();const todayKey=String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");let count=0;snap.forEach(ds=>{const x=ds.data();if(x.active===false)return;const card=document.createElement("article");card.className="notice-card";const title=document.createElement("h3");title.textContent=(x.name||"Student")+" 🎂";card.appendChild(title);const meta=document.createElement("div");meta.className="notice-meta";meta.textContent=[x.grade?"Grade "+x.grade:"",x.birthday?birthdayDateLabel(x.birthday):""].filter(Boolean).join(" • ");card.appendChild(meta);const monthDay=String(x.birthday||"").slice(5);const msg=document.createElement("p");msg.className="notice-body";msg.textContent=x.message|| (monthDay===todayKey?"🎉 Happy Birthday! සුබ උපන් දිනයක් වේවා!":"Warm wishes from R/VIDYARAJA VIDYALAYA.");card.appendChild(msg);list.appendChild(card);count++;});status.textContent=count+" birthday wish(es).";}catch(e){console.error(e);status.textContent="Could not load birthday wishes. Check Firestore rules and connection.";}}
+function birthdayMonthDay(value){const v=String(value||"");return /^\d{2}-\d{2}$/.test(v)?v:(/^\d{4}-\d{2}-\d{2}$/.test(v)?v.slice(5,10):"");}
+function birthdayDateLabel(value){const md=birthdayMonthDay(value);if(!md)return "Birthday date not provided";const d=new Date("2000-"+md+"T00:00:00");return Number.isNaN(d.getTime())?md:d.toLocaleDateString("en-GB",{day:"numeric",month:"long",timeZone:"Asia/Colombo"});}
+async function loadBirthdayWishes(){const status=$("birthdayStatus"),list=$("birthdayList");status.textContent="Loading birthday wishes...";list.replaceChildren();try{const snap=await getDocs(collection(db,"birthdayWishes"));if(snap.empty){status.textContent="No birthday wishes have been published yet. / තවම සුබපැතුම් පළ කර නැත.";return;}const today=new Date();const todayKey=String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");let count=0,todaysCount=0;snap.forEach(ds=>{const x=ds.data();if(x.active===false)return;const card=document.createElement("article");card.className="notice-card";const monthDay=birthdayMonthDay(x.birthday);const isToday=monthDay===todayKey;if(isToday)todaysCount++;const title=document.createElement("h3");title.textContent=(x.name||"Student")+(isToday?" 🎉🎂":" 🎂");card.appendChild(title);const meta=document.createElement("div");meta.className="notice-meta";meta.textContent=[x.grade?"Grade "+x.grade:"",monthDay?birthdayDateLabel(monthDay):""].filter(Boolean).join(" • ");card.appendChild(meta);const msg=document.createElement("p");msg.className="notice-body";msg.textContent=isToday?"🎉🎂 Happy Birthday! සුබ උපන් දිනයක් වේවා! 🎂🎉":(x.message||"Warm wishes from R/VIDYARAJA VIDYALAYA.");card.appendChild(msg);if(isToday){card.style.borderColor="#eaff00";card.style.boxShadow="0 0 18px #eaff0060";}list.appendChild(card);count++;});status.textContent=count+" student birthday(s) listed."+(todaysCount?" 🎉 Today: "+todaysCount+" birthday(s)!":"");}catch(e){console.error(e);status.textContent="Could not load birthday wishes: "+(e.code||e.message||"Check Firestore rules and connection.");}}
 $("birthdayBtn").addEventListener("click",()=>{hideForExtraSection(birthdaySection);loadBirthdayWishes();});
 $("birthdayHomeBtn").addEventListener("click",showHome);$("refreshBirthdaysBtn").addEventListener("click",loadBirthdayWishes);
 $("studentHelpBtn").addEventListener("click",()=>{if(!auth?.currentUser){alert("Please log in to the Student Portal first.");showStudentAuth("login");return;}hideForExtraSection(helpSection);$("helpRequestStatus").textContent="";$("helpStudentName").focus();});
@@ -1392,6 +1393,7 @@ form.addEventListener("submit",async event=>{
 
   const data={admission:$("admission").value.trim(),grade:selectedGrade};
   fieldIds.forEach(id=>data[id]=$(id).value.trim());
+  data.birthdayMonthDay = /^\d{4}-\d{2}-\d{2}$/.test(data.dob) ? data.dob.slice(5,10) : "";
 
   if(!data.admission||!data.fullName){
     statusEl.textContent="Please enter Admission Number and Full Name.";
@@ -1427,9 +1429,23 @@ form.addEventListener("submit",async event=>{
     const batch=writeBatch(db);
     const studentRef=doc(collection(db,"students"));
     const lookupRef=doc(db,"studentLookups",verificationCode);
+    const birthdayRef=doc(db,"birthdayWishes",studentRef.id);
 
     batch.set(studentRef,payload);
     batch.set(lookupRef,lookupPayload);
+    // Store only month/day in the public birthday list, never the full birth date.
+    // If DOB was left blank, keep student registration working but skip birthday listing.
+    if(/^\d{2}-\d{2}$/.test(data.birthdayMonthDay)){
+      batch.set(birthdayRef,{
+        name:data.fullName,
+        grade:data.grade,
+        birthday:data.birthdayMonthDay,
+        message:"",
+        active:true,
+        source:"studentRegistration",
+        createdAt:serverTimestamp()
+      });
+    }
 
     await batch.commit();
 
