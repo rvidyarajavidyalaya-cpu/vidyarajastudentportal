@@ -193,6 +193,39 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
 #themeClose{margin-top:12px;width:100%;background:var(--green);color:#071006}
 @media(max-width:480px){#themeToggle{right:10px;bottom:10px;padding:11px 13px;font-size:12px}#themePanel{right:10px;bottom:65px}}
 
+
+/* SMART WELCOME DASHBOARD — added without removing existing portal styles */
+.smart-dashboard{margin:0 0 24px;padding:clamp(18px,3vw,30px);border:1px solid rgba(125,166,255,.38);border-radius:24px;background:linear-gradient(135deg,#101d43 0%,#172c59 48%,#203c72 100%);box-shadow:0 18px 50px rgba(0,0,0,.28);position:relative;overflow:hidden;color:#f7f9ff}
+.smart-dashboard:before{content:"";position:absolute;width:250px;height:250px;border-radius:50%;right:-80px;top:-120px;background:rgba(103,160,255,.18);filter:blur(2px);pointer-events:none}
+.smart-dash-top{position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;z-index:1}
+.smart-dash-eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#b9d0ff;font-weight:800;margin-bottom:8px}
+.smart-dash-title{font-size:clamp(23px,4vw,34px);line-height:1.2;color:#fff;margin:0 0 9px;font-weight:800;letter-spacing:-.5px}
+.smart-dash-subtitle{font-size:14px;color:#d8e4ff;line-height:1.7;max-width:560px}
+.smart-dash-date{white-space:nowrap;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.09);border-radius:14px;padding:11px 14px;font-size:12px;color:#e5edff}
+.smart-dash-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;position:relative;z-index:1}
+.smart-dash-btn{border:0;border-radius:12px;padding:12px 16px;font-size:12px;font-weight:800;cursor:pointer;transition:transform .2s,filter .2s}
+.smart-dash-btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.smart-dash-btn.primary{background:#fff;color:#18356c;box-shadow:0 7px 18px rgba(0,0,0,.15)}
+.smart-dash-btn.ghost{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.24);color:#fff}
+.smart-dash-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px;position:relative;z-index:1}
+.smart-dash-stat{padding:15px;border-radius:16px;background:rgba(255,255,255,.085);border:1px solid rgba(255,255,255,.12);min-width:0}
+.smart-dash-stat-icon{font-size:21px;margin-bottom:10px}
+.smart-dash-stat-value{font-size:24px;font-weight:800;color:#fff;line-height:1.2}
+.smart-dash-stat-label{font-size:12px;color:#cbd9fb;margin-top:5px;line-height:1.5}
+.smart-dash-latest{margin-top:24px;position:relative;z-index:1}
+.smart-dash-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.smart-dash-section-head h3{font-size:15px;color:#fff;margin:0;letter-spacing:.2px}
+.smart-dash-section-head span{font-size:11px;color:#b9d0ff}
+.smart-dash-notice-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.smart-dash-notice{min-width:0;padding:14px;border-radius:14px;background:rgba(5,13,34,.35);border:1px solid rgba(255,255,255,.12)}
+.smart-dash-notice h4{font-size:13px;line-height:1.5;color:#fff;margin:0 0 7px;overflow-wrap:anywhere}
+.smart-dash-notice p{font-size:12px;line-height:1.6;color:#d5e1ff;margin:0;overflow-wrap:anywhere}
+.smart-dash-notice .date{font-size:10px;color:#a9c2fa;margin-top:10px}
+.smart-dash-empty{font-size:12px;line-height:1.7;color:#d5e1ff;padding:14px;border:1px dashed rgba(255,255,255,.25);border-radius:14px}
+.smart-dash-status{font-size:11px;color:#c9d8ff;min-height:17px;margin-top:10px}
+@media(max-width:650px){.smart-dash-stats{grid-template-columns:1fr 1fr}.smart-dash-notice-list{grid-template-columns:1fr}.smart-dash-date{white-space:normal}.smart-dash-stat:last-child{grid-column:1/-1}}
+@media(prefers-reduced-motion:reduce){.smart-dash-btn{transition:none}}
+
 </style>
 
 <link rel="manifest" href="manifest.json">
@@ -313,6 +346,30 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
 </section>
 
 <section class="home-panel" id="homeSection">
+<section class="smart-dashboard" aria-labelledby="smartWelcomeTitle">
+  <div class="smart-dash-top">
+    <div>
+      <div class="smart-dash-eyebrow">R/VIDYARAJA VIDYALAYA · STUDENT PORTAL</div>
+      <h2 class="smart-dash-title" id="smartWelcomeTitle">Welcome back, Student! 👋</h2>
+      <p class="smart-dash-subtitle">Your school updates, important notices and learning resources — all in one place.</p>
+    </div>
+    <div class="smart-dash-date" id="welcomeTodayDate">📅 Loading date…</div>
+  </div>
+  <div class="smart-dash-actions">
+    <button type="button" class="smart-dash-btn primary" id="welcomeViewNoticesBtn">📢 VIEW ALL NOTICES</button>
+    <button type="button" class="smart-dash-btn ghost" id="welcomeRefreshBtn">↻ REFRESH DASHBOARD</button>
+  </div>
+  <div class="smart-dash-stats" aria-label="Portal summary">
+    <div class="smart-dash-stat"><div class="smart-dash-stat-icon">🔔</div><div class="smart-dash-stat-value" id="welcomeNoticeCount">—</div><div class="smart-dash-stat-label">Published school notices</div></div>
+    <div class="smart-dash-stat"><div class="smart-dash-stat-icon">📎</div><div class="smart-dash-stat-value" id="welcomeDocumentCount">—</div><div class="smart-dash-stat-label">Notices with attachments</div></div>
+    <div class="smart-dash-stat"><div class="smart-dash-stat-icon">🗓️</div><div class="smart-dash-stat-value">School Updates</div><div class="smart-dash-stat-label">Check notices for upcoming dates and events</div></div>
+  </div>
+  <div class="smart-dash-latest">
+    <div class="smart-dash-section-head"><h3>✨ LATEST SCHOOL UPDATES</h3><span>Synced from Admin Portal</span></div>
+    <div class="smart-dash-notice-list" id="welcomeLatestNotices"><div class="smart-dash-empty">Loading the latest school notices…</div></div>
+    <p class="smart-dash-status" id="welcomeDashboardStatus" role="status" aria-live="polite"></p>
+  </div>
+</section>
 <h2 class="section-title">STUDENT PORTAL / ශිෂ්‍ය පිවිසුම</h2>
 <p class="notice">Choose an option below / පහත විකල්පයෙන් එකක් තෝරන්න.</p>
 <div class="home-buttons">
@@ -811,6 +868,53 @@ async function loadSchoolNotices(){
   }
 }
 
+
+/* SMART WELCOME DASHBOARD — reads the same schoolNotices collection used by the Admin Portal */
+const welcomeLatestNotices = $("welcomeLatestNotices");
+const welcomeDashboardStatus = $("welcomeDashboardStatus");
+function welcomeDateLabel(value){
+  try{
+    if(value && typeof value.toDate === "function") return value.toDate().toLocaleString("en-GB",{timeZone:"Asia/Colombo",day:"2-digit",month:"short",year:"numeric"});
+    if(value){const d=new Date(value);if(!Number.isNaN(d.getTime()))return d.toLocaleDateString("en-GB",{timeZone:"Asia/Colombo",day:"2-digit",month:"short",year:"numeric"});}
+  }catch(e){}
+  return "Recently published";
+}
+function updateWelcomeDate(){
+  const el=$("welcomeTodayDate");
+  if(el)el.textContent="📅 "+new Date().toLocaleDateString("en-GB",{timeZone:"Asia/Colombo",weekday:"short",day:"2-digit",month:"short",year:"numeric"});
+}
+function renderWelcomeNotice(item){
+  const card=document.createElement("article");card.className="smart-dash-notice";
+  const title=document.createElement("h4");title.textContent=item.title||"School Notice";card.appendChild(title);
+  const body=document.createElement("p");
+  const raw=String(item.body||"").trim();body.textContent=raw?(raw.length>115?raw.slice(0,112)+"…":raw):(item.fileURL?"An attachment is available. Open the notice to view or download it.":"Open the notice board for more information.");card.appendChild(body);
+  const date=document.createElement("div");date.className="date";date.textContent="📅 "+welcomeDateLabel(item.updatedAt||item.createdAt);card.appendChild(date);
+  if(item.fileURL){const file=document.createElement("div");file.className="date";file.textContent="📎 Attachment available";card.appendChild(file);}
+  return card;
+}
+async function loadWelcomeDashboard(){
+  updateWelcomeDate();
+  if(!welcomeLatestNotices||!welcomeDashboardStatus)return;
+  if(!db){welcomeDashboardStatus.textContent="Firebase connection is not ready. Please refresh later.";return;}
+  welcomeDashboardStatus.textContent="Refreshing school updates…";
+  try{
+    const snap=await getDocs(query(collection(db,"schoolNotices"),orderBy("createdAt","desc")));
+    const items=snap.docs.map(d=>({id:d.id,...d.data()}));
+    $("welcomeNoticeCount").textContent=String(items.length);
+    $("welcomeDocumentCount").textContent=String(items.filter(x=>Boolean(x.fileURL)).length);
+    welcomeLatestNotices.replaceChildren();
+    if(!items.length){const empty=document.createElement("div");empty.className="smart-dash-empty";empty.textContent="No notices have been published yet. New notices from the Admin Portal will appear here.";welcomeLatestNotices.appendChild(empty);welcomeDashboardStatus.textContent="Dashboard is up to date.";return;}
+    items.slice(0,3).forEach(item=>welcomeLatestNotices.appendChild(renderWelcomeNotice(item)));
+    welcomeDashboardStatus.textContent="Updated just now · "+items.length+" notice(s) available.";
+  }catch(error){
+    console.error("Smart dashboard could not load notices:",error);
+    welcomeLatestNotices.replaceChildren();const empty=document.createElement("div");empty.className="smart-dash-empty";empty.textContent="School updates could not be loaded right now. Check the Internet connection and Firestore rules.";welcomeLatestNotices.appendChild(empty);
+    welcomeDashboardStatus.textContent="Could not refresh school updates.";
+  }
+}
+$("welcomeViewNoticesBtn")?.addEventListener("click",openNoticeBoard);
+$("welcomeRefreshBtn")?.addEventListener("click",loadWelcomeDashboard);
+
 $("adminLoginForm").addEventListener("submit",async event=>{
   event.preventDefault();adminLoginStatus.textContent="Signing in...";$("adminLoginSubmit").disabled=true;
   try{
@@ -882,6 +986,7 @@ function updateGradeFields(){
 }
 
 function showHome(){
+  if(typeof loadWelcomeDashboard === "function") loadWelcomeDashboard();
   gradeSection.style.display="none";
   homeSection.style.display="block";
   formSection.style.display="none";
