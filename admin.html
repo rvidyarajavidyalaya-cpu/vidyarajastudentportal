@@ -749,9 +749,25 @@ async function loadStudents() {
   }
 }
 
-function viewStudent(s) {
+async function viewStudent(s) {
   const grid = $("detailGrid");
   grid.replaceChildren();
+
+  // Verification codes are stored as document IDs in the studentLookups collection,
+  // rather than inside the main students record. Look up the matching code by admission number.
+  let verifiedCode = norm(s.verificationCode ?? s.code ?? "");
+  try {
+    const admissionKey = String(admissionOf(s) || "").trim().toLowerCase();
+    if (admissionKey) {
+      const lookupSnapshot = await getDocs(collection(db, "studentLookups"));
+      const match = lookupSnapshot.docs.find(lookupDoc =>
+        String(lookupDoc.data().admission ?? "").trim().toLowerCase() === admissionKey
+      );
+      if (match) verifiedCode = match.id;
+    }
+  } catch (error) {
+    console.error("Could not load student verification code:", error);
+  }
 
   const labels = [
     ["Admission / Index Number", admissionOf(s) || s.id],
@@ -767,7 +783,7 @@ function viewStudent(s) {
     ["O/L Results", s.olResults ?? s.olResultsText ?? s.ol],
     ["Sports Achievements", s.sports ?? s.sportsAchievements],
     ["Extracurricular Activities", s.extra ?? s.extracurricularActivities],
-    ["Verification Code", s.verificationCode ?? s.code],
+    ["Verification Code", verifiedCode || "Not found in studentLookups"],
     ["Submitted At", displayDate(s.submittedAt ?? s.createdAt ?? s.timestamp)]
   ];
 
