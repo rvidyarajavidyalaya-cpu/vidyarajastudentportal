@@ -286,6 +286,7 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
   <button class="secondary" id="studentLogoutBtn" type="button">↪ STUDENT LOG OUT</button>
 </div>
 
+<div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px 0"><button class="secondary" id="themeModeBtn" type="button" aria-pressed="false">🌙 DARK / ☀️ LIGHT</button></div>
 <div class="language-switch" aria-label="Language selection">
   <button class="secondary active" id="langEnglishBtn" type="button">🇬🇧 English</button>
   <button class="secondary" id="langSinhalaBtn" type="button">🇱🇰 සිංහල</button>
@@ -320,12 +321,36 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
 <button class="home-button marks" id="viewMarksBtn" type="button"><span class="symbol">▤</span><span>VIEW MARKS</span><small>Term Test ප්‍රතිඵල බලන්න</small></button>
 <button class="home-button" id="digitalLibraryBtn" type="button"><span class="symbol">📚</span><span data-i18n="libraryHomeTitle">FOR O/L AND A/L STUDENTS</span><small data-i18n="libraryHomeSub">Past papers for O/L and A/L students</small></button>
 <button class="home-button" id="schoolNoticeBtn" type="button"><span class="symbol">📢</span><span>SCHOOL NOTICES</span><small>පාසලේ නිවේදන බලන්න</small></button>
+<button class="home-button" id="birthdayBtn" type="button"><span class="symbol">🎂</span><span>BIRTHDAY WISHES</span><small>සිසුන්ගේ උපන් දින සුබපැතුම්</small></button>
+<button class="home-button" id="studentHelpBtn" type="button"><span class="symbol">📩</span><span>STUDENT HELP / REQUESTS</span><small>උදව්වක් හෝ ඉල්ලීමක් යොමු කරන්න</small></button>
 </div>
 
 </section>
 
 
 
+
+<section class="view-panel" id="birthdaySection" style="display:none">
+  <h2 class="section-title">🎂 BIRTHDAY WISHES / උපන් දින සුබපැතුම්</h2>
+  <p class="notice">පාසල් පරිපාලනය විසින් පළ කරන ලද උපන් දින සුබපැතුම් මෙහි පෙන්වයි.</p>
+  <div class="notice-nav"><button class="secondary" id="birthdayHomeBtn" type="button">← BACK TO HOME</button><button class="secondary" id="refreshBirthdaysBtn" type="button">REFRESH</button></div>
+  <p class="notice-status" id="birthdayStatus" role="status"></p>
+  <div id="birthdayList" class="notice-list"></div>
+</section>
+
+<section class="view-panel" id="studentHelpSection" style="display:none">
+  <h2 class="section-title">📩 STUDENT HELP / REQUESTS</h2>
+  <p class="notice">ඔබගේ ඉල්ලීම හෝ ගැටලුව පාසල් පරිපාලනයට යොමු කරන්න. මෙය යැවීමට Student Portal එකට login වී සිටිය යුතුය.</p>
+  <div class="notice-nav"><button class="secondary" id="helpHomeBtn" type="button">← BACK TO HOME</button></div>
+  <form class="notice-form" id="studentHelpForm">
+    <label for="helpStudentName">Student name / ශිෂ්‍යයාගේ නම</label><input id="helpStudentName" maxlength="120" required placeholder="සම්පූර්ණ නම">
+    <label for="helpAdmission">Admission / Index number</label><input id="helpAdmission" maxlength="40" required placeholder="ඇතුළත් අංකය">
+    <label for="helpCategory">Request type / ඉල්ලීමේ වර්ගය</label><select id="helpCategory" required><option value="">Select / තෝරන්න</option><option>General Help / සාමාන්‍ය උදව්</option><option>Student Information / ශිෂ්‍ය තොරතුරු</option><option>Exam Marks / විභාග ලකුණු</option><option>Technical Issue / තාක්ෂණික ගැටලුව</option><option>Other / වෙනත්</option></select>
+    <label for="helpMessage">Message / විස්තර</label><textarea id="helpMessage" rows="5" maxlength="3000" required placeholder="ඔබගේ ඉල්ලීම පැහැදිලිව ලියන්න"></textarea>
+    <button class="primary" id="sendHelpRequestBtn" type="submit">📩 SEND REQUEST / යොමු කරන්න</button>
+  </form>
+  <p class="notice-status" id="helpRequestStatus" role="status" aria-live="polite"></p>
+</section>
 
 <section class="view-panel" id="schoolNoticeSection">
   <h2 class="section-title">📢 SCHOOL NOTICE BOARD</h2>
@@ -699,6 +724,24 @@ onAuthStateChanged(auth,user=>{
   else if(!studentAuthenticated){showStudentAuth("login");}
 });
 
+/* BIRTHDAY WISHES, STUDENT REQUESTS, AND SAVED THEME */
+const birthdaySection=$("birthdaySection"), helpSection=$("studentHelpSection");
+function hideForExtraSection(target){
+  [homeSection,gradeSection,formSection,viewPanel,studentResult,marksSection,marksResult,successScreen,librarySection,noticeSection,birthdaySection,helpSection].forEach(el=>{if(el)el.style.display="none";});
+  target.style.display="block";window.scrollTo({top:0,behavior:"smooth"});
+}
+const themeModeBtn=$("themeModeBtn");
+function applySavedTheme(){const light=localStorage.getItem("vidyarajaPortalTheme")==="light";document.body.classList.toggle("light-theme",light);if(themeModeBtn){themeModeBtn.textContent=light?"☀️ LIGHT THEME (ON)":"🌙 DARK THEME (ON)";themeModeBtn.setAttribute("aria-pressed",String(light));}}
+applySavedTheme();
+themeModeBtn?.addEventListener("click",()=>{const next=document.body.classList.contains("light-theme")?"dark":"light";localStorage.setItem("vidyarajaPortalTheme",next);applySavedTheme();});
+function birthdayDateLabel(value){if(!value)return "Birthday date not provided";const d=new Date(String(value)+"T00:00:00");return Number.isNaN(d.getTime())?String(value):d.toLocaleDateString("en-GB",{day:"numeric",month:"long",timeZone:"Asia/Colombo"});}
+async function loadBirthdayWishes(){const status=$("birthdayStatus"),list=$("birthdayList");status.textContent="Loading birthday wishes...";list.replaceChildren();try{const snap=await getDocs(collection(db,"birthdayWishes"));if(snap.empty){status.textContent="No birthday wishes have been published yet. / තවම සුබපැතුම් පළ කර නැත.";return;}const today=new Date();const todayKey=String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");let count=0;snap.forEach(ds=>{const x=ds.data();if(x.active===false)return;const card=document.createElement("article");card.className="notice-card";const title=document.createElement("h3");title.textContent=(x.name||"Student")+" 🎂";card.appendChild(title);const meta=document.createElement("div");meta.className="notice-meta";meta.textContent=[x.grade?"Grade "+x.grade:"",x.birthday?birthdayDateLabel(x.birthday):""].filter(Boolean).join(" • ");card.appendChild(meta);const monthDay=String(x.birthday||"").slice(5);const msg=document.createElement("p");msg.className="notice-body";msg.textContent=x.message|| (monthDay===todayKey?"🎉 Happy Birthday! සුබ උපන් දිනයක් වේවා!":"Warm wishes from R/VIDYARAJA VIDYALAYA.");card.appendChild(msg);list.appendChild(card);count++;});status.textContent=count+" birthday wish(es).";}catch(e){console.error(e);status.textContent="Could not load birthday wishes. Check Firestore rules and connection.";}}
+$("birthdayBtn").addEventListener("click",()=>{hideForExtraSection(birthdaySection);loadBirthdayWishes();});
+$("birthdayHomeBtn").addEventListener("click",showHome);$("refreshBirthdaysBtn").addEventListener("click",loadBirthdayWishes);
+$("studentHelpBtn").addEventListener("click",()=>{if(!auth?.currentUser){alert("Please log in to the Student Portal first.");showStudentAuth("login");return;}hideForExtraSection(helpSection);$("helpRequestStatus").textContent="";$("helpStudentName").focus();});
+$("helpHomeBtn").addEventListener("click",showHome);
+$("studentHelpForm").addEventListener("submit",async e=>{e.preventDefault();const user=auth?.currentUser;if(!user){$("helpRequestStatus").textContent="Please log in first.";return;}const btn=$("sendHelpRequestBtn");btn.disabled=true;$("helpRequestStatus").textContent="Sending request...";try{await addDoc(collection(db,"studentRequests"),{studentName:$("helpStudentName").value.trim(),admission:$("helpAdmission").value.trim(),category:$("helpCategory").value,message:$("helpMessage").value.trim(),studentUid:user.uid,studentEmail:user.email||"",status:"Pending",createdAt:serverTimestamp()});$("studentHelpForm").reset();$("helpRequestStatus").textContent="Request sent successfully. / ඔබගේ ඉල්ලීම සාර්ථකව යොමු කළා.";}catch(err){console.error(err);$("helpRequestStatus").textContent="Could not send request. Firebase Firestore rules may need updating.";}finally{btn.disabled=false;}});
+
 /* SCHOOL NOTICE BOARD: public viewing, authenticated admin publishing */
 const noticeSection=$("schoolNoticeSection");
 const noticeList=$("noticeList");
@@ -848,6 +891,8 @@ function showHome(){
   successScreen.style.display="none";
   librarySection.style.display="none";
   noticeSection.style.display="none";
+  if(birthdaySection)birthdaySection.style.display="none";
+  if(helpSection)helpSection.style.display="none";
   blurOverlay.style.display="none";
   loadingScreen.style.display="none";
   admissionLookup.style.display="block";
@@ -1745,6 +1790,13 @@ musicToggle.addEventListener("click",async()=>{
   #homeSection .home-button:hover:not(.is-zoomed){transform:scale(1)!important;box-shadow:none!important}
   #homeSection .home-button:hover:not(.is-zoomed) .symbol{transform:scale(1)!important}
 }
+
+body.light-theme{background:linear-gradient(135deg,#f2fff4,#e6f0ff);color:#152218}
+body.light-theme header,body.light-theme .card,body.light-theme .home-panel,body.light-theme .view-panel,body.light-theme .student-result{background:rgba(255,255,255,.96);color:#152218;border-color:#2d8b45;box-shadow:0 4px 18px #16351b18}
+body.light-theme .notice,body.light-theme .sub,body.light-theme p{color:inherit}
+body.light-theme input,body.light-theme select,body.light-theme textarea{background:#fff;color:#152218;border-color:#8aa993}
+body.light-theme .secondary{background:#e8f2eb;color:#17351c;border-color:#7d9e84}
+body.light-theme .notice-card,body.light-theme .notice-admin-box{background:#f7fff8;color:#152218;border-color:#7dba8a}
 </style>
 <script id="portal-touch-zoom-script">
 (function(){
