@@ -192,6 +192,14 @@ tr:hover td{background:#0e1b10}
 .loading-text{color:var(--muted);font-size:13px;margin-top:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+
+.news-item{border:1px solid #29472d;border-radius:12px;padding:14px;margin:12px 0;background:#08120a}
+.news-item h3{margin-bottom:7px;overflow-wrap:anywhere}
+.news-meta{font-size:12px;color:var(--muted);margin-bottom:9px}
+.news-body{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;margin:8px 0}
+.news-attachment{display:inline-block;color:var(--green);margin:7px 0;overflow-wrap:anywhere}
+.news-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.news-actions button{margin:0}
 @media(max-width:760px){
   .toolbar{grid-template-columns:1fr 1fr}
   .toolbar button{width:100%;margin-right:0}
@@ -263,6 +271,7 @@ tr:hover td{background:#0e1b10}
       <button class="secondary" id="refreshBtn" type="button">REFRESH</button>
       <button class="primary" id="bulkMarksOpenBtn" type="button">BULK MARKS</button>
       <button class="secondary" id="accountsOpenBtn" type="button">STUDENT LOGIN ACCOUNTS</button>
+      <button class="primary" id="newsOpenBtn" type="button">📢 NEWS / NOTICES</button>
       <button class="danger" id="logoutBtn" type="button">LOG OUT</button>
     </div>
   </div>
@@ -314,6 +323,38 @@ tr:hover td{background:#0e1b10}
       </tbody>
     </table>
   </div>
+</section>
+
+<section class="panel hidden" id="newsPanel">
+  <div class="topline">
+    <div>
+      <h2>📢 SCHOOL NEWS &amp; NOTICES</h2>
+      <p class="small">Publish news here. Published items appear on the Student Portal's School Notice Board.</p>
+    </div>
+    <button class="secondary" id="closeNewsBtn" type="button">← BACK TO DASHBOARD</button>
+  </div>
+
+  <form id="newsForm">
+    <h3 id="newsFormHeading">ADD NEW NEWS / NOTICE</h3>
+    <label for="newsTitle">News title / මාතෘකාව</label>
+    <input id="newsTitle" type="text" maxlength="140" required placeholder="Enter the news title">
+    <label for="newsBody">News details / විස්තර</label>
+    <textarea id="newsBody" maxlength="10000" rows="6" placeholder="Write the news or announcement here"></textarea>
+    <label for="newsFile">Photo, video or document (optional)</label>
+    <input id="newsFile" type="file" accept="image/*,video/*,.pdf,.doc,.docx,.ppt,.pptx">
+    <p class="small">Maximum attachment size: 100 MB. On edit, leave the file field empty to keep the existing attachment.</p>
+    <button class="primary" id="saveNewsBtn" type="submit">📤 PUBLISH NEWS</button>
+    <button class="secondary hidden" id="cancelNewsEditBtn" type="button">CANCEL EDIT</button>
+    <p class="status" id="newsFormStatus" role="status" aria-live="polite"></p>
+  </form>
+
+  <hr style="border:0;border-top:1px solid #29472d;margin:22px 0">
+  <div class="topline">
+    <h3>Published News</h3>
+    <button class="secondary" id="refreshNewsBtn" type="button">REFRESH NEWS</button>
+  </div>
+  <p class="status" id="newsListStatus" role="status" aria-live="polite"></p>
+  <div id="adminNewsList"><p class="small">Login and open this section to load published news.</p></div>
 </section>
 
 <section class="panel hidden" id="accountsPanel">
@@ -471,13 +512,18 @@ import {
   setDoc,
   getDoc,
   updateDoc,
-  serverTimestamp
+  serverTimestamp,
+  addDoc,
+  query,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 import {
   getFunctions,
   httpsCallable
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-functions.js";
+
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB5zbHDhWfg_l4wyoOVfxvcUZW-j-OIFqs",
@@ -494,6 +540,7 @@ const ADMIN_UID = "IpFcr0JLloUN2ENuJ70k8wgBzp22";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 const functions = getFunctions(app);
 const getStudentLoginAccounts = httpsCallable(functions, "getStudentLoginAccounts");
 
@@ -1270,6 +1317,7 @@ $("loginForm").addEventListener("submit", async e => {
 onAuthStateChanged(auth, async user => {
   if (!user) {
     isAdmin = false;
+    setHidden("newsPanel", true);
     setHidden("loginPanel", false);
     setHidden("dashboard", true);
     setHidden("marksPanel", true);
@@ -1283,6 +1331,7 @@ onAuthStateChanged(auth, async user => {
 
   if (user.uid !== ADMIN_UID) {
     isAdmin = false;
+    setHidden("newsPanel", true);
     setHidden("accountsPanel", true);
 
     showStatus(
@@ -1486,6 +1535,233 @@ $("marksForm").addEventListener("submit", async e => {
   } finally {
     $("saveMarksBtn").disabled = false;
     hideLoading();
+  }
+});
+
+/* SCHOOL NEWS MANAGEMENT — uses the same schoolNotices collection as the public Student Portal */
+let editingNewsId = null;
+let editingNewsOriginal = null;
+
+function requireAdminForNews() {
+  return Boolean(isAdmin && auth.currentUser && auth.currentUser.uid === ADMIN_UID);
+}
+
+function resetNewsForm() {
+  editingNewsId = null;
+  editingNewsOriginal = null;
+  $("newsForm").reset();
+  $("newsFormHeading").textContent = "ADD NEW NEWS / NOTICE";
+  $("saveNewsBtn").textContent = "📤 PUBLISH NEWS";
+  $("cancelNewsEditBtn").classList.add("hidden");
+  showStatus("newsFormStatus", "");
+}
+
+function openNewsPanel() {
+  if (!requireAdminForNews()) {
+    showStatus("listStatus", "Administrator login required.", true);
+    return;
+  }
+  setHidden("dashboard", true);
+  setHidden("newsPanel", false);
+  loadAdminNews();
+  $("newsPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+$("newsOpenBtn").addEventListener("click", openNewsPanel);
+$("closeNewsBtn").addEventListener("click", () => {
+  setHidden("newsPanel", true);
+  setHidden("dashboard", false);
+  resetNewsForm();
+  $("dashboard").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+$("cancelNewsEditBtn").addEventListener("click", resetNewsForm);
+$("refreshNewsBtn").addEventListener("click", loadAdminNews);
+
+function safeNewsText(value) {
+  return String(value ?? "");
+}
+
+function renderAdminNews(item) {
+  const article = document.createElement("article");
+  article.className = "news-item";
+  const title = document.createElement("h3");
+  title.textContent = item.title || "School Notice";
+  article.appendChild(title);
+
+  const meta = document.createElement("div");
+  meta.className = "news-meta";
+  const stamp = item.updatedAt || item.createdAt;
+  let dateText = "Published notice";
+  if (stamp && typeof stamp.toDate === "function") {
+    dateText = stamp.toDate().toLocaleString("en-GB", { timeZone: "Asia/Colombo" });
+  }
+  meta.textContent = dateText;
+  article.appendChild(meta);
+
+  if (item.body) {
+    const body = document.createElement("p");
+    body.className = "news-body";
+    body.textContent = item.body;
+    article.appendChild(body);
+  }
+  if (item.fileURL) {
+    const link = document.createElement("a");
+    link.className = "news-attachment";
+    link.href = item.fileURL;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "📎 " + (item.fileName || "Open attachment");
+    article.appendChild(link);
+  }
+
+  const actions = document.createElement("div");
+  actions.className = "news-actions";
+  const edit = document.createElement("button");
+  edit.type = "button";
+  edit.className = "secondary";
+  edit.textContent = "EDIT";
+  edit.addEventListener("click", () => {
+    if (!requireAdminForNews()) return;
+    editingNewsId = item.id;
+    editingNewsOriginal = item;
+    $("newsTitle").value = item.title || "";
+    $("newsBody").value = item.body || "";
+    $("newsFile").value = "";
+    $("newsFormHeading").textContent = "EDIT NEWS / NOTICE";
+    $("saveNewsBtn").textContent = "SAVE CHANGES";
+    $("cancelNewsEditBtn").classList.remove("hidden");
+    showStatus("newsFormStatus", "Editing this notice. Leave attachment empty to keep the current file.");
+    $("newsForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    $("newsTitle").focus();
+  });
+  const del = document.createElement("button");
+  del.type = "button";
+  del.className = "danger";
+  del.textContent = "DELETE";
+  del.addEventListener("click", async () => {
+    if (!requireAdminForNews()) {
+      showStatus("newsListStatus", "Administrator login required.", true);
+      return;
+    }
+    if (!confirm(`Delete this published notice?\n\n${item.title || "School Notice"}`)) return;
+    del.disabled = true;
+    try {
+      await deleteDoc(doc(db, "schoolNotices", item.id));
+      if (item.filePath) {
+        try { await deleteObject(ref(storage, item.filePath)); }
+        catch (cleanupError) { console.warn("Notice deleted but attachment cleanup failed:", cleanupError); }
+      }
+      showStatus("newsListStatus", "Notice deleted successfully.", false, true);
+      if (editingNewsId === item.id) resetNewsForm();
+      await loadAdminNews();
+    } catch (error) {
+      console.error("Delete notice failed:", error);
+      showStatus("newsListStatus", `Could not delete notice: ${error.code || error.message}. Check Firebase rules.`, true);
+      del.disabled = false;
+    }
+  });
+  actions.append(edit, del);
+  article.appendChild(actions);
+  return article;
+}
+
+async function loadAdminNews() {
+  if (!requireAdminForNews()) {
+    showStatus("newsListStatus", "Administrator login required.", true);
+    return;
+  }
+  showStatus("newsListStatus", "Loading published news...");
+  $("adminNewsList").replaceChildren();
+  try {
+    const snap = await getDocs(query(collection(db, "schoolNotices"), orderBy("createdAt", "desc")));
+    if (snap.empty) {
+      $("adminNewsList").innerHTML = '<p class="small">No news has been published yet.</p>';
+      showStatus("newsListStatus", "0 published notices.");
+      return;
+    }
+    const frag = document.createDocumentFragment();
+    snap.forEach(docSnap => frag.appendChild(renderAdminNews({ id: docSnap.id, ...docSnap.data() })));
+    $("adminNewsList").appendChild(frag);
+    showStatus("newsListStatus", `${snap.size} published notice(s).`, false, true);
+  } catch (error) {
+    console.error("Load notices failed:", error);
+    showStatus("newsListStatus", `Could not load news: ${error.code || error.message}. Check Firestore rules.`, true);
+    $("adminNewsList").innerHTML = '<p class="small">News could not be loaded. Check Firebase Firestore permissions.</p>';
+  }
+}
+
+$("newsForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  if (!requireAdminForNews()) {
+    showStatus("newsFormStatus", "Administrator login required.", true);
+    return;
+  }
+
+  const title = $("newsTitle").value.trim();
+  const body = $("newsBody").value.trim();
+  const file = $("newsFile").files?.[0] || null;
+  if (!title) {
+    showStatus("newsFormStatus", "Please enter a title.", true);
+    return;
+  }
+  if (!body && !file && !editingNewsId) {
+    showStatus("newsFormStatus", "Add news details or attach a photo/document.", true);
+    return;
+  }
+  if (file && file.size > 100 * 1024 * 1024) {
+    showStatus("newsFormStatus", "File is too large. Maximum size is 100 MB.", true);
+    return;
+  }
+
+  const btn = $("saveNewsBtn");
+  const wasEditing = Boolean(editingNewsId);
+  btn.disabled = true;
+  showStatus("newsFormStatus", wasEditing ? "Saving changes..." : "Publishing news...");
+  let uploadedPath = "";
+  try {
+    const patch = {
+      title,
+      body,
+      updatedAt: serverTimestamp(),
+      updatedBy: auth.currentUser.uid
+    };
+    if (file) {
+      uploadedPath = "schoolNotices/" + Date.now() + "_" + file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const fileRef = ref(storage, uploadedPath);
+      await uploadBytes(fileRef, file, { contentType: file.type || "application/octet-stream" });
+      patch.fileURL = await getDownloadURL(fileRef);
+      patch.fileType = file.type || "application/octet-stream";
+      patch.fileName = file.name;
+      patch.filePath = uploadedPath;
+    }
+
+    if (editingNewsId) {
+      await updateDoc(doc(db, "schoolNotices", editingNewsId), patch);
+      if (file && editingNewsOriginal?.filePath && editingNewsOriginal.filePath !== uploadedPath) {
+        try { await deleteObject(ref(storage, editingNewsOriginal.filePath)); }
+        catch (cleanupError) { console.warn("Updated notice but old attachment cleanup failed:", cleanupError); }
+      }
+      showStatus("newsFormStatus", "News updated successfully.", false, true);
+    } else {
+      await addDoc(collection(db, "schoolNotices"), {
+        ...patch,
+        createdAt: serverTimestamp(),
+        createdBy: auth.currentUser.uid,
+        createdByEmail: auth.currentUser.email || ""
+      });
+      showStatus("newsFormStatus", "News published successfully.", false, true);
+    }
+    resetNewsForm();
+    showStatus("newsFormStatus", wasEditing ? "News updated successfully." : "News published successfully.", false, true);
+    await loadAdminNews();
+  } catch (error) {
+    console.error("Publish/update news failed:", error);
+    if (uploadedPath) {
+      try { await deleteObject(ref(storage, uploadedPath)); } catch (_) {}
+    }
+    showStatus("newsFormStatus", `Could not save news: ${error.code || error.message}. Check Firebase Firestore and Storage rules.`, true);
+  } finally {
+    btn.disabled = false;
   }
 });
 
