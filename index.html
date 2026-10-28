@@ -194,35 +194,44 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
 @media(max-width:480px){#themeToggle{right:10px;bottom:10px;padding:11px 13px;font-size:12px}#themePanel{right:10px;bottom:65px}}
 
 
-/* SMART WELCOME DASHBOARD — added without removing existing portal styles */
-.smart-dashboard{margin:0 0 24px;padding:clamp(18px,3vw,30px);border:1px solid rgba(125,166,255,.38);border-radius:24px;background:linear-gradient(135deg,#101d43 0%,#172c59 48%,#203c72 100%);box-shadow:0 18px 50px rgba(0,0,0,.28);position:relative;overflow:hidden;color:#f7f9ff}
-.smart-dashboard:before{content:"";position:absolute;width:250px;height:250px;border-radius:50%;right:-80px;top:-120px;background:rgba(103,160,255,.18);filter:blur(2px);pointer-events:none}
+/* SMART WELCOME DASHBOARD — matched to the existing VIDYARAJA neon-green theme */
+.smart-dashboard{margin:0 0 24px;padding:clamp(18px,3vw,30px);border:1px solid var(--green);border-radius:24px;background:linear-gradient(135deg,rgba(3,17,7,.98) 0%,rgba(9,35,15,.98) 52%,rgba(17,53,28,.98) 100%);box-shadow:0 0 28px #39ff142b;position:relative;overflow:hidden;color:#f5fff5}
+.smart-dashboard:before{content:"";position:absolute;width:250px;height:250px;border-radius:50%;right:-80px;top:-120px;background:rgba(57,255,20,.12);filter:blur(2px);pointer-events:none}
 .smart-dash-top{position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;z-index:1}
-.smart-dash-eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#b9d0ff;font-weight:800;margin-bottom:8px}
-.smart-dash-title{font-size:clamp(23px,4vw,34px);line-height:1.2;color:#fff;margin:0 0 9px;font-weight:800;letter-spacing:-.5px}
-.smart-dash-subtitle{font-size:14px;color:#d8e4ff;line-height:1.7;max-width:560px}
-.smart-dash-date{white-space:nowrap;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.09);border-radius:14px;padding:11px 14px;font-size:12px;color:#e5edff}
+.smart-dash-eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--green);font-weight:800;margin-bottom:8px}
+.smart-dash-title{font-size:clamp(23px,4vw,34px);line-height:1.2;color:var(--yellow);margin:0 0 9px;font-weight:800;letter-spacing:-.5px}
+.smart-dash-subtitle{font-size:14px;color:#d7e8d9;line-height:1.7;max-width:560px}
+.smart-dash-date{white-space:nowrap;border:1px solid #39ff1466;background:rgba(57,255,20,.07);border-radius:14px;padding:11px 14px;font-size:12px;color:#eaffdf}
 .smart-dash-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;position:relative;z-index:1}
-.smart-dash-btn{border:0;border-radius:12px;padding:12px 16px;font-size:12px;font-weight:800;cursor:pointer;transition:transform .2s,filter .2s}
+.smart-dash-btn{border:1px solid var(--green);border-radius:12px;padding:12px 16px;font-size:12px;font-weight:800;cursor:pointer;transition:transform .2s,filter .2s}
 .smart-dash-btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
-.smart-dash-btn.primary{background:#fff;color:#18356c;box-shadow:0 7px 18px rgba(0,0,0,.15)}
-.smart-dash-btn.ghost{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.24);color:#fff}
+.smart-dash-btn.primary{background:var(--green);color:#041004;box-shadow:0 0 16px #39ff1430}
+.smart-dash-btn.ghost{background:rgba(57,255,20,.07);border:1px solid #39ff1480;color:#f5fff5}
 .smart-dash-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px;position:relative;z-index:1}
-.smart-dash-stat{padding:15px;border-radius:16px;background:rgba(255,255,255,.085);border:1px solid rgba(255,255,255,.12);min-width:0}
+.smart-dash-stat{padding:15px;border-radius:16px;background:rgba(3,12,6,.52);border:1px solid #39ff144d;min-width:0}
 .smart-dash-stat-icon{font-size:21px;margin-bottom:10px}
-.smart-dash-stat-value{font-size:24px;font-weight:800;color:#fff;line-height:1.2}
-.smart-dash-stat-label{font-size:12px;color:#cbd9fb;margin-top:5px;line-height:1.5}
+.smart-dash-stat-value{font-size:24px;font-weight:800;color:var(--yellow);line-height:1.2}
+.smart-dash-stat-label{font-size:12px;color:#c9dfcb;margin-top:5px;line-height:1.5}
 .smart-dash-latest{margin-top:24px;position:relative;z-index:1}
 .smart-dash-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
-.smart-dash-section-head h3{font-size:15px;color:#fff;margin:0;letter-spacing:.2px}
-.smart-dash-section-head span{font-size:11px;color:#b9d0ff}
+.smart-dash-section-head h3{font-size:15px;color:var(--yellow);margin:0;letter-spacing:.2px}
+.smart-dash-section-head span{font-size:11px;color:#a8d6ad}
 .smart-dash-notice-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.smart-dash-notice{min-width:0;padding:14px;border-radius:14px;background:rgba(5,13,34,.35);border:1px solid rgba(255,255,255,.12)}
-.smart-dash-notice h4{font-size:13px;line-height:1.5;color:#fff;margin:0 0 7px;overflow-wrap:anywhere}
-.smart-dash-notice p{font-size:12px;line-height:1.6;color:#d5e1ff;margin:0;overflow-wrap:anywhere}
-.smart-dash-notice .date{font-size:10px;color:#a9c2fa;margin-top:10px}
-.smart-dash-empty{font-size:12px;line-height:1.7;color:#d5e1ff;padding:14px;border:1px dashed rgba(255,255,255,.25);border-radius:14px}
-.smart-dash-status{font-size:11px;color:#c9d8ff;min-height:17px;margin-top:10px}
+.smart-dash-notice{min-width:0;padding:14px;border-radius:14px;background:rgba(3,12,6,.55);border:1px solid #39ff1440}
+.smart-dash-notice h4{font-size:13px;line-height:1.5;color:#f5fff5;margin:0 0 7px;overflow-wrap:anywhere}
+.smart-dash-notice p{font-size:12px;line-height:1.6;color:#d7e8d9;margin:0;overflow-wrap:anywhere}
+.smart-dash-notice .date{font-size:10px;color:#a8d6ad;margin-top:10px}
+.smart-dash-empty{font-size:12px;line-height:1.7;color:#d7e8d9;padding:14px;border:1px dashed #39ff1470;border-radius:14px}
+.smart-dash-status{font-size:11px;color:#c9dfcb;min-height:17px;margin-top:10px}
+body.light-theme .smart-dashboard{background:linear-gradient(135deg,#f4fff2 0%,#e9f8e8 55%,#d8efd8 100%);color:#152218;border-color:#16852a;box-shadow:0 8px 28px rgba(22,133,42,.12)}
+body.light-theme .smart-dash-title,body.light-theme .smart-dash-section-head h3,body.light-theme .smart-dash-stat-value{color:#176b26}
+body.light-theme .smart-dash-eyebrow{color:#16852a}
+body.light-theme .smart-dash-subtitle,body.light-theme .smart-dash-stat-label,body.light-theme .smart-dash-notice p,body.light-theme .smart-dash-status{color:#34563a}
+body.light-theme .smart-dash-date,body.light-theme .smart-dash-stat,body.light-theme .smart-dash-notice{background:rgba(255,255,255,.72);border-color:#16852a45;color:#234b2a}
+body.light-theme .smart-dash-notice h4{color:#153a1d}
+body.light-theme .smart-dash-section-head span,body.light-theme .smart-dash-notice .date{color:#47734c}
+body.light-theme .smart-dash-btn.ghost{color:#176b26;border-color:#16852a80;background:#ffffffa8}
+body.light-theme .smart-dash-empty{color:#34563a;border-color:#16852a70}
 @media(max-width:650px){.smart-dash-stats{grid-template-columns:1fr 1fr}.smart-dash-notice-list{grid-template-columns:1fr}.smart-dash-date{white-space:normal}.smart-dash-stat:last-child{grid-column:1/-1}}
 @media(prefers-reduced-motion:reduce){.smart-dash-btn{transition:none}}
 
