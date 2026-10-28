@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "R/VIDYARAJA VIDYALAYA Student Portal",
+  "short_name": "Vidyaraja Portal",
+  "description": "R/VIDYARAJA VIDYALAYA Student Information Portal",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07100a",
+  "theme_color": "#07100a",
+  "icons": [
+    {
+      "src": "./logo.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
