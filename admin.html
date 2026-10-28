@@ -1076,14 +1076,6 @@ function clearMarksForm(keepAdmission=false) {
   $("marksAdmission").value = admission;
   $("subjectFields").replaceChildren();
 
-  /* ADMIN MANAGEMENT: BIRTHDAY WISHES AND STUDENT HELP REQUESTS */
-function extraAdminAllowed(){return Boolean(isAdmin&&auth.currentUser&&auth.currentUser.uid===ADMIN_UID);}
-async function loadAdminBirthdays(){if(!extraAdminAllowed())return;const box=$("adminBirthdayList"),status=$("birthdayAdminStatus");box.replaceChildren();status.textContent="Loading birthdays...";try{const snap=await getDocs(query(collection(db,"birthdayWishes"),orderBy("birthday","asc")));if(snap.empty){status.textContent="No birthday wishes published yet.";return;}snap.forEach(ds=>{const d=ds.data(),row=document.createElement("article");row.className="news-item";const h=document.createElement("h3");h.textContent=(d.name||"Student")+(d.grade?" • Grade "+d.grade:"");const p=document.createElement("p");p.className="small";p.textContent=(d.birthday||"")+" — "+(d.message||"Happy Birthday!");const del=document.createElement("button");del.type="button";del.className="danger";del.textContent="DELETE";del.addEventListener("click",async()=>{if(!extraAdminAllowed()||!confirm("Delete this birthday wish?"))return;try{await deleteDoc(doc(db,"birthdayWishes",ds.id));await loadAdminBirthdays();}catch(e){status.textContent="Delete failed: "+(e.code||e.message);}});row.append(h,p,del);box.appendChild(row);});status.textContent=snap.size+" birthday wish(es).";}catch(e){console.error(e);status.textContent="Could not load birthdays: "+(e.code||e.message);}}
-$("birthdayAdminForm").addEventListener("submit",async e=>{e.preventDefault();if(!extraAdminAllowed()){showStatus("birthdayAdminStatus","Administrator login required.",true);return;}const btn=$("saveBirthdayBtn");btn.disabled=true;try{await addDoc(collection(db,"birthdayWishes"),{name:$("birthdayStudentName").value.trim(),grade:$("birthdayStudentGrade").value,birthday:$("birthdayStudentDate").value,message:$("birthdayMessage").value.trim(),active:true,createdAt:serverTimestamp(),createdBy:auth.currentUser.uid});$("birthdayAdminForm").reset();showStatus("birthdayAdminStatus","Birthday wish published successfully.",false,true);await loadAdminBirthdays();}catch(e){console.error(e);showStatus("birthdayAdminStatus","Could not save birthday: "+(e.code||e.message)+". Check Firestore rules.",true);}finally{btn.disabled=false;}});
-$("refreshBirthdaysAdminBtn").addEventListener("click",loadAdminBirthdays);
-async function loadStudentRequestsAdmin(){if(!extraAdminAllowed())return;const box=$("adminStudentRequestsList"),status=$("studentRequestsAdminStatus");box.replaceChildren();status.textContent="Loading student requests...";try{const snap=await getDocs(query(collection(db,"studentRequests"),orderBy("createdAt","desc")));if(snap.empty){status.textContent="No student requests received.";return;}snap.forEach(ds=>{const d=ds.data(),row=document.createElement("article");row.className="news-item";const h=document.createElement("h3");h.textContent=(d.studentName||"Student")+" — "+(d.category||"Request");const meta=document.createElement("p");meta.className="small";meta.textContent="Admission: "+(d.admission||"—")+" • Email: "+(d.studentEmail||"—")+" • Status: "+(d.status||"Pending");const msg=document.createElement("p");msg.style.whiteSpace="pre-wrap";msg.textContent=d.message||"";const done=document.createElement("button");done.type="button";done.className="primary";done.textContent=(d.status==="Handled"?"MARK PENDING":"MARK HANDLED");done.addEventListener("click",async()=>{if(!extraAdminAllowed())return;done.disabled=true;try{await updateDoc(doc(db,"studentRequests",ds.id),{status:d.status==="Handled"?"Pending":"Handled",handledAt:serverTimestamp(),handledBy:auth.currentUser.uid});await loadStudentRequestsAdmin();}catch(e){console.error(e);status.textContent="Could not update request: "+(e.code||e.message);done.disabled=false;}});row.append(h,meta,msg,done);box.appendChild(row);});status.textContent=snap.size+" request(s).";}catch(e){console.error(e);status.textContent="Could not load requests: "+(e.code||e.message)+". Check Firestore rules.";}}
-$("refreshStudentRequestsBtn").addEventListener("click",loadStudentRequestsAdmin);
-$("extraFeaturesOpenBtn").addEventListener("click",()=>{if(!extraAdminAllowed()){showStatus("listStatus","Administrator login required.",true);return;}setHidden("dashboard",true);setHidden("newsPanel",false);loadAdminBirthdays();loadStudentRequestsAdmin();$("newsPanel").scrollIntoView({behavior:"smooth",block:"start"});});
 
 addSubjectRow();
   showStatus("marksStatus", "");
@@ -1792,6 +1784,81 @@ $("newsForm").addEventListener("submit", async event => {
   } finally {
     btn.disabled = false;
   }
+});
+
+/* ADMIN MANAGEMENT: BIRTHDAY WISHES AND STUDENT HELP REQUESTS */
+function extraAdminAllowed(){return Boolean(isAdmin && auth.currentUser && auth.currentUser.uid === ADMIN_UID);}
+
+async function loadAdminBirthdays(){
+  if(!extraAdminAllowed()) return;
+  const box=$("adminBirthdayList"), status=$("birthdayAdminStatus");
+  box.replaceChildren(); status.textContent="Loading birthdays...";
+  try {
+    const snap=await getDocs(query(collection(db,"birthdayWishes"),orderBy("birthday","asc")));
+    if(snap.empty){status.textContent="No birthday wishes published yet.";return;}
+    snap.forEach(ds=>{
+      const d=ds.data(), row=document.createElement("article"); row.className="news-item";
+      const h=document.createElement("h3"); h.textContent=(d.name||"Student")+(d.grade?" • Grade "+d.grade:"");
+      const p=document.createElement("p"); p.className="small"; p.textContent=(d.birthday||"")+" — "+(d.message||"Happy Birthday!");
+      const del=document.createElement("button"); del.type="button"; del.className="danger"; del.textContent="DELETE";
+      del.addEventListener("click",async()=>{
+        if(!extraAdminAllowed()||!confirm("Delete this birthday wish?"))return;
+        try{await deleteDoc(doc(db,"birthdayWishes",ds.id));await loadAdminBirthdays();}
+        catch(e){status.textContent="Delete failed: "+(e.code||e.message);}
+      });
+      row.append(h,p,del);box.appendChild(row);
+    });
+    status.textContent=snap.size+" birthday wish(es).";
+  } catch(e){console.error(e);status.textContent="Could not load birthdays: "+(e.code||e.message);}
+}
+
+$("birthdayAdminForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  if(!extraAdminAllowed()){showStatus("birthdayAdminStatus","Administrator login required.",true);return;}
+  const btn=$("saveBirthdayBtn");btn.disabled=true;
+  try{
+    await addDoc(collection(db,"birthdayWishes"),{
+      name:$("birthdayStudentName").value.trim(),grade:$("birthdayStudentGrade").value,
+      birthday:$("birthdayStudentDate").value,message:$("birthdayMessage").value.trim(),
+      active:true,createdAt:serverTimestamp(),createdBy:auth.currentUser.uid
+    });
+    $("birthdayAdminForm").reset();
+    showStatus("birthdayAdminStatus","Birthday wish published successfully.",false,true);
+    await loadAdminBirthdays();
+  }catch(e){console.error(e);showStatus("birthdayAdminStatus","Could not save birthday: "+(e.code||e.message)+". Check Firestore rules.",true);}
+  finally{btn.disabled=false;}
+});
+$("refreshBirthdaysAdminBtn").addEventListener("click",loadAdminBirthdays);
+
+async function loadStudentRequestsAdmin(){
+  if(!extraAdminAllowed()) return;
+  const box=$("adminStudentRequestsList"),status=$("studentRequestsAdminStatus");
+  box.replaceChildren();status.textContent="Loading student requests...";
+  try{
+    const snap=await getDocs(query(collection(db,"studentRequests"),orderBy("createdAt","desc")));
+    if(snap.empty){status.textContent="No student requests received.";return;}
+    snap.forEach(ds=>{
+      const d=ds.data(),row=document.createElement("article");row.className="news-item";
+      const h=document.createElement("h3");h.textContent=(d.studentName||"Student")+" — "+(d.category||"Request");
+      const meta=document.createElement("p");meta.className="small";meta.textContent="Admission: "+(d.admission||"—")+" • Email: "+(d.studentEmail||"—")+" • Status: "+(d.status||"Pending");
+      const msg=document.createElement("p");msg.style.whiteSpace="pre-wrap";msg.textContent=d.message||"";
+      const done=document.createElement("button");done.type="button";done.className="primary";done.textContent=(d.status==="Handled"?"MARK PENDING":"MARK HANDLED");
+      done.addEventListener("click",async()=>{
+        if(!extraAdminAllowed())return;done.disabled=true;
+        try{await updateDoc(doc(db,"studentRequests",ds.id),{status:d.status==="Handled"?"Pending":"Handled",handledAt:serverTimestamp(),handledBy:auth.currentUser.uid});await loadStudentRequestsAdmin();}
+        catch(e){console.error(e);status.textContent="Could not update request: "+(e.code||e.message);done.disabled=false;}
+      });
+      row.append(h,meta,msg,done);box.appendChild(row);
+    });
+    status.textContent=snap.size+" request(s).";
+  }catch(e){console.error(e);status.textContent="Could not load requests: "+(e.code||e.message)+". Check Firestore rules.";}
+}
+$("refreshStudentRequestsBtn").addEventListener("click",loadStudentRequestsAdmin);
+$("extraFeaturesOpenBtn").addEventListener("click",()=>{
+  if(!extraAdminAllowed()){showStatus("listStatus","Administrator login required.",true);return;}
+  setHidden("dashboard",true);setHidden("newsPanel",false);
+  loadAdminBirthdays();loadStudentRequestsAdmin();
+  $("newsPanel").scrollIntoView({behavior:"smooth",block:"start"});
 });
 
 addSubjectRow();
