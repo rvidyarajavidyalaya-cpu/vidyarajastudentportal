@@ -203,13 +203,21 @@ tr:hover td{background:#0e1b10}
   .topline{align-items:flex-start}
 }
 </style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#07100a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="logo.png">
+
 </head>
 
 <body>
 
 <div id="loadingOverlay" role="status" aria-live="polite">
   <div class="loading-card">
-    <img class="loading-logo" src="school-logo.png" alt="School logo"
+    <img class="loading-logo" src="logo.png" alt="School logo"
          onerror="this.style.display='none'">
     <div class="loading-title">R/VIDYARAJA VIDYALAYA</div>
     <div class="spinner"></div>
@@ -1482,6 +1490,17 @@ $("marksForm").addEventListener("submit", async e => {
 });
 
 addSubjectRow();
+</script>
+
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./sw.js").catch(function (error) {
+      console.warn("App offline support could not be enabled:", error);
+    });
+  });
+}
 </script>
 
 </body>
