@@ -194,12 +194,20 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
 @media(max-width:480px){#themeToggle{right:10px;bottom:10px;padding:11px 13px;font-size:12px}#themePanel{right:10px;bottom:65px}}
 
 </style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#07100a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="logo.png">
+
 </head>
 <body class="auth-locked">
 
 <div class="start-overlay" id="startOverlay">
   <div class="start-box">
-    <img class="start-logo" src="school-logo.png" alt="School Logo" onerror="this.style.display='none'">
+    <img class="start-logo" src="logo.png" alt="School Logo" onerror="this.style.display='none'">
     <h2>R/VIDYARAJA VIDYALAYA</h2>
     <p class="start-subtitle">STUDENT INFORMATION PORTAL</p>
     <p class="start-message">Welcome to the Student Portal<br>ශිෂ්‍ය තොරතුරු පද්ධතියට සාදරයෙන් පිළිගනිමු</p>
@@ -214,7 +222,7 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
 
 <div class="student-auth-screen" id="studentAuthScreen" aria-modal="true" role="dialog" aria-labelledby="studentAuthTitle">
   <div class="student-auth-card">
-    <img class="student-auth-logo" src="school-logo.png" alt="School Logo" onerror="this.style.display='none'">
+    <img class="student-auth-logo" src="logo.png" alt="School Logo" onerror="this.style.display='none'">
     <h2 id="studentAuthTitle">STUDENT ACCOUNT</h2>
     <p class="notice">R/VIDYARAJA VIDYALAYA<br>Register a new account or log in to continue.</p>
     <div class="auth-tabs">
@@ -265,7 +273,7 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
 
 <main>
 <header>
-<img class="logo" src="school-logo.png" alt="School Logo" onerror="this.style.display='none'">
+<img class="logo" src="logo.png" alt="School Logo" onerror="this.style.display='none'">
 <h1>R/VIDYARAJA VIDYALAYA</h1>
 <p class="subtitle">STUDENT INFORMATION PORTAL</p>
 <p class="notice">ඔබගේ ශිෂ්‍ය තොරතුරු ඇතුළත් කරන්න<br>Enter Student Information</p>
@@ -405,7 +413,7 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
 
 <section class="view-panel" id="viewPanel">
 <div class="loading-screen" id="loadingScreen">
-<img class="loading-logo" src="school-logo.png" alt="School Logo" onerror="this.style.display='none'">
+<img class="loading-logo" src="logo.png" alt="School Logo" onerror="this.style.display='none'">
 <h2 class="section-title">LOADING INFORMATION</h2>
 <p class="notice">Please wait / කරුණාකර රැඳී සිටින්න</p>
 <div class="loading-dots"><span></span><span></span><span></span></div>
@@ -488,7 +496,7 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
 </section>
 
 <section class="card success-screen" id="successScreen">
-<img src="school-logo.png" alt="School Logo" class="success-logo" onerror="this.style.display='none'">
+<img src="logo.png" alt="School Logo" class="success-logo" onerror="this.style.display='none'">
 <div class="success-icon">✓</div>
 <h2>SUCCESSFULLY SAVED!</h2>
 <p>Student details have been saved successfully.<br>ශිෂ්‍ය තොරතුරු සාර්ථකව සුරකින ලදී.</p>
@@ -1801,6 +1809,17 @@ musicToggle.addEventListener("click",async()=>{
  panel.querySelectorAll('.theme-choice').forEach(b=>b.addEventListener('click',()=>applyTheme(b.dataset.theme)));
  document.getElementById('themeClose').addEventListener('click',()=>{panel.classList.remove('open');toggle.setAttribute('aria-expanded','false')});
 })();
+</script>
+
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./sw.js").catch(function (error) {
+      console.warn("App offline support could not be enabled:", error);
+    });
+  });
+}
 </script>
 
 </body>
