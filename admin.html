@@ -361,7 +361,7 @@ tr:hover td{background:#0e1b10}
       <button class="primary" type="submit" id="saveBirthdayBtn">🎂 PUBLISH BIRTHDAY WISH</button>
       <p class="status" id="birthdayAdminStatus" role="status"></p>
     </form>
-    <div class="topline"><h3>Published birthdays</h3><button class="secondary" id="refreshBirthdaysAdminBtn" type="button">REFRESH</button></div>
+    <div class="topline"><h3>Published birthdays</h3><div><button class="secondary" id="syncStudentBirthdaysBtn" type="button">SYNC ALL STUDENTS</button> <button class="secondary" id="refreshBirthdaysAdminBtn" type="button">REFRESH</button></div></div>
     <div id="adminBirthdayList"></div>
   </section>
   <section class="panel" style="padding:16px;margin:14px 0;background:#07120a">
@@ -1819,7 +1819,7 @@ $("birthdayAdminForm").addEventListener("submit",async e=>{
   try{
     await addDoc(collection(db,"birthdayWishes"),{
       name:$("birthdayStudentName").value.trim(),grade:$("birthdayStudentGrade").value,
-      birthday:$("birthdayStudentDate").value,message:$("birthdayMessage").value.trim(),
+      birthday:$("birthdayStudentDate").value.slice(5,10),message:$("birthdayMessage").value.trim(),
       active:true,createdAt:serverTimestamp(),createdBy:auth.currentUser.uid
     });
     $("birthdayAdminForm").reset();
@@ -1828,6 +1828,39 @@ $("birthdayAdminForm").addEventListener("submit",async e=>{
   }catch(e){console.error(e);showStatus("birthdayAdminStatus","Could not save birthday: "+(e.code||e.message)+". Check Firestore rules.",true);}
   finally{btn.disabled=false;}
 });
+async function syncRegisteredStudentBirthdays(){
+  if(!extraAdminAllowed()){showStatus("birthdayAdminStatus","Super Admin login required.",true);return;}
+  const btn=$("syncStudentBirthdaysBtn");btn.disabled=true;
+  showStatus("birthdayAdminStatus","Syncing registered students' birthdays...",false);
+  try{
+    // Normalize any older birthday entries so the public list stores month/day only.
+    const oldBirthdays=await getDocs(collection(db,"birthdayWishes"));
+    for(const oldDoc of oldBirthdays.docs){
+      const oldData=oldDoc.data();
+      const oldDate=String(oldData.birthday||"");
+      if(/^\d{4}-\d{2}-\d{2}$/.test(oldDate)){
+        await updateDoc(doc(db,"birthdayWishes",oldDoc.id),{birthday:oldDate.slice(5,10)});
+      }
+    }
+    const studentsSnap=await getDocs(collection(db,"students"));
+    let synced=0, skipped=0;
+    for(const studentDoc of studentsSnap.docs){
+      const student=studentDoc.data();
+      const dob=String(student.dob||student.dateOfBirth||student.birthDate||"");
+      if(!student.fullName||!/^\d{4}-\d{2}-\d{2}$/.test(dob)){skipped++;continue;}
+      const monthDay=dob.slice(5,10);
+      await setDoc(doc(db,"birthdayWishes",studentDoc.id),{
+        name:String(student.fullName),grade:String(student.grade||""),birthday:monthDay,
+        message:"",active:true,source:"studentRegistration",createdAt:serverTimestamp()
+      },{merge:true});
+      synced++;
+    }
+    showStatus("birthdayAdminStatus","Birthday sync complete. Synced: "+synced+"; skipped: "+skipped+".",false,true);
+    await loadAdminBirthdays();
+  }catch(e){console.error(e);showStatus("birthdayAdminStatus","Birthday sync failed: "+(e.code||e.message),true);}
+  finally{btn.disabled=false;}
+}
+$("syncStudentBirthdaysBtn").addEventListener("click",syncRegisteredStudentBirthdays);
 $("refreshBirthdaysAdminBtn").addEventListener("click",loadAdminBirthdays);
 
 async function loadStudentRequestsAdmin(){
@@ -1857,7 +1890,7 @@ $("refreshStudentRequestsBtn").addEventListener("click",loadStudentRequestsAdmin
 $("extraFeaturesOpenBtn").addEventListener("click",()=>{
   if(!extraAdminAllowed()){showStatus("listStatus","Administrator login required.",true);return;}
   setHidden("dashboard",true);setHidden("newsPanel",false);
-  loadAdminBirthdays();loadStudentRequestsAdmin();
+  syncRegisteredStudentBirthdays();loadStudentRequestsAdmin();
   $("newsPanel").scrollIntoView({behavior:"smooth",block:"start"});
 });
 
