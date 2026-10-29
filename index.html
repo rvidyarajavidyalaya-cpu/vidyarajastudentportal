@@ -205,7 +205,7 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
 .smart-dash-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;position:relative;z-index:1}
 /* PROFESSIONAL PERSONAL STUDENT DASHBOARD: logo-only launcher with a smooth sliding profile */
 .personal-student-card{position:relative;z-index:1;margin-top:22px;padding:12px;border:1px solid #39ff1470;border-radius:20px;background:rgba(3,12,6,.58)}
-.personal-dashboard-launcher{display:flex;align-items:center;justify-content:flex-start;width:100%;padding:5px;background:transparent;border:0;box-shadow:none;transform:none;text-align:left}
+.personal-dashboard-launcher{display:flex;align-items:center;justify-content:flex-start;width:100%;min-height:76px;padding:5px;background:transparent;border:0;box-shadow:none;transform:none;text-align:left;cursor:pointer;position:relative;z-index:2}
 .personal-dashboard-launcher:hover{transform:none;box-shadow:none}
 .personal-dashboard-logo{display:block;width:64px;height:64px;object-fit:contain;border-radius:50%;padding:4px;background:#fff;border:2px solid var(--yellow);box-shadow:0 0 18px #39ff144d;transition:transform .35s ease,box-shadow .35s ease}
 .personal-dashboard-launcher:hover .personal-dashboard-logo{transform:scale(1.06);box-shadow:0 0 25px #39ff1490}
@@ -215,7 +215,7 @@ body.auth-locked main,body.auth-locked .bubbles{visibility:hidden;pointer-events
 .personal-dashboard-slide.open{grid-template-rows:1fr;opacity:1;transform:translateY(0)}
 .personal-dashboard-slide-inner{min-height:0;overflow:hidden}
 .personal-dashboard-content{margin-top:13px;padding:clamp(15px,3vw,24px);border:1px solid #39ff1455;border-radius:17px;background:linear-gradient(145deg,rgba(6,24,11,.98),rgba(3,11,6,.98));}
-.personal-student-card h3{margin:0 0 16px;color:var(--yellow);font-size:clamp(16px,2.5vw,20px);letter-spacing:.3px}
+.personal-dashboard-content h3{margin:0 0 16px;color:var(--yellow);font-size:clamp(16px,2.5vw,20px);letter-spacing:.3px}
 .personal-profile-head{display:flex;align-items:center;gap:16px;margin-bottom:18px;padding:15px;border:1px solid #39ff144d;border-radius:15px;background:rgba(57,255,20,.045)}
 .personal-profile-photo{width:92px;height:92px;flex:0 0 92px;object-fit:cover;border-radius:50%;border:3px solid var(--green);background:#fff;box-shadow:0 0 18px #39ff1438}
 .personal-profile-photo-copy{min-width:0}
@@ -406,14 +406,14 @@ body.light-theme .smart-dash-empty{color:#34563a;border-color:#16852a70}
   </div>
   <section class="personal-student-card" aria-label="My Personal Student Dashboard">
     <button type="button" class="personal-dashboard-launcher" id="personalDashboardToggle" aria-expanded="false" aria-controls="personalDashboardSlide" aria-label="Open My Personal Student Dashboard">
-      <img class="personal-dashboard-logo" src="logo.png" alt="School logo" onerror="this.style.display='none'">
+      <img class="personal-dashboard-logo" src="school-logo.png" alt="School logo" onerror="this.onerror=null;this.src='logo.png';this.onerror=function(){this.style.display='none'}">
     </button>
     <div class="personal-dashboard-slide" id="personalDashboardSlide" aria-hidden="true">
       <div class="personal-dashboard-slide-inner">
         <div class="personal-dashboard-content">
           <h3 id="personalDashboardTitle">👤 MY PERSONAL STUDENT DASHBOARD</h3>
           <div class="personal-profile-head">
-            <img class="personal-profile-photo" id="personalDashboardPhoto" src="student-profile.jpg" alt="Student profile photo" onerror="this.onerror=null;this.src='logo.png';this.style.objectFit='contain';this.style.padding='7px'">
+            <img class="personal-profile-photo" id="personalDashboardPhoto" src="student-profile.jpg" alt="Student profile photo" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='school-logo.png';this.style.objectFit='contain';this.style.padding='7px'}else{this.style.display='none'}">
             <div class="personal-profile-photo-copy">
               <div class="personal-profile-photo-title">Student Profile</div>
               <div class="personal-profile-photo-subtitle">Your personal school information, linked to your signed-in account.</div>
