@@ -1681,6 +1681,17 @@ form.addEventListener("submit",async event=>{
   statusEl.textContent="Saving student details to Firebase... Please wait.";
 
   try{
+    // Wait until Firebase has restored the current authentication state.
+    // Student records must never be submitted with an empty ownerUid.
+    await auth.authStateReady();
+    const currentUser=auth?.currentUser;
+
+    if(!currentUser){
+      statusEl.textContent="SAVE FAILED: Please log in to your student account again.";
+      if(typeof showStudentAuth === "function") showStudentAuth("login");
+      return;
+    }
+
     const submittedAt=new Date().toISOString();
     const payload={...data,submittedAt};
     const verificationCode=generateVerificationCode();
@@ -1699,8 +1710,8 @@ form.addEventListener("submit",async event=>{
       ol:data.ol,
       sports:data.sports,
       extra:data.extra,
-      ownerUid:auth?.currentUser?.uid||"",
-      ownerEmail:auth?.currentUser?.email||"",
+      ownerUid:currentUser.uid,
+      ownerEmail:currentUser.email||"",
       submittedAt
     };
 
@@ -1743,8 +1754,9 @@ form.addEventListener("submit",async event=>{
     form.reset();
 
   }catch(error){
-    console.error(error);
-    statusEl.textContent="SAVE FAILED: "+(error.code||error.message||"Unknown error");
+    console.error("Student registration save failed:",error);
+    statusEl.textContent="SAVE FAILED: "+(error.code||error.message||"Unknown error")+
+      ". Check that the latest Firestore Rules are published to vidyarajastudentsystem.";
   }finally{
     saveBtn.disabled=false;
   }
