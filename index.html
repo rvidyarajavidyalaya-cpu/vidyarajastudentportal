@@ -857,7 +857,49 @@ applySavedTheme();
 themeModeBtn?.addEventListener("click",()=>{const next=document.body.classList.contains("light-theme")?"dark":"light";localStorage.setItem("vidyarajaPortalTheme",next);applySavedTheme();});
 function birthdayMonthDay(value){const v=String(value||"");return /^\d{2}-\d{2}$/.test(v)?v:(/^\d{4}-\d{2}-\d{2}$/.test(v)?v.slice(5,10):"");}
 function birthdayDateLabel(value){const md=birthdayMonthDay(value);if(!md)return "Birthday date not provided";const d=new Date("2000-"+md+"T00:00:00");return Number.isNaN(d.getTime())?md:d.toLocaleDateString("en-GB",{day:"numeric",month:"long",timeZone:"Asia/Colombo"});}
-async function loadBirthdayWishes(){const status=$("birthdayStatus"),list=$("birthdayList");status.textContent="Loading birthday wishes...";list.replaceChildren();try{const snap=await getDocs(collection(db,"birthdayWishes"));if(snap.empty){status.textContent="No birthday wishes have been published yet. / තවම සුබපැතුම් පළ කර නැත.";return;}const today=new Date();const todayKey=String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");let count=0,todaysCount=0;snap.forEach(ds=>{const x=ds.data();if(x.active===false)return;const card=document.createElement("article");card.className="notice-card";const monthDay=birthdayMonthDay(x.birthday);const isToday=monthDay===todayKey;if(isToday)todaysCount++;const title=document.createElement("h3");title.textContent=(x.name||"Student")+(isToday?" 🎉🎂":" 🎂");card.appendChild(title);const meta=document.createElement("div");meta.className="notice-meta";meta.textContent=[x.grade?"Grade "+x.grade:"",monthDay?birthdayDateLabel(monthDay):""].filter(Boolean).join(" • ");card.appendChild(meta);const msg=document.createElement("p");msg.className="notice-body";msg.textContent=isToday?"🎉🎂 Happy Birthday! සුබ උපන් දිනයක් වේවා! 🎂🎉":(x.message||"Warm wishes from R/VIDYARAJA VIDYALAYA.");card.appendChild(msg);if(isToday){card.style.borderColor="#eaff00";card.style.boxShadow="0 0 18px #eaff0060";}list.appendChild(card);count++;});status.textContent=count+" student birthday(s) listed."+(todaysCount?" 🎉 Today: "+todaysCount+" birthday(s)!":"");}catch(e){console.error(e);status.textContent="Could not load birthday wishes: "+(e.code||e.message||"Check Firestore rules and connection.");}}
+async function loadBirthdayWishes(){
+  const status=$("birthdayStatus"),list=$("birthdayList");
+  status.textContent="Loading today's birthdays...";
+  list.replaceChildren();
+  try{
+    const snap=await getDocs(collection(db,"birthdayWishes"));
+    const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Colombo",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+    const month=parts.find(p=>p.type==="month")?.value||"01";
+    const day=parts.find(p=>p.type==="day")?.value||"01";
+    const todayKey=month+"-"+day;
+    let count=0;
+    snap.forEach(ds=>{
+      const x=ds.data();
+      if(x.active===false)return;
+      const monthDay=birthdayMonthDay(x.birthday);
+      // අද දිනට අදාළ උපන්දිනයක් නොවේ නම් පෙන්වන්න එපා.
+      if(monthDay!==todayKey)return;
+      const card=document.createElement("article");
+      card.className="notice-card";
+      card.style.borderColor="#eaff00";
+      card.style.boxShadow="0 0 18px #eaff0060";
+      const title=document.createElement("h3");
+      title.textContent=(x.name||"Student")+" 🎉🎂";
+      card.appendChild(title);
+      const meta=document.createElement("div");
+      meta.className="notice-meta";
+      meta.textContent=[x.grade?"Grade "+x.grade:"",birthdayDateLabel(monthDay)].filter(Boolean).join(" • ");
+      card.appendChild(meta);
+      const msg=document.createElement("p");
+      msg.className="notice-body";
+      msg.textContent="🎉🎂 Happy Birthday! සුබ උපන් දිනයක් වේවා! 🎂🎉";
+      card.appendChild(msg);
+      list.appendChild(card);
+      count++;
+    });
+    status.textContent=count>0
+      ? "🎉 අද උපන්දිනය ඇති සිසුන්: "+count+" දෙනෙක්. / Today's birthdays: "+count
+      : "අද දින උපන්දිනය ඇති සිසුන් නැත. / No birthdays today.";
+  }catch(e){
+    console.error(e);
+    status.textContent="Could not load today's birthdays: "+(e.code||e.message||"Check Firestore rules and connection.");
+  }
+}
 $("birthdayBtn").addEventListener("click",()=>{hideForExtraSection(birthdaySection);loadBirthdayWishes();});
 $("birthdayHomeBtn").addEventListener("click",showHome);$("refreshBirthdaysBtn").addEventListener("click",loadBirthdayWishes);
 $("studentHelpBtn").addEventListener("click",()=>{if(!auth?.currentUser){alert("Please log in to the Student Portal first.");showStudentAuth("login");return;}hideForExtraSection(helpSection);$("helpRequestStatus").textContent="";$("helpStudentName").focus();});
@@ -1054,13 +1096,16 @@ async function loadPersonalStudentDashboard(){
   }
   personalDashboardStatus.textContent="ඔබගේ Gmail account එකට සම්බන්ධ Student Details සොයමින්...";
   try{
-    // Query only records owned by this signed-in Firebase Auth UID.
-    // Firestore Rules permit this query because it explicitly filters ownerUid.
-    const uidSnap=await getDocs(query(
-      collection(db,"studentLookups"),
-      where("ownerUid","==",user.uid)
-    ));
-    const matches=uidSnap.docs.map(d=>({id:d.id,...d.data()}));
+    // First match by Firebase Auth UID, which is safer than matching only an email address.
+    let matches=[];
+    const uidSnap=await getDocs(query(collection(db,"studentLookups"),where("ownerUid","==",user.uid)));
+    matches=uidSnap.docs.map(d=>({id:d.id,...d.data()}));
+
+    // Compatibility fallback for records linked by the authenticated Gmail address.
+    if(!matches.length&&user.email){
+      const emailSnap=await getDocs(query(collection(db,"studentLookups"),where("ownerEmail","==",user.email)));
+      matches=emailSnap.docs.map(d=>({id:d.id,...d.data()}));
+    }
     if(!matches.length){
       personalDashboardStatus.textContent="මෙම Gmail account එකට සම්බන්ධ Student Information හමු වුණේ නැහැ. Student Information form එක submit කළේ මේ account එකෙන්දැයි පරීක්ෂා කරන්න.";
       return;
@@ -1073,11 +1118,7 @@ async function loadPersonalStudentDashboard(){
     if(heading&&student.fullName)heading.textContent="Welcome back, "+student.fullName+"! 👋";
   }catch(error){
     console.error("Personal student dashboard lookup failed",error);
-    if(error?.code==="permission-denied"){
-      personalDashboardStatus.textContent="Student Details ලබාගත නොහැකියි (permission-denied). Firestore Rules හි studentLookups list permission එක සහ ownerUid query එක පරීක්ෂා කරන්න.";
-    }else{
-      personalDashboardStatus.textContent="Student Details ලබාගත නොහැකියි. Internet connection එක සහ Firebase settings පරීක්ෂා කර නැවත උත්සාහ කරන්න.";
-    }
+    personalDashboardStatus.textContent="Student Details ලබාගත නොහැකියි. Firebase Firestore Rules මඟින් logged-in user හට තමන්ගේ studentLookups records කියවීමට අවසර තිබේදැයි පරීක්ෂා කරන්න.";
   }
 }
 $("personalDashboardRefreshBtn")?.addEventListener("click",loadPersonalStudentDashboard);
@@ -1682,17 +1723,6 @@ form.addEventListener("submit",async event=>{
   statusEl.textContent="Saving student details to Firebase... Please wait.";
 
   try{
-    // Wait until Firebase has restored the current authentication state.
-    // Student records must never be submitted with an empty ownerUid.
-    await auth.authStateReady();
-    const currentUser=auth?.currentUser;
-
-    if(!currentUser){
-      statusEl.textContent="SAVE FAILED: Please log in to your student account again.";
-      if(typeof showStudentAuth === "function") showStudentAuth("login");
-      return;
-    }
-
     const submittedAt=new Date().toISOString();
     const payload={...data,submittedAt};
     const verificationCode=generateVerificationCode();
@@ -1711,8 +1741,8 @@ form.addEventListener("submit",async event=>{
       ol:data.ol,
       sports:data.sports,
       extra:data.extra,
-      ownerUid:currentUser.uid,
-      ownerEmail:currentUser.email||"",
+      ownerUid:auth?.currentUser?.uid||"",
+      ownerEmail:auth?.currentUser?.email||"",
       submittedAt
     };
 
@@ -1755,9 +1785,8 @@ form.addEventListener("submit",async event=>{
     form.reset();
 
   }catch(error){
-    console.error("Student registration save failed:",error);
-    statusEl.textContent="SAVE FAILED: "+(error.code||error.message||"Unknown error")+
-      ". Check that the latest Firestore Rules are published to vidyarajastudentsystem.";
+    console.error(error);
+    statusEl.textContent="SAVE FAILED: "+(error.code||error.message||"Unknown error");
   }finally{
     saveBtn.disabled=false;
   }
