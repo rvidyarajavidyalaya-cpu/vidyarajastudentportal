@@ -271,6 +271,18 @@ body.light-theme .smart-dash-empty{color:#34563a;border-color:#16852a70}
 @media(max-width:650px){.smart-dash-stats{grid-template-columns:1fr 1fr}.smart-dash-notice-list{grid-template-columns:1fr}.smart-dash-date{white-space:normal}.smart-dash-stat:last-child{grid-column:1/-1}.personal-profile-grid{grid-template-columns:1fr}.personal-code-row .smart-dash-btn{width:100%}}
 @media(prefers-reduced-motion:reduce){.smart-dash-btn{transition:none}}
 
+
+/* Birthday login celebration */
+#birthdayWelcomeOverlay{display:none;position:fixed;inset:0;z-index:5000;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.58);backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px)}
+.birthday-welcome-box{position:relative;width:min(100%,520px);padding:34px 22px;text-align:center;border:2px solid #eaff00;border-radius:26px;background:radial-gradient(circle at top,rgba(57,255,20,.17),rgba(3,12,6,.98) 62%);box-shadow:0 0 45px #39ff1470,0 0 90px #eaff0020;animation:birthdayPop .65s cubic-bezier(.2,.8,.2,1)}
+.birthday-welcome-cake{font-size:clamp(58px,14vw,90px);line-height:1.2;margin-bottom:12px;filter:drop-shadow(0 0 15px #eaff0080);animation:iconFloat 2s infinite}
+.birthday-welcome-box h2{font-size:clamp(24px,6vw,36px);line-height:1.35;color:#eaff00;margin:8px 0 12px;text-shadow:0 0 16px #eaff0060;overflow-wrap:anywhere}
+.birthday-welcome-name{color:#39ff14;font-size:clamp(20px,5vw,28px);font-weight:900;overflow-wrap:anywhere;margin:8px 0 16px}
+.birthday-welcome-box p{color:#effff0;line-height:1.9;margin-bottom:23px}
+.birthday-thankyou-button{min-width:200px;background:#39ff14;color:#041004;border:1px solid #eaff00;box-shadow:0 0 20px #39ff1470}
+@keyframes birthdayPop{from{opacity:0;transform:translateY(20px) scale(.88)}to{opacity:1;transform:translateY(0) scale(1)}}
+.birthday-profile-cake{grid-column:1/-1;text-align:center;padding:14px;border:1px solid #eaff00;border-radius:14px;background:linear-gradient(135deg,#16220a,#07140a);color:#eaff00;font-size:22px;font-weight:900;box-shadow:0 0 17px #eaff0030}
+.birthday-profile-cake span{display:block;font-size:46px;margin-bottom:6px;animation:iconFloat 2s infinite}
 </style>
 
 <link rel="manifest" href="manifest.json">
@@ -661,6 +673,16 @@ body.light-theme .smart-dash-empty{color:#34563a;border-color:#16852a70}
 </div>
 </div>
 
+<div id="birthdayWelcomeOverlay" role="dialog" aria-modal="true" aria-labelledby="birthdayWelcomeTitle" aria-describedby="birthdayWelcomeMessage">
+  <div class="birthday-welcome-box">
+    <div class="birthday-welcome-cake" aria-hidden="true">🎂🎉</div>
+    <h2 id="birthdayWelcomeTitle">HAPPY BIRTHDAY!</h2>
+    <div class="birthday-welcome-name" id="birthdayWelcomeName">Student</div>
+    <p id="birthdayWelcomeMessage">🎈 May your special day be filled with happiness and success!<br>ඔබට සුබ උපන් දිනයක් වේවා! 🎈</p>
+    <button class="birthday-thankyou-button" id="birthdayWelcomeThanks" type="button">💚 THANK YOU</button>
+  </div>
+</div>
+
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import {getFirestore,collection,getDoc,doc,writeBatch,addDoc,getDocs,deleteDoc,query,where,orderBy,serverTimestamp,onSnapshot} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
@@ -739,6 +761,9 @@ const registrationSuccessOverlay=$("registrationSuccessOverlay");
 let registrationInProgress=false;
 let studentAuthenticated=false;
 let authStartupResolved=false;
+let birthdayPopupForUid="";
+let birthdayStudentIsToday=false;
+let birthdayStudentDisplayName="";
 function showStudentAuth(mode="login"){
   studentAuthScreen.style.display="flex";
   document.body.classList.add("auth-locked");
@@ -761,6 +786,7 @@ function enterStudentPortal(){
   loadWelcomeDashboard();
   loadPersonalStudentDashboard();
   watchWelcomeDashboard();
+  checkAndShowStudentBirthday();
 }
 const gmailNoticeOverlay=$("gmailNoticeOverlay");
 function openGmailNotice(){
@@ -829,7 +855,7 @@ studentRegisterForm.addEventListener("submit",async event=>{
   }finally{btn.disabled=false;btn.textContent="CREATE PERMANENT ACCOUNT";}
 });
 $("studentLogoutBtn").addEventListener("click",async()=>{
-  try{await signOut(auth);studentAuthenticated=false;showStudentAuth("login");studentAuthStatus.textContent="You have logged out successfully.";}
+  try{await signOut(auth);studentAuthenticated=false;birthdayPopupForUid="";birthdayStudentIsToday=false;showStudentAuth("login");studentAuthStatus.textContent="You have logged out successfully.";}
   catch(error){console.error(error);studentAuthStatus.textContent="Could not log out. Please try again.";}
 });
 onAuthStateChanged(auth,user=>{
@@ -857,6 +883,47 @@ applySavedTheme();
 themeModeBtn?.addEventListener("click",()=>{const next=document.body.classList.contains("light-theme")?"dark":"light";localStorage.setItem("vidyarajaPortalTheme",next);applySavedTheme();});
 function birthdayMonthDay(value){const v=String(value||"");return /^\d{2}-\d{2}$/.test(v)?v:(/^\d{4}-\d{2}-\d{2}$/.test(v)?v.slice(5,10):"");}
 function birthdayDateLabel(value){const md=birthdayMonthDay(value);if(!md)return "Birthday date not provided";const d=new Date("2000-"+md+"T00:00:00");return Number.isNaN(d.getTime())?md:d.toLocaleDateString("en-GB",{day:"numeric",month:"long",timeZone:"Asia/Colombo"});}
+function getSriLankaTodayKey(){
+  const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Colombo",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+  const month=parts.find(p=>p.type==="month")?.value||"01";
+  const day=parts.find(p=>p.type==="day")?.value||"01";
+  return month+"-"+day;
+}
+async function checkAndShowStudentBirthday(){
+  const user=auth?.currentUser;
+  if(!user||!db||birthdayPopupForUid===user.uid)return;
+  birthdayPopupForUid=user.uid;
+  try{
+    let matches=[];
+    const uidSnap=await getDocs(query(collection(db,"studentLookups"),where("ownerUid","==",user.uid)));
+    matches=uidSnap.docs.map(d=>({id:d.id,...d.data()}));
+    if(!matches.length&&user.email){
+      const emailSnap=await getDocs(query(collection(db,"studentLookups"),where("ownerEmail","==",user.email)));
+      matches=emailSnap.docs.map(d=>({id:d.id,...d.data()}));
+    }
+    if(!matches.length)return;
+    matches.sort((a,b)=>String(b.submittedAt||"").localeCompare(String(a.submittedAt||"")));
+    const student=matches[0];
+    const birthdayKey=birthdayMonthDay(student.birthdayMonthDay||student.dob);
+    birthdayStudentIsToday=!!birthdayKey&&birthdayKey===getSriLankaTodayKey();
+    birthdayStudentDisplayName=String(student.fullName||student.name||"Student").trim();
+    if(!birthdayStudentIsToday)return;
+    const overlay=$("birthdayWelcomeOverlay");
+    const nameEl=$("birthdayWelcomeName");
+    if(nameEl)nameEl.textContent=birthdayStudentDisplayName;
+    if(overlay){overlay.style.display="flex";$("birthdayWelcomeThanks")?.focus();}
+    // If profile data has already loaded, refresh it so the cake appears immediately.
+    if(personalDashboardProfile&&personalDashboardProfile.style.display!=="none")renderPersonalStudentProfile(student);
+  }catch(error){
+    // Birthday greeting is optional; a rules/network issue must never prevent portal login.
+    console.warn("Could not check student's birthday greeting:",error);
+  }
+}
+$("birthdayWelcomeThanks")?.addEventListener("click",()=>{
+  const overlay=$("birthdayWelcomeOverlay");if(overlay)overlay.style.display="none";
+  // Continue to the normal portal after acknowledging the greeting.
+  $("homeSection")?.scrollIntoView({behavior:"smooth",block:"start"});
+});
 async function loadBirthdayWishes(){
   const status=$("birthdayStatus"),list=$("birthdayList");
   status.textContent="Loading today's birthdays...";
@@ -1063,6 +1130,12 @@ function renderPersonalStudentProfile(student){
   personalDashboardProfile.replaceChildren();
   const photo=$("personalDashboardPhoto");
   if(photo){photo.src="student-profile.jpg";photo.alt=(String(student.fullName||"Student").trim()+" profile photo");}
+  if(birthdayStudentIsToday){
+    const cake=document.createElement("div");cake.className="birthday-profile-cake";
+    const cakeIcon=document.createElement("span");cakeIcon.textContent="🎂";cakeIcon.setAttribute("aria-hidden","true");
+    const cakeText=document.createElement("div");cakeText.textContent="HAPPY BIRTHDAY, "+(birthdayStudentDisplayName||student.fullName||"STUDENT")+"! 🎉";
+    cake.append(cakeIcon,cakeText);personalDashboardProfile.appendChild(cake);
+  }
   personalDashboardFields.forEach(([label,key])=>{
     const card=document.createElement("div");card.className="personal-profile-item";
     const name=document.createElement("strong");name.textContent=label;
