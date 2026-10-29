@@ -388,8 +388,7 @@ body.light-theme .smart-dash-empty{color:#34563a;border-color:#16852a70}
   </div>
   <section class="personal-student-card" aria-labelledby="personalDashboardTitle">
     <h3 id="personalDashboardTitle">👤 MY PERSONAL STUDENT DASHBOARD</h3>
-    <p class="personal-help">ඔබ Login වී ඇති Gmail account එකට සම්බන්ධ කර ඇති Student Information මෙහි ස්වයංක්‍රීයව පෙන්වයි. Verification Code එකක් paste කිරීමට අවශ්‍ය නැහැ.</p>
-    <div class="personal-code-row" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="personal-code-row" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <button type="button" class="smart-dash-btn primary" id="personalDashboardRefreshBtn">↻ REFRESH MY DETAILS</button>
     </div>
     <p class="personal-profile-status" id="personalDashboardStatus" role="status" aria-live="polite"></p>
@@ -639,7 +638,7 @@ body.light-theme .smart-dash-empty{color:#34563a;border-color:#16852a70}
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-import {getFirestore,collection,getDoc,doc,writeBatch,addDoc,getDocs,deleteDoc,query,where,orderBy,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import {getFirestore,collection,getDoc,doc,writeBatch,addDoc,getDocs,deleteDoc,query,where,orderBy,serverTimestamp,onSnapshot} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 import {getStorage,ref,uploadBytes,getDownloadURL,deleteObject} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
@@ -733,6 +732,10 @@ function enterStudentPortal(){
   registrationSuccessOverlay.style.display="none";
   document.body.classList.remove("auth-locked");
   $("studentLogoutBar").style.display="flex";
+  // Load the dashboard as soon as the student signs in; no manual refresh needed.
+  loadWelcomeDashboard();
+  loadPersonalStudentDashboard();
+  watchWelcomeDashboard();
 }
 const gmailNoticeOverlay=$("gmailNoticeOverlay");
 function openGmailNotice(){
@@ -948,6 +951,35 @@ async function loadWelcomeDashboard(){
     welcomeDashboardStatus.textContent="Could not refresh school updates.";
   }
 }
+let welcomeNoticesUnsubscribe=null;
+function watchWelcomeDashboard(){
+  if(!db||!welcomeLatestNotices||welcomeNoticesUnsubscribe)return;
+  try{
+    welcomeNoticesUnsubscribe=onSnapshot(
+      query(collection(db,"schoolNotices"),orderBy("createdAt","desc")),
+      snapshot=>{
+        const items=snapshot.docs.map(d=>({id:d.id,...d.data()}));
+        $("welcomeNoticeCount").textContent=String(items.length);
+        $("welcomeDocumentCount").textContent=String(items.filter(x=>Boolean(x.fileURL)).length);
+        welcomeLatestNotices.replaceChildren();
+        if(!items.length){
+          const empty=document.createElement("div");
+          empty.className="smart-dash-empty";
+          empty.textContent="No notices have been published yet. New notices from the Admin Portal will appear here.";
+          welcomeLatestNotices.appendChild(empty);
+          welcomeDashboardStatus.textContent="Dashboard is up to date.";
+          return;
+        }
+        items.slice(0,3).forEach(item=>welcomeLatestNotices.appendChild(renderWelcomeNotice(item)));
+        welcomeDashboardStatus.textContent="Updated just now · "+items.length+" notice(s) available.";
+      },
+      error=>{
+        console.error("Live school notice updates failed:",error);
+        welcomeDashboardStatus.textContent="School updates could not be loaded. Check Firestore rules.";
+      }
+    );
+  }catch(error){console.error("Could not start live school updates:",error);}
+}
 $("welcomeViewNoticesBtn")?.addEventListener("click",openNoticeBoard);
 $("welcomeRefreshBtn")?.addEventListener("click",loadWelcomeDashboard);
 
@@ -955,10 +987,10 @@ $("welcomeRefreshBtn")?.addEventListener("click",loadWelcomeDashboard);
 const personalDashboardStatus=$("personalDashboardStatus");
 const personalDashboardProfile=$("personalDashboardProfile");
 const personalDashboardFields=[
-  ["Admission Number","admission"],["Full Name","fullName"],["Date of Birth","dob"],
-  ["Grade / Class","grade"],["Telephone Number","phone"],
-  ["WhatsApp Number","whatsapp"],["Email Address","email"],["Home Address","address"],
-  ["Sports Achievements","sports"],["Extracurricular Activities","extra"]
+  ["Admission Number","admission"],
+  ["Full Name","fullName"],
+  ["Grade / Class","grade"],
+  ["Email Address","email"]
 ];
 function renderPersonalStudentProfile(student){
   personalDashboardProfile.replaceChildren();
@@ -1002,9 +1034,7 @@ async function loadPersonalStudentDashboard(){
     matches.sort((a,b)=>String(b.submittedAt||"").localeCompare(String(a.submittedAt||"")));
     const student=matches[0];
     renderPersonalStudentProfile(student);
-    personalDashboardStatus.textContent=matches.length>1
-      ? "ඔබගේ Gmail account එකට සම්බන්ධ Student Details පෙන්වයි. Records කිහිපයක් හමු වූ නිසා අලුත්ම record එක පෙන්වා ඇත."
-      : "ඔබගේ Gmail account එකට සම්බන්ධ Student Details සාර්ථකව ලබාගත්තා.";
+    personalDashboardStatus.textContent="";
     const heading=$("smartWelcomeTitle");
     if(heading&&student.fullName)heading.textContent="Welcome back, "+student.fullName+"! 👋";
   }catch(error){
