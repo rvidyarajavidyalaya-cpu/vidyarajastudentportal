@@ -292,6 +292,29 @@ body.light-theme .smart-dash-empty{color:#34563a;border-color:#16852a70}
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="logo.png">
 
+<style id="vidyaraja-modern-redesign">
+/* Modern layout using the ORIGINAL VIDYARAJA dark-green + neon-lime colours */
+:root{--green:#39ff14;--yellow:#eaff00;--panel:rgba(7,19,10,.96);--vv-navy:#041004;--vv-blue:#07140a;--vv-gold:#39ff14;--vv-ink:#d7e8d9;--vv-muted:#b9d2bd;--vv-border:#34563a}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:linear-gradient(145deg,#030604 0%,#07140a 48%,#041004 100%);color:#d7e8d9;padding:24px 16px;font-family:Inter,"Segoe UI",Arial,"Noto Sans Sinhala",sans-serif}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 8% 10%,#39ff1418,transparent 24%),radial-gradient(circle at 90% 30%,#eaff0010,transparent 28%)}
+main{max-width:1200px;margin:0 auto;z-index:1}
+header{position:relative;overflow:hidden;text-align:left;display:grid;grid-template-columns:auto 1fr;column-gap:20px;align-items:center;padding:26px 32px;margin:0 0 18px;background:linear-gradient(120deg,#030604,#07140a 72%,#17351c);border:1px solid #34563a;border-radius:22px;box-shadow:0 18px 42px #0008;animation:none}
+header:after{content:"";position:absolute;width:280px;height:280px;right:-85px;top:-140px;border:34px solid #39ff1430;border-radius:50%;pointer-events:none}
+.logo{grid-row:1/5;width:88px;height:88px;border:2px solid #39ff14;background:#07140a;border-radius:18px;padding:6px;margin:0;animation:none;box-shadow:0 8px 22px #0008}
+header h1{font-size:clamp(22px,3vw,34px);color:#f5fff5;letter-spacing:.2px;line-height:1.2}.subtitle{color:#eaff00;letter-spacing:2.2px;font-size:11px;margin-top:8px;font-weight:800}header .notice{color:#c9dfcb;margin-top:8px;font-size:13px;line-height:1.6}
+.live-datetime{grid-column:2;display:flex;gap:12px;flex-wrap:wrap;color:#f5fff5;font-size:12px;margin-top:10px}.live-datetime>div{padding:7px 11px;border-radius:8px;background:#ffffff0a;border:1px solid #39ff1430}
+.card,.home-panel,.view-panel,.student-result{background:rgba(7,19,10,.96);border:1px solid #34563a;border-radius:18px;box-shadow:0 10px 28px #0005;padding:26px;margin-bottom:20px;animation:none}.section-title{color:#eaff00;font-size:clamp(18px,2.5vw,23px);letter-spacing:-.3px;margin-bottom:12px}.notice{color:#b9d2bd;font-size:14px;line-height:1.8}
+#themeModeBtn,.language-switch button,.student-logout-bar button{border-color:#34563a;background:#07140a;color:#d7e8d9;box-shadow:none}.language-switch{display:flex;justify-content:flex-end;gap:8px;margin:10px 0 16px}.language-switch button{padding:9px 13px;border-radius:999px}.language-switch button.active{background:#176b26;color:#fff;border-color:#39ff14}#themeModeBtn{border-radius:999px;padding:9px 14px}
+.smart-dashboard{background:rgba(7,19,10,.96);border:1px solid #34563a;border-radius:20px;padding:24px;box-shadow:0 12px 34px #0005}.smart-dash-top{background:linear-gradient(120deg,#030604,#07140a);border:1px solid #34563a;border-radius:16px;padding:25px;color:#f5fff5;display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;overflow:hidden}.smart-dash-top:after{content:"";position:absolute;width:190px;height:190px;right:-65px;bottom:-110px;border:25px solid #39ff142b;border-radius:50%}.smart-dash-eyebrow{font-size:11px;letter-spacing:1.8px;color:#eaff00;font-weight:800;margin-bottom:10px}.smart-dash-title{color:#f5fff5!important;font-size:clamp(23px,3vw,32px);line-height:1.25;margin-bottom:8px}.smart-dash-subtitle{color:#c9dfcb;line-height:1.7;max-width:620px}.smart-dash-date{position:relative;z-index:1;background:#ffffff0a;border:1px solid #39ff1438;color:#f5fff5;border-radius:12px;padding:12px 14px;font-size:12px;white-space:nowrap}
+.smart-dash-actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}button,.primary,.secondary{font-family:inherit;transition:transform .2s,box-shadow .2s,background .2s;border-radius:10px}button:hover{transform:translateY(-2px);box-shadow:0 8px 18px #39ff1417}.primary,.smart-dash-btn.primary{background:#39ff14!important;color:#041004!important;border:1px solid #39ff14!important}.secondary,.smart-dash-btn.ghost{background:#07140a!important;color:#d7e8d9!important;border:1px solid #34563a!important}.smart-dash-btn{padding:11px 15px;border-radius:10px}
+.smart-dash-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:16px 0}.smart-dash-stat{background:#061009;border:1px solid #34563a;border-radius:14px;padding:18px;display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:center}.smart-dash-stat-icon{grid-row:1/3;width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:#17351c;font-size:21px}.smart-dash-stat-value{color:#39ff14;font-weight:800;font-size:21px;overflow-wrap:anywhere}.smart-dash-stat-label{font-size:12px;color:#b9d2bd;line-height:1.5;margin-top:3px}.smart-dash-latest{margin-top:18px;background:#061009;border:1px solid #34563a;border-radius:15px;padding:19px}.smart-dash-section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}.smart-dash-section-head h3{color:#eaff00;font-size:16px}.smart-dash-section-head span{font-size:11px;color:#b9d2bd}.smart-dash-empty{background:#07140a;border:1px dashed #34563a;border-radius:12px;padding:18px;color:#b9d2bd}
+.home-buttons{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:20px}.home-button{min-height:145px;align-items:flex-start;text-align:left;justify-content:flex-start;gap:10px;background:#07140a!important;color:#d7e8d9!important;border:1px solid #34563a!important;border-radius:16px;padding:20px;box-shadow:0 8px 24px #0004;animation:none;font-size:15px}.home-button .symbol{width:45px;height:45px;display:grid;place-items:center;border-radius:13px;background:#17351c;color:#39ff14;font-size:24px;animation:none}.home-button.view .symbol{background:#17351c;color:#eaff00}.home-button.marks .symbol{background:#17351c;color:#39ff14}.home-button small{color:#b9d2bd;font-size:12px;line-height:1.5}.home-button:hover{border-color:#39ff14!important;box-shadow:0 12px 26px #39ff1414}
+.field label{color:#d7e8d9;font-size:13px}input,textarea,select{background:#061009;color:#f5fff5;border:1px solid #34563a;border-radius:10px;padding:13px}input::placeholder,textarea::placeholder{color:#8ca991}input[type=date],input[type=file]{color-scheme:dark}input:focus,textarea:focus,select:focus{border-color:#39ff14;box-shadow:0 0 0 3px #39ff1422}.result-item{background:#061009;border:1px solid #34563a;border-radius:12px;color:#d7e8d9}.result-item strong{color:#39ff14}.status{color:#39ff14}.view-panel .notice-nav{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px}.notice-list,.smart-dash-notice-list{display:grid;gap:10px}.notice-list>*{background:#061009!important;color:#d7e8d9!important;border:1px solid #34563a!important;border-radius:12px!important;padding:15px!important}
+.student-auth-card,.gmail-notice-box,.registration-success-box{background:#061009!important;color:#d7e8d9!important;border:1px solid #34563a!important;border-radius:22px!important;box-shadow:0 24px 70px #0008!important}.student-auth-card h2,.gmail-notice-box h2,.registration-success-box h2{color:#39ff14!important}.student-auth-logo,.success-logo,.loading-logo{border-color:#39ff14;animation:none}.auth-hint{color:#b9d2bd!important}#musicToggle{background:#07140a!important;color:#39ff14!important;border:1px solid #39ff14!important;box-shadow:0 8px 24px #0008!important}#gradeSection .actions{gap:10px}footer{color:#b9d2bd}
+@media(max-width:760px){body{padding:12px 9px}header{padding:20px;grid-template-columns:64px 1fr;column-gap:13px;border-radius:17px}.logo{width:62px;height:62px;border-radius:14px}header h1{font-size:20px}.subtitle{font-size:9px;letter-spacing:1.3px}.live-datetime{grid-column:1/-1;margin-top:15px}.smart-dash-top{display:block;padding:20px}.smart-dash-date{display:inline-block;margin-top:14px;white-space:normal}.smart-dashboard{padding:13px}.smart-dash-stats{grid-template-columns:1fr}.smart-dash-stat{padding:14px}.home-buttons{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.home-button{min-height:130px;padding:14px;font-size:13px}.home-button .symbol{width:38px;height:38px;font-size:21px}.card,.home-panel,.view-panel,.student-result{padding:17px}.smart-dash-latest{padding:14px}}
+@media(max-width:420px){.home-buttons{grid-template-columns:1fr}.home-button{min-height:100px;display:grid;grid-template-columns:42px 1fr;align-items:center;column-gap:12px}.home-button .symbol{grid-row:1/3}.home-button small{grid-column:2}.actions button{flex:1}.language-switch{justify-content:center}}
+</style>
 </head>
 <body class="auth-locked">
 
@@ -372,6 +395,19 @@ body.light-theme .smart-dash-empty{color:#34563a;border-color:#16852a70}
   <div id="liveTime">Loading time...</div>
 </div>
 </header>
+<!-- NEW LEFT-SIDE STUDENT PORTAL NAVIGATION -->
+<nav class="student-side-nav" id="studentSideNav" aria-label="Student Portal navigation">
+  <div class="side-nav-brand"><span class="side-nav-mark">VR</span><div><strong>STUDENT PORTAL</strong><small>R/VIDYARAJA VIDYALAYA</small></div></div>
+  <button type="button" class="side-nav-link active" data-target="home"><span>⌂</span> HOME</button>
+  <button type="button" class="side-nav-link" data-target="fillInfoBtn"><span>✎</span> FILL INFORMATION</button>
+  <button type="button" class="side-nav-link" data-target="viewInfoBtn"><span>⌕</span> VIEW INFORMATION</button>
+  <button type="button" class="side-nav-link" data-target="viewMarksBtn"><span>▤</span> VIEW MARKS</button>
+  <button type="button" class="side-nav-link" data-target="digitalLibraryBtn"><span>📚</span> FOR O/L AND A/L STUDENTS</button>
+  <button type="button" class="side-nav-link" data-target="schoolNoticeBtn"><span>📢</span> SCHOOL NOTICES</button>
+  <button type="button" class="side-nav-link" data-target="birthdayBtn"><span>🎂</span> BIRTHDAY WISHES</button>
+  <button type="button" class="side-nav-link" data-target="studentHelpBtn"><span>📩</span> STUDENT HELP REQUESTS</button>
+  <div class="side-nav-footer">Knowledge • Discipline • Excellence</div>
+</nav>
 <div class="student-logout-bar" id="studentLogoutBar" style="display:none">
   <button class="secondary" id="studentLogoutBtn" type="button">↪ STUDENT LOG OUT</button>
 </div>
@@ -2206,6 +2242,23 @@ body.light-theme .notice,body.light-theme .sub,body.light-theme p{color:inherit}
 body.light-theme input,body.light-theme select,body.light-theme textarea{background:#fff;color:#152218;border-color:#8aa993}
 body.light-theme .secondary{background:#e8f2eb;color:#17351c;border-color:#7d9e84}
 body.light-theme .notice-card,body.light-theme .notice-admin-box{background:#f7fff8;color:#152218;border-color:#7dba8a}
+
+/* LEFT SIDEBAR NAVIGATION — preserves the original green/yellow theme */
+.student-side-nav{position:fixed;z-index:120;left:16px;top:18px;bottom:18px;width:238px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;padding:15px 12px;background:rgba(3,12,6,.97);border:1px solid #34563a;border-radius:19px;box-shadow:0 10px 35px #0008,0 0 18px #39ff1410;backdrop-filter:blur(12px)}
+.side-nav-brand{display:flex;align-items:center;gap:10px;padding:8px 6px 17px;margin-bottom:8px;border-bottom:1px solid #34563a}
+.side-nav-mark{display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;border:1px solid var(--yellow);border-radius:12px;background:#17351c;color:var(--yellow);font-weight:900;box-shadow:0 0 12px #39ff1420}
+.side-nav-brand strong{display:block;color:var(--yellow);font-size:12px;line-height:1.5}.side-nav-brand small{display:block;color:#a9c5ad;font-size:9px;line-height:1.5;letter-spacing:.3px}
+.side-nav-link{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:10px 11px;text-align:left;background:transparent;border:1px solid transparent;border-radius:10px;color:#d7e8d9;font-size:11px;line-height:1.4;font-weight:800;transition:background .2s,border-color .2s,color .2s;}
+.side-nav-link span{display:grid;place-items:center;flex:0 0 27px;height:27px;border-radius:8px;background:#17351c;color:var(--green);font-size:16px}
+.side-nav-link:hover,.side-nav-link:focus-visible,.side-nav-link.active{background:#102414;border-color:#39ff1477;color:var(--yellow);box-shadow:inset 3px 0 0 var(--green)}
+.side-nav-link.active span{background:var(--green);color:#041004}
+.side-nav-footer{margin-top:auto;padding:16px 5px 4px;color:#739679;font-size:9px;text-align:center;border-top:1px solid #34563a}
+main{max-width:none!important;width:auto!important;margin:0 18px 0 270px!important}
+#homeSection .home-buttons{display:none!important}
+@media(max-width:850px){.student-side-nav{position:relative;left:auto;top:auto;bottom:auto;width:100%;max-height:none;margin:0 0 18px;padding:10px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.side-nav-brand,.side-nav-footer{grid-column:1/-1}.side-nav-brand{padding-bottom:10px;margin-bottom:2px}.side-nav-link{font-size:10px;min-height:42px;padding:8px}.side-nav-footer{margin-top:5px}main{margin:0!important;width:100%!important}header{margin-bottom:16px!important}}
+@media(max-width:430px){.student-side-nav{grid-template-columns:1fr 1fr}.side-nav-link{font-size:9px;gap:7px;padding:7px}.side-nav-link span{flex-basis:23px;height:23px;font-size:14px}}
+body.light-theme .student-side-nav{background:rgba(255,255,255,.98);border-color:#8aa993}body.light-theme .side-nav-link{color:#18321d}body.light-theme .side-nav-link.active,body.light-theme .side-nav-link:hover{background:#e9f8eb;color:#17351c}
+
 </style>
 <script id="portal-touch-zoom-script">
 (function(){
@@ -2278,6 +2331,35 @@ if ("serviceWorker" in navigator) {
     });
   });
 }
+</script>
+
+
+<script id="student-side-nav-script">
+(function(){
+  const nav=document.getElementById('studentSideNav');
+  if(!nav)return;
+  const links=[...nav.querySelectorAll('.side-nav-link')];
+  function markActive(link){links.forEach(x=>x.classList.toggle('active',x===link));}
+  links.forEach(link=>link.addEventListener('click',()=>{
+    markActive(link);
+    const target=link.dataset.target;
+    if(target==='home'){
+      if(typeof showHome==='function')showHome();
+      else document.getElementById('homeSection')?.style.setProperty('display','block');
+      window.scrollTo({top:0,behavior:'smooth'});
+      return;
+    }
+    const original=document.getElementById(target);
+    if(original)original.click();
+  }));
+  document.querySelectorAll('#homeSection .home-button').forEach(tile=>tile.addEventListener('click',()=>{
+    const id=tile.id;const link=links.find(x=>x.dataset.target===id);if(link)markActive(link);
+  }));
+  document.addEventListener('click',e=>{
+    const back=e.target.closest('#backHomeBtn,#gradeBackBtn,#marksBackBtn,#noticeHomeBtn,#birthdayHomeBtn,#helpHomeBtn,#marksResultBackBtn');
+    if(back){const home=links.find(x=>x.dataset.target==='home');if(home)markActive(home);}
+  });
+})();
 </script>
 
 </body>
