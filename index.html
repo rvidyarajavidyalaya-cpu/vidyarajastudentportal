@@ -1054,16 +1054,13 @@ async function loadPersonalStudentDashboard(){
   }
   personalDashboardStatus.textContent="ඔබගේ Gmail account එකට සම්බන්ධ Student Details සොයමින්...";
   try{
-    // First match by Firebase Auth UID, which is safer than matching only an email address.
-    let matches=[];
-    const uidSnap=await getDocs(query(collection(db,"studentLookups"),where("ownerUid","==",user.uid)));
-    matches=uidSnap.docs.map(d=>({id:d.id,...d.data()}));
-
-    // Compatibility fallback for records linked by the authenticated Gmail address.
-    if(!matches.length&&user.email){
-      const emailSnap=await getDocs(query(collection(db,"studentLookups"),where("ownerEmail","==",user.email)));
-      matches=emailSnap.docs.map(d=>({id:d.id,...d.data()}));
-    }
+    // Query only records owned by this signed-in Firebase Auth UID.
+    // Firestore Rules permit this query because it explicitly filters ownerUid.
+    const uidSnap=await getDocs(query(
+      collection(db,"studentLookups"),
+      where("ownerUid","==",user.uid)
+    ));
+    const matches=uidSnap.docs.map(d=>({id:d.id,...d.data()}));
     if(!matches.length){
       personalDashboardStatus.textContent="මෙම Gmail account එකට සම්බන්ධ Student Information හමු වුණේ නැහැ. Student Information form එක submit කළේ මේ account එකෙන්දැයි පරීක්ෂා කරන්න.";
       return;
@@ -1076,7 +1073,11 @@ async function loadPersonalStudentDashboard(){
     if(heading&&student.fullName)heading.textContent="Welcome back, "+student.fullName+"! 👋";
   }catch(error){
     console.error("Personal student dashboard lookup failed",error);
-    personalDashboardStatus.textContent="Student Details ලබාගත නොහැකියි. Firebase Firestore Rules මඟින් logged-in user හට තමන්ගේ studentLookups records කියවීමට අවසර තිබේදැයි පරීක්ෂා කරන්න.";
+    if(error?.code==="permission-denied"){
+      personalDashboardStatus.textContent="Student Details ලබාගත නොහැකියි (permission-denied). Firestore Rules හි studentLookups list permission එක සහ ownerUid query එක පරීක්ෂා කරන්න.";
+    }else{
+      personalDashboardStatus.textContent="Student Details ලබාගත නොහැකියි. Internet connection එක සහ Firebase settings පරීක්ෂා කර නැවත උත්සාහ කරන්න.";
+    }
   }
 }
 $("personalDashboardRefreshBtn")?.addEventListener("click",loadPersonalStudentDashboard);
