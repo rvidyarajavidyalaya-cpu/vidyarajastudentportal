@@ -1,3 +1,4 @@
+
 {
   "id": "./",
   "name": "R/VIDYARAJA VIDYALAYA Student Portal",
@@ -11,7 +12,7 @@
   "theme_color": "#07100a",
   "icons": [
     {
-      "src": "./logo.png",
+      "src": "./school-logo.png",
       "sizes": "any",
       "type": "image/png",
       "purpose": "any"
