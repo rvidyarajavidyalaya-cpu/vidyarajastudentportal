@@ -1,11 +1,13 @@
-/* R/VIDYARAJA VIDYALAYA Student Portal - basic PWA shell cache */
-const CACHE_NAME = "vidyaraja-portal-shell-v1";
+
+/* R/VIDYARAJA VIDYALAYA Student Portal - PWA */
+const CACHE_NAME = "vidyaraja-student-app-v2";
+
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./amin.html",
   "./manifest.json",
-  "./logo.png"
+  "./school-logo.png",
+  "./student-profile.jpg"
 ];
 
 self.addEventListener("install", (event) => {
@@ -20,7 +22,9 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys()
       .then((keys) => Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+        keys
+          .filter((key) => key !== CACHE_NAME)
+          .map((key) => caches.delete(key))
       ))
       .then(() => self.clients.claim())
   );
@@ -30,16 +34,20 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // Leave Firebase, CDN libraries, and other external requests to the network.
-  if (url.origin !== self.location.origin || request.method !== "GET") return;
+  if (
+    url.origin !== self.location.origin ||
+    request.method !== "GET"
+  ) return;
 
-  // Network-first for page navigation so online users receive the latest portal.
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME)
+              .then((cache) => cache.put(request, copy));
+          }
           return response;
         })
         .catch(async () => {
@@ -50,10 +58,15 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Cache-first only for the small local app-shell files.
-  if (APP_SHELL.some((path) => new URL(path, self.location.href).pathname === url.pathname)) {
+  if (
+    APP_SHELL.some(
+      (path) =>
+        new URL(path, self.location.href).pathname === url.pathname
+    )
+  ) {
     event.respondWith(
-      caches.match(request).then((cached) => cached || fetch(request))
+      caches.match(request)
+        .then((cached) => cached || fetch(request))
     );
   }
 });
